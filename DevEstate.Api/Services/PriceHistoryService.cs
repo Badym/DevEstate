@@ -1,0 +1,58 @@
+﻿using DevEstate.Api.Dtos;
+using DevEstate.Api.Models;
+using DevEstate.Api.Repositories;
+
+namespace DevEstate.Api.Services
+{
+    public class PriceHistoryService
+    {
+        private readonly PriceHistoryRepository _repo;
+
+        public PriceHistoryService(PriceHistoryRepository repo)
+        {
+            _repo = repo;
+        }
+
+        public async Task<PriceHistoryDtos.Response> GetByIdAsync(string id)
+        {
+            var entity = await _repo.GetByIdAsync(id);
+            if (entity == null) throw new Exception("PriceHistory not found");
+
+            return new PriceHistoryDtos.Response
+            {
+                Id = entity.Id,
+                PropertyId = entity.PropertyId,
+                Date = entity.Date,
+                NewPrice = entity.NewPrice
+            };
+        }
+
+        public async Task<List<PriceHistoryDtos.Response>> GetAllAsync()
+        {
+            var entities = await _repo.GetAllAsync();
+            return entities.Select(e => new PriceHistoryDtos.Response
+            {
+                Id = e.Id,
+                PropertyId = e.PropertyId,
+                Date = e.Date,
+                NewPrice = e.NewPrice
+            }).ToList();
+        }
+
+        public async Task CreateAsync(PriceHistoryDtos.Create dto)
+        {
+            var entity = new PriceHistory
+            {
+                PropertyId = dto.PropertyId,
+                Date = dto.Date,
+                NewPrice = dto.NewPrice
+            };
+            await _repo.CreateAsync(entity);
+        }
+
+        public async Task DeleteAsync(string id)
+        {
+            await _repo.DeleteAsync(id);
+        }
+    }
+}
