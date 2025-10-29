@@ -13,12 +13,12 @@ namespace DevEstate.Api.Services
             _repo = repo;
         }
 
-        public async Task<InvestmentDtos.Response> GetByIdAsync(string id)
+        public async Task<InvestmentDtos.InvestmentResponseDtos> GetByIdAsync(string id)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Investment not found");
 
-            return new InvestmentDtos.Response
+            return new InvestmentDtos.InvestmentResponseDtos
             {
                 Id = entity.Id,
                 Name = entity.Name,
@@ -27,14 +27,15 @@ namespace DevEstate.Api.Services
                 PostalCode = entity.PostalCode,
                 Description = entity.Description,
                 Status = entity.Status,
-                CreatedAt = entity.CreatedAt
+                CreatedAt = entity.CreatedAt,
+                Images = entity.Images
             };
         }
 
-        public async Task<List<InvestmentDtos.Response>> GetAllAsync()
+        public async Task<List<InvestmentDtos.InvestmentResponseDtos>> GetAllAsync()
         {
             var entities = await _repo.GetAllAsync();
-            return entities.Select(e => new InvestmentDtos.Response
+            return entities.Select(e => new InvestmentDtos.InvestmentResponseDtos()
             {
                 Id = e.Id,
                 Name = e.Name,
@@ -43,11 +44,12 @@ namespace DevEstate.Api.Services
                 PostalCode = e.PostalCode,
                 Description = e.Description,
                 Status = e.Status,
-                CreatedAt = e.CreatedAt
+                CreatedAt = e.CreatedAt,
+                Images = e.Images
             }).ToList();
         }
 
-        public async Task CreateAsync(InvestmentDtos.Create dto)
+        public async Task CreateAsync(InvestmentDtos.InvestmentCreateDtos dto)
         {
             var entity = new Investment
             {
@@ -62,7 +64,7 @@ namespace DevEstate.Api.Services
             await _repo.CreateAsync(entity);
         }
 
-        public async Task UpdateAsync(string id, InvestmentDtos.Update dto)
+        public async Task UpdateAsync(string id, InvestmentDtos.InvestmentUpdateDtos dto)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Investment not found");
@@ -92,6 +94,53 @@ namespace DevEstate.Api.Services
                 await _repo.UpdateAsync(investment);
             }
         }
+        
+        public async Task<List<InvestmentDtos.InvestmentResponseDtos>> GetByStatusAsync(string status)
+        {
+            var entities = await _repo.GetAllAsync();
+
+            // Filtrowanie inwestycji na podstawie statusu
+            var filteredInvestments = entities
+                .Where(e => e.Status.Equals(status, StringComparison.OrdinalIgnoreCase))
+                .Select(e => new InvestmentDtos.InvestmentResponseDtos
+                {
+                    Id = e.Id,
+                    Name = e.Name,
+                    City = e.City,
+                    Street = e.Street,
+                    PostalCode = e.PostalCode,
+                    Description = e.Description,
+                    Status = e.Status,
+                    CreatedAt = e.CreatedAt,
+                    Images = e.Images
+                })
+                .ToList();
+
+            return filteredInvestments;
+        }
+
+        public async Task<InvestmentDtos.InvestmentResponseDtos?> GetByNameAsync(string name)
+        {
+            var entity = (await _repo.GetAllAsync())
+                .FirstOrDefault(i => i.Name.ToLower() == name.ToLower());
+
+            if (entity == null)
+                return null;
+
+            return new InvestmentDtos.InvestmentResponseDtos
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                City = entity.City,
+                Street = entity.Street,
+                PostalCode = entity.PostalCode,
+                Description = entity.Description,
+                Status = entity.Status,
+                CreatedAt = entity.CreatedAt,
+                Images = entity.Images
+            };
+        }
+
 
     }
 }

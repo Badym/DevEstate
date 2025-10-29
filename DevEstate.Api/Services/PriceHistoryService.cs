@@ -13,12 +13,12 @@ namespace DevEstate.Api.Services
             _repo = repo;
         }
 
-        public async Task<PriceHistoryDtos.Response> GetByIdAsync(string id)
+        public async Task<PriceHistoryDtos.PriceHistoryResponseDtos> GetByIdAsync(string id)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("PriceHistory not found");
 
-            return new PriceHistoryDtos.Response
+            return new PriceHistoryDtos.PriceHistoryResponseDtos
             {
                 Id = entity.Id,
                 PropertyId = entity.PropertyId,
@@ -27,10 +27,10 @@ namespace DevEstate.Api.Services
             };
         }
 
-        public async Task<List<PriceHistoryDtos.Response>> GetAllAsync()
+        public async Task<List<PriceHistoryDtos.PriceHistoryResponseDtos>> GetAllAsync()
         {
             var entities = await _repo.GetAllAsync();
-            return entities.Select(e => new PriceHistoryDtos.Response
+            return entities.Select(e => new PriceHistoryDtos.PriceHistoryResponseDtos
             {
                 Id = e.Id,
                 PropertyId = e.PropertyId,
@@ -39,7 +39,7 @@ namespace DevEstate.Api.Services
             }).ToList();
         }
 
-        public async Task CreateAsync(PriceHistoryDtos.Create dto)
+        public async Task CreateAsync(PriceHistoryDtos.PriceHistoryCreateDtos dto)
         {
             var entity = new PriceHistory
             {

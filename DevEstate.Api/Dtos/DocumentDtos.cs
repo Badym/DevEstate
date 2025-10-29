@@ -2,23 +2,30 @@
 
 public static class DocumentDtos
 {
-    public class Create
+    public class DocumentCreateDtos
     {
-        public string PropertyId { get; set; } = null!;
-        public string BuildingId { get; set; } = null!;
+        public string? InvestmentId { get; set; }
+        public string? BuildingId { get; set; }
+        public string? PropertyId { get; set; }
+
         public string FileName { get; set; } = null!;
         public string FileType { get; set; } = null!;
         public string FileUrl { get; set; } = null!;
+        public string? Type { get; set; } // np. "Prospekt", "Rzut", "Załącznik"
     }
 
-    public class Response
+    public class DocumentResponseDtos
     {
         public string Id { get; set; } = null!;
-        public string PropertyId { get; set; } = null!;
-        public string BuildingId { get; set; } = null!;
+        public string? InvestmentId { get; set; }
+        public string? BuildingId { get; set; }
+        public string? PropertyId { get; set; }
+
         public string FileName { get; set; } = null!;
         public string FileType { get; set; } = null!;
         public string FileUrl { get; set; } = null!;
-        public DateTime UploadedAt { get; set; } = DateTime.UtcNow;
+        public string? Type { get; set; }
+
+        public DateTime UploadedAt { get; set; }
     }
 }

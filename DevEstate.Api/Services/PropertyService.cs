@@ -13,12 +13,12 @@ namespace DevEstate.Api.Services
             _repo = repo;
         }
 
-        public async Task<PropertyDtos.Response> GetByIdAsync(string id)
+        public async Task<PropertyDtos.PropertyResponseDtos> GetByIdAsync(string id)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Property not found");
 
-            return new PropertyDtos.Response
+            return new PropertyDtos.PropertyResponseDtos
             {
                 Id = entity.Id,
                 ApartmentNumber = entity.ApartmentNumber,
@@ -27,15 +27,16 @@ namespace DevEstate.Api.Services
                 Price = entity.Price,
                 PricePerMeter = entity.PricePerMeter,
                 Status = entity.Status,
-                BuildingNumber = entity.BuildingId,
-                InvestmentName = entity.InvestmentId
+                InvestmentId = entity.InvestmentId,
+                BuildingId = entity.BuildingId,
+                Images = entity.Images,
             };
         }
 
-        public async Task<List<PropertyDtos.Response>> GetAllAsync()
+        public async Task<List<PropertyDtos.PropertyResponseDtos>> GetAllAsync()
         {
             var entities = await _repo.GetAllAsync();
-            return entities.Select(e => new PropertyDtos.Response
+            return entities.Select(e => new PropertyDtos.PropertyResponseDtos
             {
                 Id = e.Id,
                 ApartmentNumber = e.ApartmentNumber,
@@ -44,12 +45,13 @@ namespace DevEstate.Api.Services
                 Price = e.Price,
                 PricePerMeter = e.PricePerMeter,
                 Status = e.Status,
-                BuildingNumber = e.BuildingId,
-                InvestmentName = e.InvestmentId
+                BuildingId = e.BuildingId,
+                InvestmentId = e.InvestmentId,
+                Images = e.Images,
             }).ToList();
         }
 
-        public async Task CreateAsync(PropertyDtos.Create dto)
+        public async Task CreateAsync(PropertyDtos.PropertyCreateDtos dto)
         {
             var entity = new Property
             {
@@ -66,7 +68,7 @@ namespace DevEstate.Api.Services
             await _repo.CreateAsync(entity);
         }
 
-        public async Task UpdateAsync(string id, PropertyDtos.Update dto)
+        public async Task UpdateAsync(string id, PropertyDtos.PropertyUpdateDtos dto)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Property not found");
@@ -91,6 +93,52 @@ namespace DevEstate.Api.Services
                 property.Images.Add(fileUrl);
                 await _repo.UpdateAsync(property);
             }
+        }
+        
+        public async Task<IEnumerable<PropertyDtos.PropertyResponseDtos>> GetByInvestmentIdAsync(string investmentId)
+        {
+            var properties = await _repo.GetByInvestmentIdAsync(investmentId);
+            if (properties == null || !properties.Any())
+                return Enumerable.Empty<PropertyDtos.PropertyResponseDtos>();
+
+            return properties.Select(p => new PropertyDtos.PropertyResponseDtos
+            {
+                Id = p.Id!,
+                ApartmentNumber = p.ApartmentNumber,
+                Type = p.Type,
+                Area = p.Area,
+                Price = p.Price,
+                PricePerMeter = p.PricePerMeter,
+                Status = p.Status,
+                BuildingId = p.BuildingId,
+                InvestmentId = p.InvestmentId,
+                Images = p.Images,
+            });
+        }
+
+        public async Task<IEnumerable<PropertyDtos.PropertyResponseDtos>> GetByInvestmentIdAndTypeAsync(string investmentId, string type)
+        {
+            // upewniamy się że typ jest małymi literami
+            type = type.ToLower();
+
+            var allProperties = await _repo.GetByInvestmentIdAsync(investmentId);
+            if (allProperties == null || !allProperties.Any())
+                return Enumerable.Empty<PropertyDtos.PropertyResponseDtos>();
+
+            var filtered = allProperties.Where(p => p.Type.ToLower() == type).ToList();
+
+            return filtered.Select(p => new PropertyDtos.PropertyResponseDtos
+            {
+                Id = p.Id!,
+                ApartmentNumber = p.ApartmentNumber,
+                Type = p.Type,
+                Area = p.Area,
+                Price = p.Price,
+                PricePerMeter = p.PricePerMeter,
+                Status = p.Status,
+                InvestmentId = p.InvestmentId,
+                Images = p.Images,
+            });
         }
 
     }

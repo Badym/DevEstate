@@ -13,12 +13,12 @@ namespace DevEstate.Api.Services
             _repo = repo;
         }
 
-        public async Task<CompanyDtos.Response> GetByIdAsync(string id)
+        public async Task<CompanyDtos.CompanyResponseDtos> GetByIdAsync(string id)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Company not found");
 
-            return new CompanyDtos.Response
+            return new CompanyDtos.CompanyResponseDtos()
             {
                 Id = entity.Id,
                 Name = entity.Name,
@@ -27,14 +27,15 @@ namespace DevEstate.Api.Services
                 Website = entity.Website,
                 Address = entity.Address,
                 Description = entity.Description,
-                CreatedAt = entity.CreatedAt
+                CreatedAt = entity.CreatedAt,
+                LogoImage = entity.LogoImage,
             };
         }
 
-        public async Task<List<CompanyDtos.Response>> GetAllAsync()
+        public async Task<List<CompanyDtos.CompanyResponseDtos>> GetAllAsync()
         {
             var entities = await _repo.GetAllAsync();
-            return entities.Select(e => new CompanyDtos.Response
+            return entities.Select(e => new CompanyDtos.CompanyResponseDtos()
             {
                 Id = e.Id,
                 Name = e.Name,
@@ -43,11 +44,15 @@ namespace DevEstate.Api.Services
                 Website = e.Website,
                 Address = e.Address,
                 Description = e.Description,
-                CreatedAt = e.CreatedAt
+                CreatedAt = e.CreatedAt,
+                NIP = e.NIP,
+                REGON = e.REGON,
+                KRS = e.KRS,
+                LogoImage = e.LogoImage,
             }).ToList();
         }
 
-        public async Task CreateAsync(CompanyDtos.Create dto)
+        public async Task CreateAsync(CompanyDtos.CompanyCreateDtos dto)
         {
             var entity = new Company
             {
@@ -65,7 +70,7 @@ namespace DevEstate.Api.Services
             await _repo.CreateAsync(entity);
         }
 
-        public async Task UpdateAsync(string id, CompanyDtos.Update dto)
+        public async Task UpdateAsync(string id, CompanyDtos.CompanyUpdateDtos dto)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Company not found");
@@ -84,5 +89,30 @@ namespace DevEstate.Api.Services
         {
             await _repo.DeleteAsync(id);
         }
+        
+        public async Task<CompanyDtos.CompanyResponseDtos?> GetFirstAsync()
+        {
+            var entities = await _repo.GetAllAsync();
+            var entity = entities.FirstOrDefault();
+            if (entity == null) return null;
+
+            return new CompanyDtos.CompanyResponseDtos()
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                Email = entity.Email,
+                Phone = entity.Phone,
+                Website = entity.Website,
+                Address = entity.Address,
+                Description = entity.Description,
+                CreatedAt = entity.CreatedAt,
+                NIP = entity.NIP,
+                REGON = entity.REGON,
+                KRS = entity.KRS,
+                LogoImage = entity.LogoImage,
+            };
+        }
+
+
     }
 }

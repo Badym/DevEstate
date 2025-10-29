@@ -2,7 +2,7 @@
 
 public static class InvestmentDtos
 {
-    public class Create
+    public class InvestmentCreateDtos
     {
         public string CompanyId { get; set; } = null!;
         public string Name { get; set; } = null!;
@@ -13,7 +13,7 @@ public static class InvestmentDtos
         public string Status { get; set; } = "Aktualne"; // Na sprzedaż / Zarezerwowane / Nieaktualne
     }
 
-    public class Update
+    public class InvestmentUpdateDtos
     {
         public string? Name { get; set; }
         public string? City { get; set; }
@@ -23,7 +23,7 @@ public static class InvestmentDtos
         public string? Status { get; set; }
     }
 
-    public class Response
+    public class InvestmentResponseDtos
     {
         public string Id { get; set; } = null!;
         public string Name { get; set; } = null!;
@@ -33,5 +33,6 @@ public static class InvestmentDtos
         public string Description { get; set; }
         public string Status { get; set; } = "Aktualne";
         public DateTime CreatedAt { get; set; }
+        public List<string> Images { get; set; } 
     }
 }

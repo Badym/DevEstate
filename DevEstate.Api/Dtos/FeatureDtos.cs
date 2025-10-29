@@ -2,7 +2,7 @@
 
 public static class FeatureDtos
 {
-    public class Create
+    public class FeatureCreateDtos
     {
         public string BuildingId { get; set; } = null!;
         public string Name { get; set; } = null!; // np. "Garaż", "Winda"
@@ -10,14 +10,14 @@ public static class FeatureDtos
         public decimal? Price { get; set; } // np. 40000 dla miejsca garażowego
     }
 
-    public class Update
+    public class FeatureUpdateDtos
     {
         public string? Name { get; set; }
         public string? Description { get; set; }
         public decimal? Price { get; set; }
     }
 
-    public class Response
+    public class FeatureResponseDtos
     {
         public string Id { get; set; } = null!;
         public string BuildingId { get; set; } = null!;

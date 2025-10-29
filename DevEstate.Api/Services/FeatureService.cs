@@ -13,12 +13,12 @@ namespace DevEstate.Api.Services
             _repo = repo;
         }
 
-        public async Task<FeatureDtos.Response> GetByIdAsync(string id)
+        public async Task<FeatureDtos.FeatureResponseDtos> GetByIdAsync(string id)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Feature not found");
 
-            return new FeatureDtos.Response
+            return new FeatureDtos.FeatureResponseDtos
             {
                 Id = entity.Id,
                 BuildingId = entity.BuildingId,
@@ -27,10 +27,10 @@ namespace DevEstate.Api.Services
             };
         }
 
-        public async Task<List<FeatureDtos.Response>> GetAllAsync()
+        public async Task<List<FeatureDtos.FeatureResponseDtos>> GetAllAsync()
         {
             var entities = await _repo.GetAllAsync();
-            return entities.Select(e => new FeatureDtos.Response
+            return entities.Select(e => new FeatureDtos.FeatureResponseDtos
             {
                 Id = e.Id,
                 BuildingId = e.BuildingId,
@@ -39,7 +39,7 @@ namespace DevEstate.Api.Services
             }).ToList();
         }
 
-        public async Task CreateAsync(FeatureDtos.Create dto)
+        public async Task CreateAsync(FeatureDtos.FeatureCreateDtos dto)
         {
             var entity = new Feature
             {
@@ -50,7 +50,7 @@ namespace DevEstate.Api.Services
             await _repo.CreateAsync(entity);
         }
 
-        public async Task UpdateAsync(string id, FeatureDtos.Update dto)
+        public async Task UpdateAsync(string id, FeatureDtos.FeatureUpdateDtos dto)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Feature not found");
@@ -68,15 +68,17 @@ namespace DevEstate.Api.Services
             await _repo.DeleteAsync(id);
         }
 
-        public async Task<List<FeatureDtos.Response>> GetByBuildingIdAsync(string buildingId)
+        public async Task<List<FeatureDtos.FeatureResponseDtos>> GetByBuildingIdAsync(string buildingId)
         {
             var entities = await _repo.GetByBuildingIdAsync(buildingId);
-            return entities.Select(e => new FeatureDtos.Response
+
+            return entities.Select(e => new FeatureDtos.FeatureResponseDtos
             {
-                Id = e.Id,
+                Id = e.Id!,
                 BuildingId = e.BuildingId,
                 Name = e.Name,
-                Description = e.Description
+                Description = e.Description,
+                Price = e.Price
             }).ToList();
         }
     }

@@ -2,14 +2,14 @@
 
 public static class PriceHistoryDtos
 {
-    public class Create
+    public class PriceHistoryCreateDtos
     {
         public string PropertyId { get; set; } = null!;
         public DateTime Date { get; set; } = DateTime.UtcNow;
         public decimal NewPrice { get; set; }
     }
 
-    public class Response
+    public class PriceHistoryResponseDtos
     {
         public string Id { get; set; } = null!;
         public string PropertyId { get; set; } = null!;

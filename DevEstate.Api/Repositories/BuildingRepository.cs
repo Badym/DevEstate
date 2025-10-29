@@ -38,4 +38,10 @@ public class BuildingRepository
     {
         await _buildings.DeleteOneAsync(b => b.Id == id);
     }
+    
+    public async Task<List<Building>> GetByInvestmentIdAsync(string investmentId)
+    {
+        var filter = Builders<Building>.Filter.Eq(b => b.InvestmentId, investmentId);
+        return await _buildings.Find(filter).ToListAsync();
+    }
 }

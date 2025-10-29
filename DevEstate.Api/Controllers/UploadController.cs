@@ -32,7 +32,7 @@ namespace DevEstate.Api.Controllers
             if (file == null || file.Length == 0)
                 return BadRequest("Nie wybrano pliku.");
 
-            var uploadsDir = Path.Combine(_env.WebRootPath ?? "Uploads");
+            var uploadsDir = Path.Combine(_env.ContentRootPath, "Uploads", "Images");
             if (!Directory.Exists(uploadsDir))
                 Directory.CreateDirectory(uploadsDir);
 

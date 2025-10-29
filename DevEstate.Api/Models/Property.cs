@@ -22,7 +22,7 @@ namespace DevEstate.Api.Models
         public string ApartmentNumber { get; set; } = null!; // np. "A2" lub "33E"
 
         [BsonElement("type")]
-        public string Type { get; set; } = "apartment"; // apartment / house
+        public string Type { get; set; } = "apartment"; // apartment / house    
 
         [BsonElement("area")]
         public double Area { get; set; }

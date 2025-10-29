@@ -9,6 +9,10 @@ namespace DevEstate.Api.Models
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
+        
+        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonElement("investmentId")]
+        public string? InvestmentId { get; set; }
 
         [BsonRepresentation(BsonType.ObjectId)]
         [BsonElement("propertyId")]
@@ -26,6 +30,9 @@ namespace DevEstate.Api.Models
 
         [BsonElement("fileUrl")]
         public string FileUrl { get; set; } = null!; // link do pliku (np. w chmurze)
+        
+        [BsonElement("type")]
+        public string? Type { get; set; }
 
         [BsonElement("uploadedAt")]
         public DateTime UploadedAt { get; set; } = DateTime.UtcNow;

@@ -39,5 +39,7 @@ namespace DevEstate.Api.Models
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [BsonElement("logoimage")]
+        public string LogoImage { get; set; }
     }
 }

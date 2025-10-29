@@ -38,4 +38,21 @@ public class PropertyRepository
     {
         await _properties.DeleteOneAsync(p => p.Id == id);
     }
+    
+    public async Task<List<Property>> GetByInvestmentIdAsync(string investmentId)
+    {
+        var filter = Builders<Property>.Filter.Or(
+            Builders<Property>.Filter.Eq(p => p.InvestmentId, investmentId),   // domy
+            Builders<Property>.Filter.Where(p => p.BuildingId != null && p.InvestmentId == null) // zabezpieczenie
+        );
+
+        return await _properties.Find(filter).ToListAsync();
+    }
+    
+    public async Task<List<Property>> GetByBuildingIdAsync(string buildingId)
+    {
+        var filter = Builders<Property>.Filter.Eq(p => p.BuildingId, buildingId);
+        return await _properties.Find(filter).ToListAsync();
+    }
+
 }
