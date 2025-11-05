@@ -53,6 +53,11 @@ namespace DevEstate.Api.Services
 
         public async Task CreateAsync(PropertyDtos.PropertyCreateDtos dto)
         {
+            decimal price = (decimal)dto.Price;  
+            decimal area = (decimal)dto.Area;   
+ 
+            decimal pricePerMeter = area > 0 ? Math.Round(price / area, 2) : 0;
+
             var entity = new Property
             {
                 InvestmentId = dto.InvestmentId,
@@ -62,7 +67,7 @@ namespace DevEstate.Api.Services
                 Area = dto.Area,
                 TerraceArea = dto.TerraceArea,
                 Price = dto.Price,
-                PricePerMeter = dto.PricePerMeter,
+                PricePerMeter = pricePerMeter,
                 Status = dto.Status
             };
             await _repo.CreateAsync(entity);
@@ -73,7 +78,24 @@ namespace DevEstate.Api.Services
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Property not found");
 
-            entity.Price = dto.Price ?? entity.Price;
+            if (dto.Price.HasValue || dto.Status != null)
+            {
+                if (dto.Price.HasValue)
+                {
+                    entity.Price = dto.Price.Value;
+
+                    decimal price = (decimal)entity.Price; 
+                    decimal area = (decimal)entity.Area;  
+
+                    // Przeliczamy cena za m²
+                    if (area > 0)
+                    {
+                        entity.PricePerMeter = Math.Round(price / area, 2);
+                    }
+                }
+            }
+
+            entity.Status = dto.Status ?? entity.Status;
             entity.Status = dto.Status ?? entity.Status;
 
             await _repo.UpdateAsync(entity);

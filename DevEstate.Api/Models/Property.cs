@@ -34,7 +34,7 @@ namespace DevEstate.Api.Models
         public decimal Price { get; set; }
 
         [BsonElement("pricePerMeter")]
-        public int PricePerMeter { get; set; }
+        public decimal PricePerMeter { get; set; }
 
         [BsonElement("status")]
         public string Status { get; set; } = "Aktualne"; // Aktualne / Zarezerwowane / Sprzedane

@@ -27,7 +27,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 
-export default function AdminDataTable({ title, columns, data, onAdd }) {
+export default function AdminDataTable({ title, columns, data, onAdd, filterKey = "investmentName" }) {
     const [sorting, setSorting] = React.useState([]);
     const [columnFilters, setColumnFilters] = React.useState([]);
     const [columnVisibility, setColumnVisibility] = React.useState({});
@@ -68,10 +68,10 @@ export default function AdminDataTable({ title, columns, data, onAdd }) {
             {/* 🔍 Filtr + kolumny */}
             <div className="flex items-center py-4">
                 <Input
-                    placeholder="Filtruj po nazwie..."
-                    value={(table.getColumn("name")?.getFilterValue() ?? "")}
+                    placeholder={`Filtruj po ${filterKey}...`}
+                    value={table.getColumn(filterKey)?.getFilterValue() ?? ""}
                     onChange={(e) =>
-                        table.getColumn("name")?.setFilterValue(e.target.value)
+                        table.getColumn(filterKey)?.setFilterValue(e.target.value)
                     }
                     className="max-w-sm"
                 />

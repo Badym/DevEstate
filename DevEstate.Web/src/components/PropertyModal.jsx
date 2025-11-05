@@ -1,6 +1,9 @@
-﻿import { useEffect } from "react";
+﻿import { useEffect, useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function PropertyModal({ property, onClose }) {
+    const [index, setIndex] = useState(0);
+
     // zamykanie ESC
     useEffect(() => {
         const handleEsc = (e) => e.key === "Escape" && onClose();
@@ -11,7 +14,7 @@ export default function PropertyModal({ property, onClose }) {
     if (!property) return null;
 
     const {
-        images,
+        images = [],
         apartmentNumber,
         type,
         area,
@@ -20,6 +23,10 @@ export default function PropertyModal({ property, onClose }) {
         pricePerMeter,
         status,
     } = property;
+
+    // 🧭 Nawigacja strzałkami
+    const next = () => setIndex((prev) => (prev + 1) % images.length);
+    const prev = () => setIndex((prev) => (prev - 1 + images.length) % images.length);
 
     return (
         <div
@@ -34,7 +41,7 @@ export default function PropertyModal({ property, onClose }) {
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
                     <h2 className="text-2xl font-semibold text-[#1A1A1A]">
-                        Lokal {apartmentNumber} ({type})
+                        Lokal {apartmentNumber} ({type === "apartment" ? "Mieszkanie" : "Dom"})
                     </h2>
                     <button
                         onClick={onClose}
@@ -46,19 +53,56 @@ export default function PropertyModal({ property, onClose }) {
 
                 {/* Galeria */}
                 {images && images.length > 0 && (
-                    <div className="w-full h-80 overflow-hidden">
+                    <div className="relative w-full h-80 overflow-hidden">
+                        {/* Zdjęcie */}
                         <img
-                            src={images[0]}
+                            key={index}
+                            src={images[index]}
                             alt={`Zdjęcie ${apartmentNumber}`}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-all duration-500"
                         />
+
+                        {/* Strzałki */}
+                        {images.length > 1 && (
+                            <>
+                                <button
+                                    onClick={prev}
+                                    className="absolute top-1/2 left-4 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-2"
+                                >
+                                    <ChevronLeft size={24} />
+                                </button>
+                                <button
+                                    onClick={next}
+                                    className="absolute top-1/2 right-4 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-2"
+                                >
+                                    <ChevronRight size={24} />
+                                </button>
+                            </>
+                        )}
+
+                        {/* Kropki (indykatory) */}
+                        {images.length > 1 && (
+                            <div className="absolute bottom-3 w-full flex justify-center gap-2">
+                                {images.map((_, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setIndex(i)}
+                                        className={`w-2.5 h-2.5 rounded-full transition-all ${
+                                            i === index ? "bg-white" : "bg-white/50 hover:bg-white/70"
+                                        }`}
+                                    />
+                                ))}
+                            </div>
+                        )}
                     </div>
                 )}
 
                 {/* Treść główna */}
                 <div className="p-8 grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-700">
                     <div>
-                        <p><strong>Typ:</strong> {type === "apartment" ? "Mieszkanie" : "Dom"}</p>
+                        <p>
+                            <strong>Typ:</strong> {type === "apartment" ? "Mieszkanie" : "Dom"}
+                        </p>
                         <p>
                             <strong>Status:</strong>{" "}
                             <span
@@ -70,16 +114,28 @@ export default function PropertyModal({ property, onClose }) {
                                             : "text-green-700"
                                 }`}
                             >
-                                {status}
-                            </span>
+                {status}
+              </span>
                         </p>
-                        <p><strong>Powierzchnia:</strong> {area} m²</p>
-                        {terraceArea && <p><strong>Taras:</strong> {terraceArea} m²</p>}
+                        <p>
+                            <strong>Powierzchnia:</strong> {area} m²
+                        </p>
+                        {terraceArea && (
+                            <p>
+                                <strong>Taras:</strong> {terraceArea} m²
+                            </p>
+                        )}
                     </div>
                     <div>
-                        <p><strong>Cena:</strong> {price.toLocaleString("pl-PL")} zł</p>
-                        <p><strong>Cena za m²:</strong> {pricePerMeter} zł/m²</p>
-                        <p><strong>ID lokalu:</strong> {property.id}</p>
+                        <p>
+                            <strong>Cena:</strong> {price.toLocaleString("pl-PL")} zł
+                        </p>
+                        <p>
+                            <strong>Cena za m²:</strong> {pricePerMeter} zł/m²
+                        </p>
+                        <p>
+                            <strong>ID lokalu:</strong> {property.id}
+                        </p>
                     </div>
                 </div>
 
@@ -92,7 +148,6 @@ export default function PropertyModal({ property, onClose }) {
                         Tutaj można dodać np. opis techniczny, dokumenty PDF, rzuty mieszkania,
                         albo przyciski do pobrania materiałów.
                     </p>
-                    {/* 👉 miejsce na załączniki, przyciski, linki */}
                 </div>
             </div>
         </div>

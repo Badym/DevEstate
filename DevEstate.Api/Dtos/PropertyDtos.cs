@@ -11,7 +11,7 @@ public static class PropertyDtos
         public double Area { get; set; }
         public double? TerraceArea { get; set; }
         public decimal Price { get; set; }
-        public int PricePerMeter { get; set; }
+        public decimal PricePerMeter { get; set; }
         public string Status { get; set; } = "Aktualne"; // Aktualne / Zarezerwowane / Sprzedane
     }
 
@@ -28,7 +28,7 @@ public static class PropertyDtos
         public string Type { get; set; } = string.Empty;
         public double Area { get; set; }
         public decimal Price { get; set; }
-        public int PricePerMeter { get; set; }
+        public decimal PricePerMeter { get; set; }
         public string Status { get; set; } = string.Empty;
         public string? BuildingId { get; set; }
         public string? InvestmentId { get; set; }

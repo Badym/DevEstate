@@ -25,7 +25,6 @@ public class BuildingController : ControllerBase
     public async Task<IActionResult> GetById(string id) => Ok(await _service.GetByIdAsync(id));
 
     [HttpPost]
-    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Create([FromBody] BuildingDtos.BuildingCreateDtos dto)
     {
         await _service.CreateAsync(dto);

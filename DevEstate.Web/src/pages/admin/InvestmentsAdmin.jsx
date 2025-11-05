@@ -1,19 +1,37 @@
-﻿import AdminDataTable from "../../components/AdminDataTable";
+﻿import { useState } from "react";
+import AdminDataTable from "../../components/AdminDataTable";
+import InvestmentAddModal from "@/components/modals/InvestmentAddModal";
 import { columns } from "./columns";
-
-const data = [
-    { id: 1, name: "Zielone Tarasy", city: "Warszawa", status: "Aktywna" },
-    { id: 2, name: "Nowe Zacisze", city: "Kraków", status: "Aktywna" },
-    { id: 3, name: "Parkowe", city: "Gdańsk", status: "Zakończona" },
-];
+import useFetch from "../../hooks/useFetch";
 
 export default function InvestmentsAdmin() {
+    const {
+        data: investments,
+        loading,
+        error,
+    } = useFetch("/api/investment/all");
+
+    const [openAdd, setOpenAdd] = useState(false);
+
+    if (loading) return <p className="p-10 text-gray-600">Ładowanie inwestycji...</p>;
+    if (error) return <p className="p-10 text-red-600">{error}</p>;
+
     return (
-        <AdminDataTable
-            title="Zarządzaj inwestycjami"
-            columns={columns}
-            data={data}
-            onAdd={() => alert("Dodaj nową inwestycję")}
-        />
+        <>
+            <AdminDataTable
+                title="Zarządzaj inwestycjami"
+                columns={columns}
+                data={investments || []}
+                onAdd={() => setOpenAdd(true)} // 👈 teraz otwieramy modal
+                filterKey="name"
+            />
+
+            {/* 💡 Modal dodawania inwestycji */}
+            <InvestmentAddModal
+                open={openAdd}
+                onClose={() => setOpenAdd(false)}
+                onSave={() => window.location.reload()} // po dodaniu odświeża listę
+            />
+        </>
     );
 }

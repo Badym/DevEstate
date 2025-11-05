@@ -1,5 +1,5 @@
 ﻿import { useState } from "react";
-import InvestmentEditModal from "@/components/modals/InvestmentEditModal";
+import BuildingEditModal from "@/components/admin/building/BuildingEditModal";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -13,12 +13,12 @@ import { MoreHorizontal, Edit, Trash2 } from "lucide-react";
 
 export const columns = [
     {
-        accessorKey: "name",
-        header: "Nazwa inwestycji",
+        accessorKey: "buildingNumber",
+        header: "Numer budynku",
     },
     {
-        accessorKey: "city",
-        header: "Miasto",
+        accessorKey: "investmentName",
+        header: "Inwestycja",
     },
     {
         accessorKey: "status",
@@ -26,7 +26,7 @@ export const columns = [
         cell: ({ row }) => {
             const status = row.getValue("status");
             const color =
-                status === "Aktywna"
+                status === "Aktualne"
                     ? "bg-green-100 text-green-700"
                     : "bg-gray-100 text-gray-600";
             return (
@@ -40,25 +40,34 @@ export const columns = [
         id: "actions",
         header: "",
         cell: ({ row }) => {
-            const investment = row.original;
+            const building = row.original;
             const [open, setOpen] = useState(false);
 
-            // 🗑️ Funkcja usuwania inwestycji
             const handleDelete = async () => {
-                if (!confirm(`Czy na pewno chcesz usunąć inwestycję "${investment.name}"?`)) return;
+                if (!confirm(`Czy na pewno chcesz usunąć budynek ${building.buildingNumber}?`)) return;
 
-                try {
-                    const res = await fetch(`/api/investment/${investment.id}`, {
-                        method: "DELETE",
-                    });
+                const token = localStorage.getItem("token");
 
-                    if (!res.ok) throw new Error("Nie udało się usunąć inwestycji.");
-                    alert(`✅ Inwestycja "${investment.name}" została usunięta.`);
+                const res = await fetch(`/api/building/${building.id}`, {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                if (res.ok) {
+                    alert("✅ Budynek został usunięty.");
                     window.location.reload();
-                } catch (err) {
-                    alert(`❌ Błąd: ${err.message}`);
+                } else if (res.status === 401) {
+                    alert("❌ Brak autoryzacji. Zaloguj się ponownie jako administrator.");
+                } else if (res.status === 403) {
+                    alert("🚫 Brak uprawnień (wymagana rola Admin).");
+                } else {
+                    const text = await res.text();
+                    alert(`❌ Nie udało się usunąć budynku. (${res.status}) ${text}`);
                 }
             };
+
 
             return (
                 <>
@@ -83,11 +92,10 @@ export const columns = [
                         </DropdownMenuContent>
                     </DropdownMenu>
 
-                    {/* 💡 Modal edycji */}
-                    <InvestmentEditModal
+                    <BuildingEditModal
                         open={open}
                         onClose={() => setOpen(false)}
-                        investment={investment}
+                        building={building}
                         onSave={() => window.location.reload()}
                     />
                 </>

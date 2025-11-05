@@ -54,6 +54,7 @@ namespace DevEstate.Api.Services
             var entity = new Investment
             {
                 CompanyId = dto.CompanyId,
+                
                 Name = dto.Name,
                 City = dto.City,
                 Street = dto.Street,
