@@ -54,5 +54,23 @@ namespace DevEstate.Api.Services
         {
             await _repo.DeleteAsync(id);
         }
+        
+        public async Task<List<PriceHistoryDtos.PriceHistoryResponseDtos>> GetByPropertyIdAsync(string propertyId)
+        {
+            var entities = await _repo.GetByPropertyIdAsync(propertyId);
+            if (entities == null || !entities.Any())
+                return new List<PriceHistoryDtos.PriceHistoryResponseDtos>();
+
+            return entities
+                .OrderByDescending(e => e.Date)
+                .Select(e => new PriceHistoryDtos.PriceHistoryResponseDtos
+                {
+                    Id = e.Id,
+                    PropertyId = e.PropertyId,
+                    Date = e.Date,
+                    NewPrice = e.NewPrice
+                })
+                .ToList();
+        }
     }
 }

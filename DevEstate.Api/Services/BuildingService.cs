@@ -6,19 +6,26 @@ namespace DevEstate.Api.Services
 {
     public class BuildingService
     {
-        private readonly BuildingRepository _repo;
-        private readonly PropertyRepository _propertyRepo;
+        private readonly BuildingRepository _buildingRepo;
+        private readonly PropertyService _propertyService;
+        private readonly FeatureRepository _featureRepo;
+        private readonly DocumentRepository _documentRepo;
 
-        public BuildingService(BuildingRepository repo, PropertyRepository propertyRepository)
+        public BuildingService(
+            BuildingRepository buildingRepo,
+            PropertyService propertyService,
+            FeatureRepository featureRepo,
+            DocumentRepository documentRepo)
         {
-            _repo = repo;
-            _propertyRepo = propertyRepository;
-
+            _buildingRepo = buildingRepo;
+            _propertyService = propertyService;
+            _featureRepo = featureRepo;
+            _documentRepo = documentRepo;
         }
 
         public async Task<BuildingDtos.BuildingResponseDtos> GetByIdAsync(string id)
         {
-            var entity = await _repo.GetByIdAsync(id);
+            var entity = await _buildingRepo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Building not found");
 
             return new BuildingDtos.BuildingResponseDtos()
@@ -35,7 +42,7 @@ namespace DevEstate.Api.Services
 
         public async Task<List<BuildingDtos.BuildingResponseDtos>> GetAllAsync()
         {
-            var entities = await _repo.GetAllAsync();
+            var entities = await _buildingRepo.GetAllAsync();
             return entities.Select(e => new BuildingDtos.BuildingResponseDtos()
             {
                 Id = e.Id,
@@ -57,40 +64,58 @@ namespace DevEstate.Api.Services
                 Description = dto.Description,
                 Status = dto.Status
             };
-            await _repo.CreateAsync(entity);
+            await _buildingRepo.CreateAsync(entity);
         }
 
         public async Task UpdateAsync(string id, BuildingDtos.BuildingUpdateDtos dto)
         {
-            var entity = await _repo.GetByIdAsync(id);
+            var entity = await _buildingRepo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Building not found");
 
             entity.BuildingNumber = dto.BuildingNumber ?? entity.BuildingNumber;
             entity.Description = dto.Description ?? entity.Description;
             entity.Status = dto.Status ?? entity.Status;
 
-            await _repo.UpdateAsync(entity);
+            await _buildingRepo.UpdateAsync(entity);
         }
 
         public async Task DeleteAsync(string id)
         {
-            await _repo.DeleteAsync(id);
+            // usuń dokumenty budynku
+            await _documentRepo.DeleteByParentAsync("building", id);
+
+            // usuń features powiązane z budynkiem
+            await _featureRepo.DeleteByBuildingIdAsync(id);
+
+            // usuń wszystkie properties przypisane do budynku
+            var properties = await _propertyService.GetByBuildingIdAsync(id);
+            if (properties != null && properties.Any())
+            {
+                foreach (var property in properties)
+                {
+                    await _propertyService.DeleteAsync(property.Id);
+                }
+            }
+
+            // usuń budynek
+            await _buildingRepo.DeleteAsync(id);
         }
+
         
         public async Task AddImageAsync(string buildingId, string fileUrl)
         {
-            var building = await _repo.GetByIdAsync(buildingId);
+            var building = await _buildingRepo.GetByIdAsync(buildingId);
             if (building != null)
             {
                 building.Images ??= new List<string>();
                 building.Images.Add(fileUrl);
-                await _repo.UpdateAsync(building);
+                await _buildingRepo.UpdateAsync(building);
             }
         }
         
         public async Task<IEnumerable<BuildingDtos.BuildingResponseDtos>> GetByInvestmentIdAsync(string investmentId)
         {
-            var buildings = await _repo.GetByInvestmentIdAsync(investmentId);
+            var buildings = await _buildingRepo.GetByInvestmentIdAsync(investmentId);
             var result = new List<BuildingDtos.BuildingResponseDtos>();
 
             foreach (var b in buildings)
@@ -114,9 +139,16 @@ namespace DevEstate.Api.Services
             return result;
         }
         
+       
+        public async Task<List<Building>> GetEntitiesByInvestmentIdAsync(string investmentId)
+        {
+            return await _buildingRepo.GetByInvestmentIdAsync(investmentId);
+        }
+
+        
         public async Task<(int available, int sold)> GetBuildingStatisticsAsync(string buildingId)
         {
-            var properties = await _propertyRepo.GetByBuildingIdAsync(buildingId);
+            var properties = await _propertyService.GetByBuildingIdAsync(buildingId);
 
             int available = properties.Count(p =>
                 p.Status.Equals("Aktualne", StringComparison.OrdinalIgnoreCase) ||

@@ -1,10 +1,10 @@
 ﻿import { useParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useFetch from "../hooks/useFetch";
 import TopBar from "../components/TopBar";
-import BuildingCarousel from "../components/BuildingCarousel"; // ⬅️ NOWE
+import BuildingCarousel from "../components/BuildingCarousel";
 import PropertyGrid from "../components/PropertyGrid";
-import BuildingDetailsBox from "../components/BuildingDetailsBox"; // 🆕 dodaj
+import BuildingDetailsBox from "../components/BuildingDetailsBox";
 
 import {
     Carousel,
@@ -20,6 +20,18 @@ export default function InvestmentPage() {
     const { data: investment, loading, error } = useFetch(`/api/Investment/name/${slug}`);
     const [selectedBuilding, setSelectedBuilding] = useState(null);
 
+    // Dokumenty inwestycji
+    const [documents, setDocuments] = useState([]);
+
+    // Pobieranie dokumentów
+    useEffect(() => {
+        if (investment?.id) {
+            fetch(`/api/Document/investment/${investment.id}`)
+                .then(res => res.json())
+                .then(data => setDocuments(data))
+                .catch(err => console.error("Błąd przy pobieraniu dokumentów", err));
+        }
+    }, [investment]);
 
     // Lightbox do galerii
     const [selectedImage, setSelectedImage] = useState(null);
@@ -75,6 +87,26 @@ export default function InvestmentPage() {
             <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-xl p-10 mt-20 text-center">
                 <h3 className="text-2xl font-semibold mb-4">Opis inwestycji</h3>
                 <p className="text-gray-700 leading-relaxed">{investment.description}</p>
+
+                {/* Dokumenty - minimalistyczne */}
+                {documents.length > 0 && (
+                    <div className="mt-6">
+                        <h4 className="text-lg font-semibold text-gray-800">Dokumenty</h4>
+                        <div className="flex flex-wrap justify-start mt-2">
+                            {documents.map((doc, index) => (
+                                <a
+                                    key={index}
+                                    href={doc.fileUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:underline text-sm mr-4"
+                                >
+                                    {doc.fileName}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* GALERIA */}
@@ -136,7 +168,6 @@ export default function InvestmentPage() {
                     investment={investment}
                 />
             )}
-
 
             {/* LOKALE (filtrowane po wybranym budynku) */}
             <div className="max-w-6xl mx-auto mt-8 mb-24 px-4">

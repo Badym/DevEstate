@@ -1,16 +1,21 @@
 ﻿using DevEstate.Api.Dtos;
 using DevEstate.Api.Models;
 using DevEstate.Api.Repositories;
+using DevEstate.Api.Services;
 
 namespace DevEstate.Api.Services
 {
     public class PropertyService
     {
         private readonly PropertyRepository _repo;
+        private readonly PriceHistoryService _priceHistoryService;
+        private readonly DocumentRepository _documentRepo;
 
-        public PropertyService(PropertyRepository repo)
+        public PropertyService(PropertyRepository repo,DocumentRepository documentRepo, PriceHistoryService priceHistoryService)
         {
             _repo = repo;
+            _priceHistoryService =  priceHistoryService;
+            _documentRepo = documentRepo;
         }
 
         public async Task<PropertyDtos.PropertyResponseDtos> GetByIdAsync(string id)
@@ -71,17 +76,28 @@ namespace DevEstate.Api.Services
                 Status = dto.Status
             };
             await _repo.CreateAsync(entity);
+            
+            await _priceHistoryService.CreateAsync(new PriceHistoryDtos.PriceHistoryCreateDtos
+            {
+                PropertyId = entity.Id!,
+                Date = DateTime.UtcNow,
+                NewPrice = entity.Price
+            });
         }
 
         public async Task UpdateAsync(string id, PropertyDtos.PropertyUpdateDtos dto)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Property not found");
-
+            
+            bool priceChanged = false;
+            
             if (dto.Price.HasValue || dto.Status != null)
             {
                 if (dto.Price.HasValue)
                 {
+                    priceChanged = dto.Price.Value != entity.Price;
+                    
                     entity.Price = dto.Price.Value;
 
                     decimal price = (decimal)entity.Price; 
@@ -99,10 +115,24 @@ namespace DevEstate.Api.Services
             entity.Status = dto.Status ?? entity.Status;
 
             await _repo.UpdateAsync(entity);
+            
+            if (priceChanged)
+            {
+                await _priceHistoryService.CreateAsync(new PriceHistoryDtos.PriceHistoryCreateDtos
+                {
+                    PropertyId = entity.Id!,
+                    Date = DateTime.UtcNow,
+                    NewPrice = entity.Price
+                });
+            }
         }
 
         public async Task DeleteAsync(string id)
         {
+            // Usuń dokumenty powiązane z property
+            await _documentRepo.DeleteByParentAsync("property", id);
+
+            // Usuń property
             await _repo.DeleteAsync(id);
         }
         
@@ -162,6 +192,12 @@ namespace DevEstate.Api.Services
                 Images = p.Images,
             });
         }
+        
+        public Task<List<Property>> GetByBuildingIdAsync(string buildingId)
+            => _repo.GetByBuildingIdAsync(buildingId);
+
+        public Task<List<Property>> GetEntitiesByInvestmentIdAsync(string investmentId)
+            => _repo.GetByInvestmentIdAsync(investmentId);
 
     }
 }

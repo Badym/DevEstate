@@ -19,6 +19,7 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
         status: "",
     });
     const [images, setImages] = useState([]);
+    const [documents, setDocuments] = useState([]);
 
     useEffect(() => {
         if (investment) {
@@ -31,6 +32,11 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                 status: investment.status || "",
             });
             setImages(investment.images || []);
+            // Pobieramy dokumenty przypisane do inwestycji
+            fetch(`/api/document/investment/${investment.id}`)
+                .then((res) => (res.ok ? res.json() : []))
+                .then((data) => setDocuments(data))
+                .catch(() => setDocuments([]));
         }
     }, [investment]);
 
@@ -57,7 +63,7 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
     };
 
     // 📤 Upload zdjęcia
-    const handleUpload = async (e) => {
+    const handleUploadImage = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
 
@@ -96,6 +102,46 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
             setImages((prev) => prev.filter((img) => img !== imageUrl));
         } catch (err) {
             alert(err.message);
+        }
+    };
+
+    // 📤 Upload dokumentu
+    const handleUploadDocument = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+            const res = await fetch(`/api/document/investment/${investment.id}`, {
+                method: "POST",
+                body: formData,
+            });
+            if (!res.ok) throw new Error("Nie udało się przesłać dokumentu.");
+            const data = await res.json();
+
+            setDocuments((prev) => [
+                ...prev,
+                { fileName: data.fileName, fileUrl: data.fileUrl, fileType: data.fileType },
+            ]);
+            e.target.value = "";
+            alert("✅ Dokument został pomyślnie dodany!");
+        } catch (err) {
+            alert(`❌ ${err.message}`);
+        }
+    };
+
+    // 🗑️ Usuwanie dokumentu
+    const handleDeleteDocument = async (docId) => {
+        if (!confirm("Czy na pewno chcesz usunąć ten dokument?")) return;
+
+        try {
+            const res = await fetch(`/api/document/${docId}`, { method: "DELETE" });
+            if (!res.ok) throw new Error("Nie udało się usunąć dokumentu.");
+            setDocuments((prev) => prev.filter((doc) => doc.id !== docId));
+        } catch (err) {
+            alert(`❌ ${err.message}`);
         }
     };
 
@@ -163,7 +209,7 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                                 <input
                                     type="file"
                                     accept="image/*"
-                                    onChange={handleUpload}
+                                    onChange={handleUploadImage}
                                     className="hidden"
                                 />
                             </label>
@@ -190,6 +236,48 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                             </div>
                         ) : (
                             <p className="text-sm text-gray-500">Brak zdjęć dla tej inwestycji.</p>
+                        )}
+                    </div>
+
+                    {/* 📄 Sekcja dokumentów */}
+                    <div className="mt-6">
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="text-sm font-semibold text-gray-800">Dokumenty</h3>
+                            <label className="cursor-pointer text-sm font-medium text-green-600 hover:underline">
+                                ➕ Dodaj dokument
+                                <input
+                                    type="file"
+                                    accept=".pdf,.doc,.docx"
+                                    onChange={handleUploadDocument}
+                                    className="hidden"
+                                />
+                            </label>
+                        </div>
+
+                        {documents.length > 0 ? (
+                            <ul className="space-y-2">
+                                {documents.map((doc, i) => (
+                                    <li key={i} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-md">
+                                        <a
+                                            href={doc.fileUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-sm text-blue-600 hover:underline"
+                                        >
+                                            📎 {doc.fileName}
+                                        </a>
+                                        <button
+                                            type="button"
+                                            onClick={() => handleDeleteDocument(doc.id)}
+                                            className="text-red-500 text-xs hover:underline"
+                                        >
+                                            Usuń
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-sm text-gray-500">Brak dokumentów dla tej inwestycji.</p>
                         )}
                     </div>
 

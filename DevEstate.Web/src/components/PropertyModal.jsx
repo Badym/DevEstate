@@ -1,15 +1,34 @@
 ﻿import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import PriceHistoryChart from "@/components/PriceHistoryChart";
+import { Button } from "@/components/ui/button";
 
 export default function PropertyModal({ property, onClose }) {
     const [index, setIndex] = useState(0);
+    const [historyOpen, setHistoryOpen] = useState(false);
+    const [documents, setDocuments] = useState([]);
 
-    // zamykanie ESC
+    // Zamknięcie ESC
     useEffect(() => {
         const handleEsc = (e) => e.key === "Escape" && onClose();
         window.addEventListener("keydown", handleEsc);
         return () => window.removeEventListener("keydown", handleEsc);
     }, [onClose]);
+
+    // Pobieranie dokumentów przypisanych do nieruchomości
+    useEffect(() => {
+        const fetchDocuments = async () => {
+            try {
+                const res = await fetch(`/api/Document/property/${property.id}`);
+                if (!res.ok) throw new Error("Nie udało się pobrać dokumentów.");
+                const data = await res.json();
+                setDocuments(data);  // Zapisanie dokumentów w stanie
+            } catch (error) {
+                console.error("Błąd podczas pobierania dokumentów: ", error);
+            }
+        };
+        if (property) fetchDocuments();
+    }, [property]);
 
     if (!property) return null;
 
@@ -24,7 +43,7 @@ export default function PropertyModal({ property, onClose }) {
         status,
     } = property;
 
-    // 🧭 Nawigacja strzałkami
+    // Nawigacja strzałkami
     const next = () => setIndex((prev) => (prev + 1) % images.length);
     const prev = () => setIndex((prev) => (prev - 1 + images.length) % images.length);
 
@@ -36,7 +55,7 @@ export default function PropertyModal({ property, onClose }) {
             {/* Kontener modala */}
             <div
                 className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-fadeIn"
-                onClick={(e) => e.stopPropagation()} // blokuje zamykanie przy kliknięciu wnętrza
+                onClick={(e) => e.stopPropagation()} // Blokuje zamykanie przy kliknięciu wnętrza
             >
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
@@ -114,8 +133,8 @@ export default function PropertyModal({ property, onClose }) {
                                             : "text-green-700"
                                 }`}
                             >
-                {status}
-              </span>
+                                {status}
+                            </span>
                         </p>
                         <p>
                             <strong>Powierzchnia:</strong> {area} m²
@@ -139,15 +158,44 @@ export default function PropertyModal({ property, onClose }) {
                     </div>
                 </div>
 
-                {/* 🧩 Dodatkowe sekcje */}
+                {/* Dokumenty (jeśli są) */}
+                {documents && documents.length > 0 && (
+                    <div className="border-t border-gray-200 p-8 text-gray-600">
+                        <h4 className="text-lg font-semibold mb-4 text-[#1A1A1A]">Dokumenty</h4>
+                        <div className="space-y-4">
+                            {documents.map((doc) => (
+                                <a
+                                    key={doc.id}
+                                    href={doc.fileUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block text-[#C8A27E] hover:text-[#b18e6b] font-semibold text-lg"
+                                >
+                                    {doc.fileName}
+                                </a>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* Historia cen */}
                 <div className="border-t border-gray-200 p-8 text-gray-600">
                     <h4 className="text-lg font-semibold mb-4 text-[#1A1A1A]">
-                        Dodatkowe informacje
+                        Historia cen
                     </h4>
-                    <p>
-                        Tutaj można dodać np. opis techniczny, dokumenty PDF, rzuty mieszkania,
-                        albo przyciski do pobrania materiałów.
-                    </p>
+
+                    <Button
+                        onClick={() => setHistoryOpen(true)}
+                        className="bg-indigo-600 text-white hover:bg-indigo-700"
+                    >
+                        Zobacz historię cen
+                    </Button>
+
+                    <PriceHistoryChart
+                        propertyId={property.id}
+                        open={historyOpen}
+                        onClose={() => setHistoryOpen(false)}
+                    />
                 </div>
             </div>
         </div>

@@ -37,8 +37,7 @@ namespace DevEstate.Api.Controllers;
             var allowedTypes = new[] { "image/jpeg", "image/png", "image/webp" };
             if (!allowedTypes.Contains(file.ContentType))
                 return BadRequest("Dozwolone tylko pliki JPG, PNG lub WEBP.");
-
-            // 📁 Folder docelowy
+            
             var uploadsDir = Path.Combine(_env.ContentRootPath, "Uploads", "Images");
             if (!Directory.Exists(uploadsDir))
                 Directory.CreateDirectory(uploadsDir);
@@ -46,17 +45,14 @@ namespace DevEstate.Api.Controllers;
             var extension = Path.GetExtension(file.FileName);
             var uniqueName = $"{entityType}_{entityId}_{Guid.NewGuid():N}{extension}";
             var filePath = Path.Combine(uploadsDir, uniqueName);
-
-            // 💾 Zapisz plik
+            
             await using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
-
-            // 🌍 URL publiczny
+            
             var fileUrl = $"{Request.Scheme}://{Request.Host}/uploads/images/{uniqueName}";
-
-            // 🔗 Przypisz zdjęcie do właściwej encji
+            
             switch (entityType.ToLower())
             {
                 case "investment":

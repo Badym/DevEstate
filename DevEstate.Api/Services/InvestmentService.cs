@@ -6,16 +6,26 @@ namespace DevEstate.Api.Services
 {
     public class InvestmentService
     {
-        private readonly InvestmentRepository _repo;
+        private readonly InvestmentRepository _investmentRepo;
+        private readonly DocumentRepository _documentRepo;
+        private readonly BuildingService _buildingService;
+        private readonly PropertyService _propertyService;
 
-        public InvestmentService(InvestmentRepository repo)
+        public InvestmentService(
+            InvestmentRepository investmentRepo,
+            DocumentRepository documentRepo,
+            BuildingService buildingService,
+            PropertyService propertyService)
         {
-            _repo = repo;
+            _investmentRepo = investmentRepo;
+            _documentRepo = documentRepo;
+            _buildingService = buildingService;
+            _propertyService = propertyService;
         }
 
         public async Task<InvestmentDtos.InvestmentResponseDtos> GetByIdAsync(string id)
         {
-            var entity = await _repo.GetByIdAsync(id);
+            var entity = await _investmentRepo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Investment not found");
 
             return new InvestmentDtos.InvestmentResponseDtos
@@ -34,7 +44,7 @@ namespace DevEstate.Api.Services
 
         public async Task<List<InvestmentDtos.InvestmentResponseDtos>> GetAllAsync()
         {
-            var entities = await _repo.GetAllAsync();
+            var entities = await _investmentRepo.GetAllAsync();
             return entities.Select(e => new InvestmentDtos.InvestmentResponseDtos()
             {
                 Id = e.Id,
@@ -62,12 +72,12 @@ namespace DevEstate.Api.Services
                 Description = dto.Description,
                 Status = dto.Status
             };
-            await _repo.CreateAsync(entity);
+            await _investmentRepo.CreateAsync(entity);
         }
 
         public async Task UpdateAsync(string id, InvestmentDtos.InvestmentUpdateDtos dto)
         {
-            var entity = await _repo.GetByIdAsync(id);
+            var entity = await _investmentRepo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Investment not found");
 
             entity.Name = dto.Name ?? entity.Name;
@@ -77,28 +87,51 @@ namespace DevEstate.Api.Services
             entity.Description = dto.Description ?? entity.Description;
             entity.Status = dto.Status ?? entity.Status;
 
-            await _repo.UpdateAsync(entity);
+            await _investmentRepo.UpdateAsync(entity);
         }
 
         public async Task DeleteAsync(string id)
         {
-            await _repo.DeleteAsync(id);
+            // Usuń dokumenty inwestycji
+            await _documentRepo.DeleteByParentAsync("investment", id);
+
+            // Usuń budynki przypisane do inwestycji
+            var buildings = await _buildingService.GetEntitiesByInvestmentIdAsync(id);
+            if (buildings != null && buildings.Any())
+            {
+                foreach (var building in buildings)
+                    await _buildingService.DeleteAsync(building.Id);
+            }
+
+            // Usuń domy niezależne (properties bez buildingId)
+            var properties = await _propertyService.GetEntitiesByInvestmentIdAsync(id);
+            if (properties != null && properties.Any())
+            {
+                foreach (var property in properties)
+                {
+                    if (string.IsNullOrEmpty(property.BuildingId))
+                        await _propertyService.DeleteAsync(property.Id);
+                }
+            }
+
+            // Usuń inwestycję
+            await _investmentRepo.DeleteAsync(id);
         }
         
         public async Task AddImageAsync(string investmentId, string fileUrl)
         {
-            var investment = await _repo.GetByIdAsync(investmentId);
+            var investment = await _investmentRepo.GetByIdAsync(investmentId);
             if (investment != null)
             {
                 investment.Images ??= new List<string>();
                 investment.Images.Add(fileUrl);
-                await _repo.UpdateAsync(investment);
+                await _investmentRepo.UpdateAsync(investment);
             }
         }
         
         public async Task<List<InvestmentDtos.InvestmentResponseDtos>> GetByStatusAsync(string status)
         {
-            var entities = await _repo.GetAllAsync();
+            var entities = await _investmentRepo.GetAllAsync();
 
             // Filtrowanie inwestycji na podstawie statusu
             var filteredInvestments = entities
@@ -122,7 +155,7 @@ namespace DevEstate.Api.Services
 
         public async Task<InvestmentDtos.InvestmentResponseDtos?> GetByNameAsync(string name)
         {
-            var entity = (await _repo.GetAllAsync())
+            var entity = (await _investmentRepo.GetAllAsync())
                 .FirstOrDefault(i => i.Name.ToLower() == name.ToLower());
 
             if (entity == null)

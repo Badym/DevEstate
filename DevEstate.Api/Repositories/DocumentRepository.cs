@@ -47,4 +47,17 @@ public class DocumentRepository
 
         return await _documents.Find(filter).ToListAsync();
     }
+    
+    public async Task DeleteByParentAsync(string parentType, string parentId)
+    {
+        FilterDefinition<Document> filter = parentType.ToLower() switch
+        {
+            "investment" => Builders<Document>.Filter.Eq(d => d.InvestmentId, parentId),
+            "building" => Builders<Document>.Filter.Eq(d => d.BuildingId, parentId),
+            "property" => Builders<Document>.Filter.Eq(d => d.PropertyId, parentId),
+            _ => throw new ArgumentException($"Nieznany typ nadrzędny: {parentType}")
+        };
+
+        await _documents.DeleteManyAsync(filter);
+    }
 }

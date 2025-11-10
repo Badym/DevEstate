@@ -41,10 +41,7 @@ namespace DevEstate.Api.Controllers;
             return NoContent();
         }
 
-        // ------------------ UPLOAD (POST) ------------------
-        /// <summary>
-        /// Upload dokumentu (PDF/DOCX) i przypisanie go do inwestycji, budynku lub mieszkania.
-        /// </summary>
+
         [HttpPost("{entityType}/{entityId}")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> UploadDocument(string entityType, string entityId, IFormFile file)
@@ -62,26 +59,21 @@ namespace DevEstate.Api.Controllers;
             if (!allowedTypes.Contains(file.ContentType))
                 return BadRequest("Dozwolone tylko pliki PDF lub DOCX.");
 
-            // 📁 Folder Uploads/Documents
             var uploadsDir = Path.Combine(_env.ContentRootPath, "Uploads", "Documents");
             if (!Directory.Exists(uploadsDir))
                 Directory.CreateDirectory(uploadsDir);
 
-            // 🔧 Nazwa pliku
             var extension = Path.GetExtension(file.FileName);
             var uniqueName = $"{entityType}_{entityId}_{Guid.NewGuid():N}{extension}";
             var filePath = Path.Combine(uploadsDir, uniqueName);
 
-            // 💾 Zapis na dysku
             await using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            // 🌍 URL
             var fileUrl = $"{Request.Scheme}://{Request.Host}/uploads/documents/{uniqueName}";
 
-            // 🗂️ Utworzenie DTO i zapis w bazie
             var dto = new DocumentDtos.DocumentCreateDtos()
             {
                 FileName = file.FileName,
@@ -129,8 +121,8 @@ namespace DevEstate.Api.Controllers;
                 _ => new List<DocumentDtos.DocumentResponseDtos>()
             };
 
-            if (!filtered.Any())
-                return NotFound($"Brak dokumentów dla {entityType} o ID: {entityId}");
+            //if (!filtered.Any())
+            //    return NotFound($"Brak dokumentów dla {entityType} o ID: {entityId}");
 
             return Ok(filtered);
         }

@@ -1,18 +1,13 @@
-﻿import useFetch from "../hooks/useFetch";
-import {
-    FaCar,
-    FaVideo,
-    FaTree,
-    FaChild,
-    FaBuilding,
-    FaWarehouse,
-} from "react-icons/fa";
+﻿import { useState, useEffect } from "react";
+import { FaCar, FaVideo, FaTree, FaChild, FaBuilding, FaWarehouse } from "react-icons/fa";
+import useFetch from "../hooks/useFetch";
 
 export default function BuildingDetailsBox({ buildingId, investment }) {
     if (!buildingId) return null;
 
     const { data: building, loading, error } = useFetch(`/api/Building/${buildingId}`);
     const { data: features } = useFetch(`/api/Building/${buildingId}/features`);
+    const { data: documents } = useFetch(`/api/Document/building/${buildingId}`);  // Pobranie dokumentów
 
     if (loading) return <p className="text-center mt-6 text-gray-500">Ładowanie danych budynku...</p>;
     if (error || !building) return null;
@@ -101,6 +96,29 @@ export default function BuildingDetailsBox({ buildingId, investment }) {
                                     </p>
                                 )}
                             </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Dokumenty (tylko, jeśli dostępne) */}
+            {documents && documents.length > 0 && (
+                <div className="mt-12 border-t border-gray-200 pt-10">
+                    <h4 className="text-3xl font-semibold mb-8 text-center text-[#1A1A1A]">
+                        Dokumenty budynku
+                    </h4>
+
+                    <div className="space-y-4">
+                        {documents.map((doc) => (
+                            <a
+                                key={doc.id}
+                                href={doc.fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block text-[#C8A27E] hover:text-[#b18e6b] font-semibold text-lg"
+                            >
+                                {doc.fileName}
+                            </a>
                         ))}
                     </div>
                 </div>

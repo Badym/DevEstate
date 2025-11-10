@@ -33,4 +33,12 @@ public class PriceHistoryRepository
     {
         await _priceHistories.DeleteOneAsync(ph => ph.Id == id);
     }
+    
+    public async Task<List<PriceHistory>> GetByPropertyIdAsync(string propertyId)
+    {
+        return await _priceHistories
+            .Find(ph => ph.PropertyId == propertyId)
+            .SortByDescending(ph => ph.Date)
+            .ToListAsync();
+    }
 }
