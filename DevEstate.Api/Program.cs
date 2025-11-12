@@ -75,6 +75,8 @@ builder.Services.AddSingleton<UserRepository>();
 builder.Services.AddSingleton<FeatureRepository>();
 builder.Services.AddSingleton<PriceHistoryRepository>();
 builder.Services.AddSingleton<DocumentRepository>();
+builder.Services.AddSingleton<FeatureTypeRepository>();
+
 
 builder.Services.AddSingleton<CompanyService>();
 builder.Services.AddSingleton<InvestmentService>();
@@ -84,6 +86,8 @@ builder.Services.AddSingleton<UserService>();
 builder.Services.AddSingleton<FeatureService>();
 builder.Services.AddSingleton<PriceHistoryService>();
 builder.Services.AddSingleton<DocumentService>();
+builder.Services.AddSingleton<FeatureTypeService>();
+
 
 // DataSeeder
 builder.Services.AddSingleton<DataSeeder>();

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 export default function AdminDashboard() {
     const navigate = useNavigate();
 
-    // 🔒 Sprawdzamy, czy użytkownik jest zalogowany
+    // 🔒 Sprawdzenie autoryzacji
     useEffect(() => {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -86,6 +86,22 @@ export default function AdminDashboard() {
                         >
                             🏠 Nieruchomości
                         </Button>
+
+                        <Button
+                            variant="ghost"
+                            className="justify-start text-left hover:bg-[#C8A27E]/20 hover:text-[#C8A27E]"
+                            onClick={() => navigate("/admin/features")}
+                        >
+                            ⚙️ Udogodnienia
+                        </Button>
+
+                        <Button
+                            variant="ghost"
+                            className="justify-start text-left hover:bg-[#C8A27E]/20 hover:text-[#C8A27E]"
+                            onClick={() => navigate("/admin/feature-types")}
+                        >
+                            🧩 Typy cech
+                        </Button>
                     </nav>
                 </aside>
 
@@ -95,10 +111,10 @@ export default function AdminDashboard() {
                         Witaj, {user.fullName || "Administrator"}!
                     </h2>
                     <p className="text-gray-600 text-lg mb-10">
-                        W tym panelu możesz zarządzać inwestycjami, budynkami i mieszkaniami.
+                        W tym panelu możesz zarządzać inwestycjami, budynkami, lokalami oraz udogodnieniami.
                     </p>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                         <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
                             <h3 className="font-semibold text-lg mb-2">Inwestycje</h3>
                             <p className="text-gray-500">Podgląd i zarządzanie inwestycjami.</p>
@@ -127,6 +143,28 @@ export default function AdminDashboard() {
                             <Button
                                 className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
                                 onClick={() => navigate("/admin/properties")}
+                            >
+                                Przejdź
+                            </Button>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+                            <h3 className="font-semibold text-lg mb-2">Udogodnienia</h3>
+                            <p className="text-gray-500">Zarządzaj dodatkowymi funkcjami i usługami.</p>
+                            <Button
+                                className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
+                                onClick={() => navigate("/admin/features")}
+                            >
+                                Przejdź
+                            </Button>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+                            <h3 className="font-semibold text-lg mb-2">Typy cech</h3>
+                            <p className="text-gray-500">Zarządzaj kategoriami udogodnień (np. garaż, ogród).</p>
+                            <Button
+                                className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
+                                onClick={() => navigate("/admin/feature-types")}
                             >
                                 Przejdź
                             </Button>

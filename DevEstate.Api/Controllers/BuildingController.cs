@@ -46,13 +46,4 @@ public class BuildingController : ControllerBase
         await _service.DeleteAsync(id);
         return Ok();
     }
-    
-    [HttpGet("{id}/features")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetFeaturesByBuilding(string id)
-    {
-        var features = await _featureService.GetByBuildingIdAsync(id);
-        return Ok(features);
-    }
-
 }

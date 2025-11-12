@@ -1,18 +1,27 @@
-﻿import { useState, useEffect } from "react";
+﻿import { useState } from "react";
 import { FaCar, FaVideo, FaTree, FaChild, FaBuilding, FaWarehouse } from "react-icons/fa";
 import useFetch from "../hooks/useFetch";
+import FeatureListModal from "./FeatureListModal";
 
 export default function BuildingDetailsBox({ buildingId, investment }) {
     if (!buildingId) return null;
 
     const { data: building, loading, error } = useFetch(`/api/Building/${buildingId}`);
-    const { data: features } = useFetch(`/api/Building/${buildingId}/features`);
-    const { data: documents } = useFetch(`/api/Document/building/${buildingId}`);  // Pobranie dokumentów
+    const { data: featureTypes } = useFetch(`/api/Feature/byBuilding/${buildingId}/types`);
+    const { data: documents } = useFetch(`/api/Document/building/${buildingId}`);
+
+    const [selectedFeatureType, setSelectedFeatureType] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const handleFeatureClick = (featureType) => {
+        setSelectedFeatureType(featureType);
+        setModalOpen(true);
+    };
 
     if (loading) return <p className="text-center mt-6 text-gray-500">Ładowanie danych budynku...</p>;
     if (error || !building) return null;
 
-    // 🧩 Ikony dopasowane do typu cechy
+    // 🧩 Ikony dopasowane do nazwy typu cechy
     const getFeatureIcon = (name) => {
         const lower = name?.toLowerCase() || "";
         if (lower.includes("gara")) return <FaCar className="text-[#C8A27E] w-6 h-6" />;
@@ -71,37 +80,42 @@ export default function BuildingDetailsBox({ buildingId, investment }) {
             </div>
 
             {/* Udogodnienia */}
-            {features && features.length > 0 && (
+            {featureTypes && featureTypes.length > 0 && (
                 <div className="mt-12 border-t border-gray-200 pt-10">
                     <h4 className="text-3xl font-semibold mb-8 text-center text-[#1A1A1A]">
                         Udogodnienia budynku
                     </h4>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 px-4">
-                        {features.map((f) => (
-                            <div
-                                key={f.id}
-                                className="flex flex-col items-center justify-center bg-[#FAF9F6] hover:bg-[#f4ede3] transition rounded-xl shadow-md py-6 px-4"
+                        {featureTypes.map((f) => (
+                            <button
+                                key={f.featureTypeId}
+                                onClick={() => handleFeatureClick(f)}
+                                className="flex flex-col items-center justify-center bg-[#FAF9F6] hover:bg-[#f4ede3] transition rounded-xl shadow-md py-6 px-4 cursor-pointer"
                             >
-                                {getFeatureIcon(f.name)}
-                                <p className="mt-3 text-lg font-semibold text-[#1A1A1A]">{f.name}</p>
-                                {f.description && (
-                                    <p className="text-sm text-gray-600 mt-2 text-center">
-                                        {f.description}
-                                    </p>
-                                )}
-                                {f.price && (
+                                {getFeatureIcon(f.featureTypeName)}
+                                <p className="mt-3 text-lg font-semibold text-[#1A1A1A]">
+                                    {f.featureTypeName}
+                                </p>
+
+                                <p className="text-sm text-gray-600 mt-1 text-center">
+                                    Dostępnych: {f.count}
+                                </p>
+
+                                {f.minPrice && (
                                     <p className="text-[#C8A27E] font-medium mt-2">
-                                        {f.price.toLocaleString("pl-PL")} zł
+                                        {f.minPrice === f.maxPrice
+                                            ? `${f.minPrice.toLocaleString("pl-PL")} zł`
+                                            : `od ${f.minPrice.toLocaleString("pl-PL")} do ${f.maxPrice.toLocaleString("pl-PL")} zł`}
                                     </p>
                                 )}
-                            </div>
+                            </button>
                         ))}
                     </div>
                 </div>
             )}
 
-            {/* Dokumenty (tylko, jeśli dostępne) */}
+            {/* Dokumenty */}
             {documents && documents.length > 0 && (
                 <div className="mt-12 border-t border-gray-200 pt-10">
                     <h4 className="text-3xl font-semibold mb-8 text-center text-[#1A1A1A]">
@@ -123,6 +137,14 @@ export default function BuildingDetailsBox({ buildingId, investment }) {
                     </div>
                 </div>
             )}
+
+            {/* Modal z listą feature’ów */}
+            <FeatureListModal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                featureType={selectedFeatureType}
+                buildingId={buildingId}
+            />
         </section>
     );
 }

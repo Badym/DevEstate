@@ -12,6 +12,7 @@ namespace DevEstate.Api.Services
         private readonly PropertyRepository _propertyRepo;
         private readonly UserRepository _userRepo;
         private readonly FeatureRepository _featureRepo;
+        private readonly FeatureTypeRepository _featureTypeRepo;
         private readonly PriceHistoryRepository _priceHistoryRepo;
         private readonly PasswordHasher<User> _passwordHasher = new();
 
@@ -22,6 +23,7 @@ namespace DevEstate.Api.Services
             PropertyRepository propertyRepo,
             UserRepository userRepo,
             FeatureRepository featureRepo,
+            FeatureTypeRepository featureTypeRepo,
             PriceHistoryRepository priceHistoryRepo)
         {
             _companyRepo = companyRepo;
@@ -30,6 +32,7 @@ namespace DevEstate.Api.Services
             _propertyRepo = propertyRepo;
             _userRepo = userRepo;
             _featureRepo = featureRepo;
+            _featureTypeRepo = featureTypeRepo;
             _priceHistoryRepo = priceHistoryRepo;
         }
 
@@ -53,6 +56,24 @@ namespace DevEstate.Api.Services
                 LogoImage = "http://localhost:5086/uploads/images/logoO.jpg"
             };
             await _companyRepo.CreateAsync(company);
+
+            // ========== FEATURE TYPES ==========
+            var featureTypes = new List<FeatureType>
+            {
+                new() { Name = "Winda", UnitName = null },
+                new() { Name = "Miejsce parkingowe", UnitName = "szt." },
+                new() { Name = "Komórka lokatorska", UnitName = "szt." },
+                new() { Name = "Monitoring", UnitName = null },
+                new() { Name = "Plac zabaw", UnitName = null },
+                new() { Name = "Ogródek", UnitName = "m²" },
+                new() { Name = "Garaż podziemny", UnitName = "szt." }
+            };
+            foreach (var ft in featureTypes)
+                await _featureTypeRepo.CreateAsync(ft);
+
+            // Pomocnicze wyszukiwanie typów po nazwie
+            string GetTypeId(string name) =>
+                featureTypes.First(f => f.Name == name).Id!;
 
             // ========== INWESTYCJA 1: Libelta Residence ==========
             var libelta = new Investment
@@ -147,22 +168,24 @@ namespace DevEstate.Api.Services
             // --- Feature'y ---
             await _featureRepo.CreateAsync(new Feature
             {
+                InvestmentId = libelta.Id,
                 BuildingId = libeltaBuildingA.Id,
-                Name = "Winda",
-                Description = "Cicha, energooszczędna winda obsługująca wszystkie piętra",
-                Price = null
+                FeatureTypeId = GetTypeId("Winda"),
+                Description = "Cicha, energooszczędna winda obsługująca wszystkie piętra"
             });
             await _featureRepo.CreateAsync(new Feature
             {
+                InvestmentId = libelta.Id,
                 BuildingId = libeltaBuildingA.Id,
-                Name = "Garaż podziemny",
-                Description = "Miejsca parkingowe dla mieszkańców",
-                Price = 45000
+                FeatureTypeId = GetTypeId("Garaż podziemny"),
+                Price = 45000,
+                Description = "Miejsca parkingowe dla mieszkańców"
             });
             await _featureRepo.CreateAsync(new Feature
             {
+                InvestmentId = libelta.Id,
                 BuildingId = libeltaBuildingB.Id,
-                Name = "Monitoring",
+                FeatureTypeId = GetTypeId("Monitoring"),
                 Description = "Całodobowy monitoring i ochrona budynku"
             });
 
@@ -184,7 +207,6 @@ namespace DevEstate.Api.Services
             };
             await _investmentRepo.CreateAsync(jasne);
 
-            // --- Budynki i domy ---
             var jasneBuildingA = new Building
             {
                 InvestmentId = jasne.Id,
@@ -210,10 +232,10 @@ namespace DevEstate.Api.Services
 
             await _featureRepo.CreateAsync(new Feature
             {
+                InvestmentId = jasne.Id,
                 BuildingId = jasneBuildingA.Id,
-                Name = "Plac zabaw",
-                Description = "Bezpieczny teren dla dzieci z ogrodzeniem",
-                Price = null
+                FeatureTypeId = GetTypeId("Plac zabaw"),
+                Description = "Bezpieczny teren dla dzieci z ogrodzeniem"
             });
 
             // --- Historia cen ---
@@ -273,13 +295,13 @@ namespace DevEstate.Api.Services
 
             await _featureRepo.CreateAsync(new Feature
             {
+                InvestmentId = zielonaPolana.Id,
                 BuildingId = zielonaBuildingA.Id,
-                Name = "Ogród prywatny",
-                Description = "Każdy dom posiada własny ogród",
-                Price = null
+                FeatureTypeId = GetTypeId("Ogródek"),
+                Description = "Każdy dom posiada własny ogród"
             });
 
-            // ========== UŻYTKOWNIK ADMIN ==========
+            // ========== ADMIN ==========
             var admin = new User
             {
                 Email = "admin@devestate.pl",

@@ -1,6 +1,5 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using Swashbuckle.AspNetCore.Annotations;
 
 namespace DevEstate.Api.Models
 {
@@ -11,16 +10,24 @@ namespace DevEstate.Api.Models
         public string? Id { get; set; }
 
         [BsonRepresentation(BsonType.ObjectId)]
-        [BsonElement("buildingId")]
-        public string BuildingId { get; set; } = null!;
+        [BsonElement("investmentId")]
+        public string InvestmentId { get; set; } = null!;
 
-        [BsonElement("name")]
-        public string Name { get; set; } = null!; // np. "Garaż", "Winda"
+        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonElement("buildingId")]
+        public string? BuildingId { get; set; }
+
+        [BsonRepresentation(BsonType.ObjectId)]
+        [BsonElement("featureTypeId")]
+        public string FeatureTypeId { get; set; } = null!;
+
+        [BsonElement("price")]
+        public decimal? Price { get; set; }
+
+        [BsonElement("isAvailable")]
+        public bool IsAvailable { get; set; } = true;
 
         [BsonElement("description")]
         public string? Description { get; set; }
-
-        [BsonElement("price")]
-        public decimal? Price { get; set; } // np. 40000 (dla miejsca garażowego)
     }
 }

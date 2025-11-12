@@ -7,6 +7,9 @@ import InvestmentsAdmin from "@/pages/admin/InvestmentsAdmin.jsx";
 import BuildingsAdmin from "@/pages/admin/BuildingsAdmin.jsx";
 import PropertiesAdmin from "@/pages/admin/PropertiesAdmin.jsx";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import FeaturesAdmin from "@/pages/admin/FeaturesAdmin.jsx";
+import FeatureTypesAdmin from "@/pages/admin/FeatureTypesAdmin.jsx";
+
 
 export default function App() {
     return (
@@ -49,6 +52,23 @@ export default function App() {
                     </ProtectedRoute>
                 }
             />
+            <Route
+                path="/admin/features"
+                element={
+                    <ProtectedRoute>
+                        <FeaturesAdmin />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/admin/feature-types"
+                element={
+                    <ProtectedRoute>
+                        <FeatureTypesAdmin />
+                    </ProtectedRoute>
+                }
+            />
+
         </Routes>
     );
 }

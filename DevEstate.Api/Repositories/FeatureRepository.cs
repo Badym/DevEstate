@@ -19,11 +19,11 @@ namespace DevEstate.Api.Repositories
             await _features.InsertOneAsync(feature);
         }
 
-        public async Task<Feature> GetByIdAsync(string id)
+        public async Task<Feature?> GetByIdAsync(string id)
         {
             return await _features.Find(f => f.Id == id).FirstOrDefaultAsync();
         }
-        
+
         public async Task<List<Feature>> GetAllAsync()
         {
             return await _features.Find(_ => true).ToListAsync();
@@ -43,11 +43,24 @@ namespace DevEstate.Api.Repositories
         {
             return await _features.Find(f => f.BuildingId == buildingId).ToListAsync();
         }
-        
+
+        public async Task<List<Feature>> GetByInvestmentIdAsync(string investmentId)
+        {
+            return await _features.Find(f => f.InvestmentId == investmentId).ToListAsync();
+        }
+
         public async Task DeleteByBuildingIdAsync(string buildingId)
         {
             var filter = Builders<Feature>.Filter.Eq(f => f.BuildingId, buildingId);
             await _features.DeleteManyAsync(filter);
         }
+
+        public async Task DeleteByInvestmentIdAsync(string investmentId)
+        {
+            var filter = Builders<Feature>.Filter.Eq(f => f.InvestmentId, investmentId);
+            await _features.DeleteManyAsync(filter);
+        }
+        
+        
     }
 }

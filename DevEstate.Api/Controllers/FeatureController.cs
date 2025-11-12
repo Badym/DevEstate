@@ -2,47 +2,85 @@
 using DevEstate.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DevEstate.Api.Controllers;
-
-[ApiController]
-[Route("api/[controller]")]
-public class FeatureController : ControllerBase
+namespace DevEstate.Api.Controllers
 {
-    private readonly FeatureService _service;
-
-    public FeatureController(FeatureService service)
+    [ApiController]
+    [Route("api/[controller]")]
+    public class FeatureController : ControllerBase
     {
-        _service = service;
-    }
+        private readonly FeatureService _service;
 
-    [HttpGet("all")]
-    public async Task<IActionResult> GetAll() => Ok(await _service.GetAllAsync());
+        public FeatureController(FeatureService service)
+        {
+            _service = service;
+        }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetById(string id) => Ok(await _service.GetByIdAsync(id));
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await _service.GetAllAsync();
+            return Ok(result);
+        }
 
-    [HttpGet("byBuilding/{buildingId}")]
-    public async Task<IActionResult> GetByBuildingId(string buildingId)
-        => Ok(await _service.GetByBuildingIdAsync(buildingId));
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(string id)
+        {
+            var result = await _service.GetByIdAsync(id);
+            return Ok(result);
+        }
 
-    [HttpPost]
-    public async Task<IActionResult> Create([FromBody] FeatureDtos.FeatureCreateDtos dto)
-    {
-        await _service.CreateAsync(dto);
-        return Ok();
-    }
+        [HttpGet("byBuilding/{buildingId}")]
+        public async Task<IActionResult> GetByBuilding(string buildingId)
+        {
+            var result = await _service.GetByBuildingIdAsync(buildingId);
+            return Ok(result);
+        }
 
-    [HttpPatch("{id}")]
-    public async Task<IActionResult> Update(string id, [FromBody] FeatureDtos.FeatureUpdateDtos dto)
-    {
-        await _service.UpdateAsync(id, dto);
-        return Ok();
-    }
+        [HttpGet("byInvestment/{investmentId}")]
+        public async Task<IActionResult> GetByInvestment(string investmentId)
+        {
+            var result = await _service.GetByInvestmentIdAsync(investmentId);
+            return Ok(result);
+        }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> Delete(string id)
-    {
-        await _service.DeleteAsync(id);
-        return Ok();
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] FeatureDtos.FeatureCreateDtos dto)
+        {
+            await _service.CreateAsync(dto);
+            return Ok("Feature created successfully");
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<IActionResult> Update(string id, [FromBody] FeatureDtos.FeatureUpdateDtos dto)
+        {
+            await _service.UpdateAsync(id, dto);
+            return Ok("Feature updated successfully");
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            await _service.DeleteAsync(id);
+            return Ok("Feature deleted successfully");
+        }
+        
+        [HttpGet("byBuilding/{buildingId}/types")]
+        public async Task<IActionResult> GetFeatureTypesByBuilding(string buildingId)
+            => Ok(await _service.GetFeatureTypesByBuildingAsync(buildingId));
+
+        [HttpGet("byInvestment/{investmentId}/types")]
+        public async Task<IActionResult> GetFeatureTypesByInvestment(string investmentId)
+            => Ok(await _service.GetFeatureTypesByInvestmentAsync(investmentId));
+        
+        // GET /api/Feature/byBuilding/{buildingId}/type/{featureTypeId}
+        [HttpGet("byBuilding/{buildingId}/type/{featureTypeId}")]
+        public async Task<IActionResult> GetByBuildingAndType(string buildingId, string featureTypeId)
+            => Ok(await _service.GetByBuildingAndTypeAsync(buildingId, featureTypeId));
+
+// GET /api/Feature/byInvestment/{investmentId}/type/{featureTypeId}
+        [HttpGet("byInvestment/{investmentId}/type/{featureTypeId}")]
+        public async Task<IActionResult> GetByInvestmentAndType(string investmentId, string featureTypeId)
+            => Ok(await _service.GetByInvestmentAndTypeAsync(investmentId, featureTypeId));
+
     }
 }
