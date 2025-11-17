@@ -38,7 +38,10 @@ namespace DevEstate.Api.Services
                 Description = entity.Description,
                 Status = entity.Status,
                 CreatedAt = entity.CreatedAt,
-                Images = entity.Images
+                Images = entity.Images,
+                InvestmentMunicipality =  entity.InvestmentMunicipality,
+                InvestmentProvince = entity.InvestmentProvince,
+                InvestmentCounty = entity.InvestmentCounty,
             };
         }
 
@@ -55,7 +58,10 @@ namespace DevEstate.Api.Services
                 Description = e.Description,
                 Status = e.Status,
                 CreatedAt = e.CreatedAt,
-                Images = e.Images
+                Images = e.Images,
+                InvestmentMunicipality =  e.InvestmentMunicipality,
+                InvestmentProvince = e.InvestmentProvince,
+                InvestmentCounty = e.InvestmentCounty,
             }).ToList();
         }
 
@@ -70,7 +76,10 @@ namespace DevEstate.Api.Services
                 Street = dto.Street,
                 PostalCode = dto.PostalCode,
                 Description = dto.Description,
-                Status = dto.Status
+                Status = dto.Status,
+                InvestmentMunicipality =  dto.InvestmentMunicipality,
+                InvestmentProvince = dto.InvestmentProvince,
+                InvestmentCounty = dto.InvestmentCounty,
             };
             await _investmentRepo.CreateAsync(entity);
         }
@@ -86,6 +95,9 @@ namespace DevEstate.Api.Services
             entity.PostalCode = dto.PostalCode ?? entity.PostalCode;
             entity.Description = dto.Description ?? entity.Description;
             entity.Status = dto.Status ?? entity.Status;
+            entity.InvestmentProvince = dto.InvestmentProvince ?? entity.InvestmentProvince;
+            entity.InvestmentCounty = dto.InvestmentCounty ?? entity.InvestmentCounty;
+            entity.InvestmentMunicipality = dto.InvestmentMunicipality ?? entity.InvestmentMunicipality;
 
             await _investmentRepo.UpdateAsync(entity);
         }
@@ -146,7 +158,10 @@ namespace DevEstate.Api.Services
                     Description = e.Description,
                     Status = e.Status,
                     CreatedAt = e.CreatedAt,
-                    Images = e.Images
+                    Images = e.Images,
+                    InvestmentMunicipality =  e.InvestmentMunicipality,
+                    InvestmentProvince = e.InvestmentProvince,
+                    InvestmentCounty = e.InvestmentCounty,
                 })
                 .ToList();
 
@@ -171,7 +186,10 @@ namespace DevEstate.Api.Services
                 Description = entity.Description,
                 Status = entity.Status,
                 CreatedAt = entity.CreatedAt,
-                Images = entity.Images
+                Images = entity.Images,
+                InvestmentMunicipality =  entity.InvestmentMunicipality,
+                InvestmentProvince = entity.InvestmentProvince,
+                InvestmentCounty = entity.InvestmentCounty,
             };
         }
 

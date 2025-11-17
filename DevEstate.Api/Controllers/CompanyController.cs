@@ -52,5 +52,23 @@ public class CompanyController : ControllerBase
     
         return Ok(company);
     }
+    
+    // GET: /api/company/details
+    [HttpGet("details")]
+    public async Task<IActionResult> GetDetails()
+    {
+        var data = await _service.GetDetailsAsync();
+        if (data == null) return NotFound("Company not found");
+        return Ok(data);
+    }
+
+// PATCH: /api/company/details
+    [HttpPatch("details")]
+    public async Task<IActionResult> UpdateDetails([FromBody] CompanyDetailsDtos.UpdateCompanyDetails dto)
+    {
+        await _service.UpdateDetailsAsync(dto);
+        return Ok("Company details updated.");
+    }
+
 
 }

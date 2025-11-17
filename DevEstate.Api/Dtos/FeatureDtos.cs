@@ -10,6 +10,7 @@
             public decimal? Price { get; set; }
             public bool IsAvailable { get; set; } = true;
             public string? Description { get; set; }
+            public bool IsRequired { get; set; }
         }
 
         public class FeatureUpdateDtos
@@ -19,6 +20,7 @@
             public string? FeatureTypeId { get; set; }
             public decimal? Price { get; set; }
             public bool? IsAvailable { get; set; }
+            public bool IsRequired { get; set; }
             public string? Description { get; set; }
         }
 
@@ -30,6 +32,7 @@
             public string FeatureTypeId { get; set; } = null!;
             public decimal? Price { get; set; }
             public bool IsAvailable { get; set; }
+            public bool IsRequired { get; set; }
             public string? Description { get; set; }
         }
         

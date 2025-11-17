@@ -37,6 +37,14 @@ namespace DevEstate.Api.Models
         
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        [BsonElement("investmentProvince")]
+        public string? InvestmentProvince { get; set; }
 
+        [BsonElement("investmentCounty")]
+        public string? InvestmentCounty { get; set; }
+
+        [BsonElement("investmentMunicipality")]
+        public string? InvestmentMunicipality { get; set; }
     }
 }

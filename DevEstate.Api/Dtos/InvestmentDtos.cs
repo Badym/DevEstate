@@ -11,6 +11,10 @@ public static class InvestmentDtos
         public string PostalCode { get; set; } = null!;
         public string Description { get; set; }
         public string Status { get; set; } = "Aktualne"; // Na sprzedaż / Zarezerwowane / Nieaktualne
+        
+        public string? InvestmentProvince { get; set; }
+        public string? InvestmentCounty { get; set; }
+        public string? InvestmentMunicipality { get; set; }
     }
 
     public class InvestmentUpdateDtos
@@ -21,6 +25,9 @@ public static class InvestmentDtos
         public string? PostalCode { get; set; }
         public string? Description { get; set; }
         public string? Status { get; set; }
+        public string? InvestmentProvince { get; set; }
+        public string? InvestmentCounty { get; set; }
+        public string? InvestmentMunicipality { get; set; }
     }
 
     public class InvestmentResponseDtos
@@ -34,5 +41,8 @@ public static class InvestmentDtos
         public string Status { get; set; } = "Aktualne";
         public DateTime CreatedAt { get; set; }
         public List<string> Images { get; set; } 
+        public string? InvestmentProvince { get; set; }
+        public string? InvestmentCounty { get; set; }
+        public string? InvestmentMunicipality { get; set; }
     }
 }

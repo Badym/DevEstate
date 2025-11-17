@@ -71,7 +71,6 @@ namespace DevEstate.Api.Services
             foreach (var ft in featureTypes)
                 await _featureTypeRepo.CreateAsync(ft);
 
-            // Pomocnicze wyszukiwanie typów po nazwie
             string GetTypeId(string name) =>
                 featureTypes.First(f => f.Name == name).Id!;
 
@@ -125,42 +124,9 @@ namespace DevEstate.Api.Services
             // --- Mieszkania ---
             var libeltaApts = new List<Property>
             {
-                new()
-                {
-                    InvestmentId = libelta.Id,
-                    BuildingId = libeltaBuildingA.Id,
-                    ApartmentNumber = "1A",
-                    Type = "apartment",
-                    Area = 48.5,
-                    Price = 510000,
-                    PricePerMeter = 10515,
-                    Status = "Aktualne",
-                    Images = new() { "/images/apartment1.jpg" }
-                },
-                new()
-                {
-                    InvestmentId = libelta.Id,
-                    BuildingId = libeltaBuildingA.Id,
-                    ApartmentNumber = "2B",
-                    Type = "apartment",
-                    Area = 57.2,
-                    Price = 585000,
-                    PricePerMeter = 10227,
-                    Status = "Zarezerwowane",
-                    Images = new() { "/images/apartment2.jpg" }
-                },
-                new()
-                {
-                    InvestmentId = libelta.Id,
-                    BuildingId = libeltaBuildingB.Id,
-                    ApartmentNumber = "3C",
-                    Type = "apartment",
-                    Area = 73.1,
-                    Price = 720000,
-                    PricePerMeter = 9850,
-                    Status = "Aktualne",
-                    Images = new() { "/images/apartment3.jpg" }
-                }
+                new() { InvestmentId = libelta.Id, BuildingId = libeltaBuildingA.Id, ApartmentNumber = "1A", Type = "apartment", Area = 48.5, Price = 510000, PricePerMeter = 10515, Status = "Aktualne", Images = new() { "/images/apartment1.jpg" } },
+                new() { InvestmentId = libelta.Id, BuildingId = libeltaBuildingA.Id, ApartmentNumber = "2B", Type = "apartment", Area = 57.2, Price = 585000, PricePerMeter = 10227, Status = "Zarezerwowane", Images = new() { "/images/apartment2.jpg" } },
+                new() { InvestmentId = libelta.Id, BuildingId = libeltaBuildingB.Id, ApartmentNumber = "3C", Type = "apartment", Area = 73.1, Price = 720000, PricePerMeter = 9850, Status = "Aktualne", Images = new() { "/images/apartment3.jpg" } }
             };
             foreach (var apt in libeltaApts)
                 await _propertyRepo.CreateAsync(apt);
@@ -171,7 +137,8 @@ namespace DevEstate.Api.Services
                 InvestmentId = libelta.Id,
                 BuildingId = libeltaBuildingA.Id,
                 FeatureTypeId = GetTypeId("Winda"),
-                Description = "Cicha, energooszczędna winda obsługująca wszystkie piętra"
+                Description = "Cicha, energooszczędna winda obsługująca wszystkie piętra",
+                IsRequired = false
             });
             await _featureRepo.CreateAsync(new Feature
             {
@@ -179,14 +146,16 @@ namespace DevEstate.Api.Services
                 BuildingId = libeltaBuildingA.Id,
                 FeatureTypeId = GetTypeId("Garaż podziemny"),
                 Price = 45000,
-                Description = "Miejsca parkingowe dla mieszkańców"
+                Description = "Obowiązkowy garaż podziemny dla każdego lokalu",
+                IsRequired = true
             });
             await _featureRepo.CreateAsync(new Feature
             {
                 InvestmentId = libelta.Id,
                 BuildingId = libeltaBuildingB.Id,
                 FeatureTypeId = GetTypeId("Monitoring"),
-                Description = "Całodobowy monitoring i ochrona budynku"
+                Description = "Całodobowy monitoring i ochrona budynku",
+                IsRequired = false
             });
 
             // ========== INWESTYCJA 2: Jasne Tarasy ==========
@@ -235,7 +204,9 @@ namespace DevEstate.Api.Services
                 InvestmentId = jasne.Id,
                 BuildingId = jasneBuildingA.Id,
                 FeatureTypeId = GetTypeId("Plac zabaw"),
-                Description = "Bezpieczny teren dla dzieci z ogrodzeniem"
+                Description = "Bezpieczny teren dla dzieci z ogrodzeniem",
+                IsRequired = true,
+                Price = 10000
             });
 
             // --- Historia cen ---
@@ -298,7 +269,9 @@ namespace DevEstate.Api.Services
                 InvestmentId = zielonaPolana.Id,
                 BuildingId = zielonaBuildingA.Id,
                 FeatureTypeId = GetTypeId("Ogródek"),
-                Description = "Każdy dom posiada własny ogród"
+                Description = "Każdy dom posiada własny ogród (obowiązkowy dodatek)",
+                IsRequired = true,
+                Price = 20000
             });
 
             // ========== ADMIN ==========

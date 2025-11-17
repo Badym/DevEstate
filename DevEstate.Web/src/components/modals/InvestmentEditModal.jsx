@@ -17,10 +17,15 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
         postalCode: "",
         description: "",
         status: "",
+        investmentProvince: "",
+        investmentCounty: "",
+        investmentMunicipality: "",
     });
+
     const [images, setImages] = useState([]);
     const [documents, setDocuments] = useState([]);
 
+    // 🔄 Wczytaj dane inwestycji przy otwarciu
     useEffect(() => {
         if (investment) {
             setForm({
@@ -30,9 +35,14 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                 postalCode: investment.postalCode || "",
                 description: investment.description || "",
                 status: investment.status || "",
+                investmentProvince: investment.investmentProvince || "",
+                investmentCounty: investment.investmentCounty || "",
+                investmentMunicipality: investment.investmentMunicipality || "",
             });
+
             setImages(investment.images || []);
-            // Pobieramy dokumenty przypisane do inwestycji
+
+            // Pobierz dokumenty przypisane do inwestycji
             fetch(`/api/document/investment/${investment.id}`)
                 .then((res) => (res.ok ? res.json() : []))
                 .then((data) => setDocuments(data))
@@ -40,20 +50,24 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
         }
     }, [investment]);
 
+    // 🖊️ Zmiana pól formularza
     const handleChange = (e) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    // 🔁 Aktualizacja inwestycji
+    // 💾 Zapis inwestycji
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             const res = await fetch(`/api/investment/${investment.id}`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                },
                 body: JSON.stringify(form),
             });
+
             if (!res.ok) throw new Error("Nie udało się zaktualizować inwestycji.");
             onSave();
             onClose();
@@ -77,12 +91,11 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
             });
 
             if (!res.ok) throw new Error("Nie udało się przesłać zdjęcia.");
-
             const data = await res.json();
+
             setImages((prev) => [...prev, data.fileUrl]);
             e.target.value = "";
 
-            // ✅ Komunikat o sukcesie
             alert("✅ Zdjęcie zostało pomyślnie dodane!");
         } catch (err) {
             alert(err.message);
@@ -99,6 +112,7 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                 { method: "DELETE" }
             );
             if (!res.ok) throw new Error("Nie udało się usunąć zdjęcia.");
+
             setImages((prev) => prev.filter((img) => img !== imageUrl));
         } catch (err) {
             alert(err.message);
@@ -118,6 +132,7 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                 method: "POST",
                 body: formData,
             });
+
             if (!res.ok) throw new Error("Nie udało się przesłać dokumentu.");
             const data = await res.json();
 
@@ -126,9 +141,10 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                 { fileName: data.fileName, fileUrl: data.fileUrl, fileType: data.fileType },
             ]);
             e.target.value = "";
+
             alert("✅ Dokument został pomyślnie dodany!");
         } catch (err) {
-            alert(`❌ ${err.message}`);
+            alert(err.message);
         }
     };
 
@@ -139,9 +155,10 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
         try {
             const res = await fetch(`/api/document/${docId}`, { method: "DELETE" });
             if (!res.ok) throw new Error("Nie udało się usunąć dokumentu.");
+
             setDocuments((prev) => prev.filter((doc) => doc.id !== docId));
         } catch (err) {
-            alert(`❌ ${err.message}`);
+            alert(err.message);
         }
     };
 
@@ -193,11 +210,39 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                             name="status"
                             value={form.status}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C8A27E]"
+                            className="w-full border border-gray-300 rounded-md p-2 text-sm"
                         >
                             <option value="Aktualne">Aktualne</option>
                             <option value="Sprzedane">Sprzedane</option>
                         </select>
+                    </div>
+
+                    {/* 🏢 Dodatkowe pola */}
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Województwo</label>
+                        <Input
+                            name="investmentProvince"
+                            value={form.investmentProvince}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Powiat</label>
+                        <Input
+                            name="investmentCounty"
+                            value={form.investmentCounty}
+                            onChange={handleChange}
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700">Gmina</label>
+                        <Input
+                            name="investmentMunicipality"
+                            value={form.investmentMunicipality}
+                            onChange={handleChange}
+                        />
                     </div>
 
                     {/* 🖼️ Sekcja zdjęć */}
@@ -221,13 +266,22 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                                     <div key={i} className="relative group">
                                         <img
                                             src={img}
-                                            alt="inwestycja"
+                                            alt="investment"
                                             className="w-full h-28 object-cover rounded-md border"
                                         />
+
+                                        {/* 🔥 Widoczny przycisk usuwania */}
                                         <button
                                             type="button"
                                             onClick={() => handleDeleteImage(img)}
-                                            className="absolute top-1 right-1 bg-red-600 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition"
+                                            className="
+                        absolute top-1 right-1
+                        bg-red-600 text-white
+                        rounded-full p-1
+                        opacity-0 group-hover:opacity-100
+                        transition-opacity duration-200
+                        shadow-md
+                    "
                                         >
                                             ✕
                                         </button>
@@ -237,12 +291,13 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                         ) : (
                             <p className="text-sm text-gray-500">Brak zdjęć dla tej inwestycji.</p>
                         )}
+
                     </div>
 
                     {/* 📄 Sekcja dokumentów */}
                     <div className="mt-6">
                         <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-sm font-semibold text-gray-800">Dokumenty</h3>
+                            <h3 className="text-sm font-semibold text-gray-800">Dokumenty inwestycji</h3>
                             <label className="cursor-pointer text-sm font-medium text-green-600 hover:underline">
                                 ➕ Dodaj dokument
                                 <input
@@ -257,7 +312,10 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                         {documents.length > 0 ? (
                             <ul className="space-y-2">
                                 {documents.map((doc, i) => (
-                                    <li key={i} className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-md">
+                                    <li
+                                        key={i}
+                                        className="flex justify-between items-center bg-gray-50 px-3 py-2 rounded-md"
+                                    >
                                         <a
                                             href={doc.fileUrl}
                                             target="_blank"
@@ -279,21 +337,6 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                         ) : (
                             <p className="text-sm text-gray-500">Brak dokumentów dla tej inwestycji.</p>
                         )}
-                    </div>
-
-                    {/* 📅 Data utworzenia */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">
-                            Data utworzenia
-                        </label>
-                        <Input
-                            value={
-                                investment?.createdAt
-                                    ? new Date(investment.createdAt).toLocaleDateString("pl-PL")
-                                    : "-"
-                            }
-                            disabled
-                        />
                     </div>
 
                     <DialogFooter>

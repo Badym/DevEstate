@@ -8,11 +8,13 @@ namespace DevEstate.Api.Services
     {
         private readonly FeatureRepository _repo;
         private readonly FeatureTypeRepository _featureTypeRepo;
+        private readonly PropertyService _propertyService;
 
-        public FeatureService(FeatureRepository repo, FeatureTypeRepository featureTypeRepo)
+        public FeatureService(FeatureRepository repo, FeatureTypeRepository featureTypeRepo, PropertyService propertyService)
         {
             _repo = repo;
             _featureTypeRepo = featureTypeRepo;
+            _propertyService = propertyService;
         }
 
         public async Task<FeatureDtos.FeatureResponseDtos> GetByIdAsync(string id)
@@ -29,7 +31,8 @@ namespace DevEstate.Api.Services
                 FeatureTypeId = entity.FeatureTypeId,
                 Price = entity.Price,
                 IsAvailable = entity.IsAvailable,
-                Description = entity.Description
+                Description = entity.Description,
+                IsRequired = entity.IsRequired
             };
         }
 
@@ -44,7 +47,8 @@ namespace DevEstate.Api.Services
                 FeatureTypeId = e.FeatureTypeId,
                 Price = e.Price,
                 IsAvailable = e.IsAvailable,
-                Description = e.Description
+                Description = e.Description,
+                IsRequired = e.IsRequired
             }).ToList();
         }
 
@@ -59,7 +63,8 @@ namespace DevEstate.Api.Services
                 FeatureTypeId = e.FeatureTypeId,
                 Price = e.Price,
                 IsAvailable = e.IsAvailable,
-                Description = e.Description
+                Description = e.Description,
+                IsRequired = e.IsRequired
             }).ToList();
         }
 
@@ -74,7 +79,8 @@ namespace DevEstate.Api.Services
                 FeatureTypeId = e.FeatureTypeId,
                 Price = e.Price,
                 IsAvailable = e.IsAvailable,
-                Description = e.Description
+                Description = e.Description,
+                IsRequired = e.IsRequired
             }).ToList();
         }
 
@@ -87,9 +93,12 @@ namespace DevEstate.Api.Services
                 FeatureTypeId = dto.FeatureTypeId,
                 Price = dto.Price,
                 IsAvailable = dto.IsAvailable,
-                Description = dto.Description
+                Description = dto.Description,
+                IsRequired = dto.IsRequired
             };
             await _repo.CreateAsync(entity);
+            
+            await RecalculatePropertyPricesForFeatureAsync(entity);
         }
 
         public async Task UpdateAsync(string id, FeatureDtos.FeatureUpdateDtos dto)
@@ -104,8 +113,9 @@ namespace DevEstate.Api.Services
             entity.Price = dto.Price ?? entity.Price;
             entity.IsAvailable = dto.IsAvailable ?? entity.IsAvailable;
             entity.Description = dto.Description ?? entity.Description;
-
             await _repo.UpdateAsync(entity);
+            
+            await RecalculatePropertyPricesForFeatureAsync(entity);
         }
 
         public async Task DeleteAsync(string id)
@@ -171,7 +181,8 @@ namespace DevEstate.Api.Services
                 FeatureTypeId = f.FeatureTypeId,
                 Price = f.Price,
                 IsAvailable = f.IsAvailable,
-                Description = f.Description
+                Description = f.Description,
+                IsRequired = f.IsRequired
             }).ToList();
         }
 
@@ -192,9 +203,45 @@ namespace DevEstate.Api.Services
                 FeatureTypeId = f.FeatureTypeId,
                 Price = f.Price,
                 IsAvailable = f.IsAvailable,
-                Description = f.Description
+                Description = f.Description,
+                IsRequired = f.IsRequired
             }).ToList();
         }
+        
+        public async Task RecalculatePropertyPricesForFeatureAsync(Feature feature)
+        {
+            var properties = await _propertyService.GetByInvestmentIdAsync(feature.InvestmentId);
+
+            if (!string.IsNullOrEmpty(feature.BuildingId))
+            {
+                properties = properties.Where(p => p.BuildingId == feature.BuildingId).ToList();
+            }
+
+            foreach (var propertyDto in properties)
+            {
+                var property = new Property
+                {
+                    Id = propertyDto.Id!, 
+                    ApartmentNumber = propertyDto.ApartmentNumber,
+                    Type = propertyDto.Type,
+                    Area = propertyDto.Area,
+                    Price = propertyDto.Price,
+                    PricePerMeter = propertyDto.PricePerMeter,
+                    Status = propertyDto.Status,
+                    InvestmentId = propertyDto.InvestmentId,
+                    BuildingId = propertyDto.BuildingId,
+                    Images = propertyDto.Images,
+                    TotalPriceWithRequiredFeatures = propertyDto.TotalPriceWithRequiredFeatures 
+                };
+
+                await _propertyService.RecalculateTotalPriceAsync(property);
+            }
+        }
+
+
+
+
+
         
     }
 }

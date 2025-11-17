@@ -33,5 +33,6 @@ public static class PropertyDtos
         public string? BuildingId { get; set; }
         public string? InvestmentId { get; set; }
         public List<string> Images { get; set; }
+        public decimal? TotalPriceWithRequiredFeatures { get; set; }
     }
 }

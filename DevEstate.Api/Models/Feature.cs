@@ -26,8 +26,13 @@ namespace DevEstate.Api.Models
 
         [BsonElement("isAvailable")]
         public bool IsAvailable { get; set; } = true;
+        
+        [BsonElement("isRequired")]
+        public bool IsRequired { get; set; } = false;
 
         [BsonElement("description")]
         public string? Description { get; set; }
+        
+        
     }
 }

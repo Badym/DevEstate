@@ -32,6 +32,9 @@ namespace DevEstate.Api.Models
 
         [BsonElement("price")]
         public decimal Price { get; set; }
+        
+        [BsonElement("totalPriceWithRequiredFeatures")]
+        public decimal? TotalPriceWithRequiredFeatures { get; set; }
 
         [BsonElement("pricePerMeter")]
         public decimal PricePerMeter { get; set; }

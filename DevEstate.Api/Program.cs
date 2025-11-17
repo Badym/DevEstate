@@ -5,6 +5,8 @@ using MongoDB.Driver;
 using DevEstate.Api.Services;
 using Microsoft.Extensions.FileProviders;
 using System.Text;
+using DevEstate.Api.Dtos;
+using DevEstate.Services.DeveloperOpenData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -88,6 +90,26 @@ builder.Services.AddSingleton<PriceHistoryService>();
 builder.Services.AddSingleton<DocumentService>();
 builder.Services.AddSingleton<FeatureTypeService>();
 
+builder.Services.AddScoped<ProspectReportService>();
+
+
+
+builder.Services.AddScoped<Md5Service>();
+builder.Services.AddScoped<XmlPriceFeedService>();
+
+builder.Services.AddHttpClient<DatasetFinder>();
+
+
+builder.Services.AddSingleton(new CompanyDtos.CompanyDto
+{
+    Name = "DevEstateNazwaFirmy",
+    Website = "http://localhost:5086"
+});
+
+builder.Services.AddSingleton(new XmlDatasetSettingsDto
+{
+    DatasetExtIdent = "abdspstyabcismegptusjjqwqasuciwmnfhs"
+});
 
 // DataSeeder
 builder.Services.AddSingleton<DataSeeder>();
@@ -172,7 +194,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
-
+app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(documentPath),
@@ -187,7 +209,6 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllers();
 

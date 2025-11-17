@@ -10,6 +10,10 @@ namespace DevEstate.Api.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string? Id { get; set; }
 
+        // ─────────────────────────────
+        // 🧩 ORYGINALNE POLA
+        // ─────────────────────────────
+
         [BsonElement("name")]
         public string Name { get; set; } = null!;
 
@@ -39,7 +43,50 @@ namespace DevEstate.Api.Models
 
         [BsonElement("createdAt")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
         [BsonElement("logoimage")]
         public string LogoImage { get; set; }
+
+        // ─────────────────────────────
+        // 🆕 DODANE POLA (DLA RAPORTU)
+        // ─────────────────────────────
+
+        [BsonElement("legalForm")]
+        public string? LegalForm { get; set; }
+
+        [BsonElement("ceidgNumber")]
+        public string? CEIDGNumber { get; set; }
+
+        [BsonElement("fax")]
+        public string? Fax { get; set; }
+
+        [BsonElement("province")]
+        public string? Province { get; set; }
+
+        [BsonElement("county")]
+        public string? County { get; set; }
+
+        [BsonElement("municipality")]
+        public string? Municipality { get; set; }
+
+        [BsonElement("city")]
+        public string? City { get; set; }
+
+        [BsonElement("street")]
+        public string? Street { get; set; }
+
+        [BsonElement("buildingNumber")]
+        public string? BuildingNumber { get; set; }
+
+        [BsonElement("apartmentNumber")]
+        public string? ApartmentNumber { get; set; }
+
+        [BsonElement("postalCode")]
+        public string? PostalCode { get; set; }
+        
+        [BsonElement("contactMethod")]
+        public string? ContactMethod { get; set; } 
+        
+        
     }
 }

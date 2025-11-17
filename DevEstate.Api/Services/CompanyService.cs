@@ -65,7 +65,7 @@ namespace DevEstate.Api.Services
                 Website = dto.Website,
                 Address = dto.Address,
                 Description = dto.Description,
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
             };
             await _repo.CreateAsync(entity);
         }
@@ -111,6 +111,68 @@ namespace DevEstate.Api.Services
                 KRS = entity.KRS,
                 LogoImage = entity.LogoImage,
             };
+        }
+        
+        public async Task<CompanyDetailsDtos.ResponseCompanyDetails?> GetDetailsAsync()
+        {
+            var entity = (await _repo.GetAllAsync()).FirstOrDefault();
+            if (entity == null) return null;
+
+            return new CompanyDetailsDtos.ResponseCompanyDetails()
+            {
+                Id = entity.Id,
+                Name = entity.Name,
+                LegalForm = entity.LegalForm,
+                KRS = entity.KRS,
+                CEIDGNumber = entity.CEIDGNumber,
+                NIP = entity.NIP,
+                REGON = entity.REGON,
+                Phone = entity.Phone,
+                Fax = entity.Fax,
+                Email = entity.Email,
+                Website = entity.Website,
+                Province = entity.Province,
+                County = entity.County,
+                Municipality = entity.Municipality,
+                City = entity.City,
+                Street = entity.Street,
+                BuildingNumber = entity.BuildingNumber,
+                ApartmentNumber = entity.ApartmentNumber,
+                PostalCode = entity.PostalCode,
+                Description = entity.Description,
+                LogoImage = entity.LogoImage,
+                ContactMethond = entity.ContactMethod
+            };
+        }
+
+        public async Task UpdateDetailsAsync(CompanyDetailsDtos.UpdateCompanyDetails dto)
+        {
+            var entity = (await _repo.GetAllAsync()).FirstOrDefault();
+            if (entity == null) throw new Exception("Company not found");
+
+            entity.Name = dto.Name;
+            entity.LegalForm = dto.LegalForm;
+            entity.KRS = dto.KRS;
+            entity.CEIDGNumber = dto.CEIDGNumber;
+            entity.NIP = dto.NIP;
+            entity.REGON = dto.REGON;
+            entity.Phone = dto.Phone;
+            entity.Fax = dto.Fax;
+            entity.Email = dto.Email;
+            entity.Website = dto.Website;
+            entity.Province = dto.Province;
+            entity.County = dto.County;
+            entity.Municipality = dto.Municipality;
+            entity.City = dto.City;
+            entity.Street = dto.Street;
+            entity.BuildingNumber = dto.BuildingNumber;
+            entity.ApartmentNumber = dto.ApartmentNumber;
+            entity.PostalCode = dto.PostalCode;
+            entity.Description = dto.Description;
+            entity.LogoImage = dto.LogoImage;
+            entity.ContactMethod = dto.ContactMethond;
+
+            await _repo.UpdateAsync(entity);
         }
 
 

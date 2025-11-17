@@ -1,0 +1,48 @@
+﻿<datasets xmlns="urn:otwarte-dane:harvester:1.13">
+  <dataset status="published" xmlns="">
+    <extIdent>abdspstyabcismegptusjjqwqasuciwmnfhs</extIdent>
+    <title>
+      <polish>Ceny ofertowe mieszkań dewelopera DevEstateNazwaFirmy w 2025 r.</polish>
+      <english>Offer prices of apartments of developer DevEstateNazwaFirmy in 2025.</english>
+    </title>
+    <description>
+      <polish>Zbiór danych zawiera informacje o cenach ofertowych mieszkań dewelopera DevEstateNazwaFirmy.</polish>
+      <english>Dataset contains offer prices of developer DevEstateNazwaFirmy.</english>
+    </description>
+    <updateFrequency>daily</updateFrequency>
+    <hasDynamicData>false</hasDynamicData>
+    <hasHighValueData>true</hasHighValueData>
+    <hasHighValueDataFromEuropeanCommissionList>false</hasHighValueDataFromEuropeanCommissionList>
+    <hasResearchData>false</hasResearchData>
+    <categories>
+      <category>ECON</category>
+    </categories>
+    <resources>
+      <resource status="published">
+        <extIdent>1beb0e1c-785a-4ced-89ef-33759ae38a8d</extIdent>
+        <url>http://localhost:5086/dane/cennik.csv</url>
+        <title>
+          <polish>Ceny ofertowe mieszkań DevEstateNazwaFirmy 2025-11-17</polish>
+          <english>Offer prices DevEstateNazwaFirmy 2025-11-17</english>
+        </title>
+        <description>
+          <polish>Cennik udostępniony dnia 2025-11-17</polish>
+          <english>Price list published 2025-11-17</english>
+        </description>
+        <availability>local</availability>
+        <dataDate>2025-11-17</dataDate>
+        <specialSigns>
+          <specialSign>X</specialSign>
+        </specialSigns>
+        <hasDynamicData>false</hasDynamicData>
+        <hasHighValueData>true</hasHighValueData>
+        <hasHighValueDataFromEuropeanCommissionList>false</hasHighValueDataFromEuropeanCommissionList>
+        <hasResearchData>false</hasResearchData>
+        <containsProtectedData>false</containsProtectedData>
+      </resource>
+    </resources>
+    <tags>
+      <tag lang="pl">Deweloper</tag>
+    </tags>
+  </dataset>
+</datasets>

@@ -10,12 +10,14 @@ namespace DevEstate.Api.Services
         private readonly PropertyRepository _repo;
         private readonly PriceHistoryService _priceHistoryService;
         private readonly DocumentRepository _documentRepo;
+        private readonly FeatureRepository _featureRepo;
 
-        public PropertyService(PropertyRepository repo,DocumentRepository documentRepo, PriceHistoryService priceHistoryService)
+        public PropertyService(PropertyRepository repo,DocumentRepository documentRepo,FeatureRepository featureRepo, PriceHistoryService priceHistoryService)
         {
             _repo = repo;
             _priceHistoryService =  priceHistoryService;
             _documentRepo = documentRepo;
+            _featureRepo = featureRepo;
         }
 
         public async Task<PropertyDtos.PropertyResponseDtos> GetByIdAsync(string id)
@@ -35,6 +37,7 @@ namespace DevEstate.Api.Services
                 InvestmentId = entity.InvestmentId,
                 BuildingId = entity.BuildingId,
                 Images = entity.Images,
+                TotalPriceWithRequiredFeatures = entity.TotalPriceWithRequiredFeatures
             };
         }
 
@@ -53,6 +56,7 @@ namespace DevEstate.Api.Services
                 BuildingId = e.BuildingId,
                 InvestmentId = e.InvestmentId,
                 Images = e.Images,
+                TotalPriceWithRequiredFeatures = e.TotalPriceWithRequiredFeatures
             }).ToList();
         }
 
@@ -60,7 +64,7 @@ namespace DevEstate.Api.Services
         {
             decimal price = (decimal)dto.Price;  
             decimal area = (decimal)dto.Area;   
- 
+
             decimal pricePerMeter = area > 0 ? Math.Round(price / area, 2) : 0;
 
             var entity = new Property
@@ -75,16 +79,19 @@ namespace DevEstate.Api.Services
                 PricePerMeter = pricePerMeter,
                 Status = dto.Status
             };
+
             await _repo.CreateAsync(entity);
-            
+
             await _priceHistoryService.CreateAsync(new PriceHistoryDtos.PriceHistoryCreateDtos
             {
                 PropertyId = entity.Id!,
                 Date = DateTime.UtcNow,
                 NewPrice = entity.Price
             });
-        }
 
+            await RecalculateTotalPriceAsync(entity);
+        }
+        
         public async Task UpdateAsync(string id, PropertyDtos.PropertyUpdateDtos dto)
         {
             var entity = await _repo.GetByIdAsync(id);
@@ -125,6 +132,8 @@ namespace DevEstate.Api.Services
                     NewPrice = entity.Price
                 });
             }
+            
+            await RecalculateTotalPriceAsync(entity);
         }
 
         public async Task DeleteAsync(string id)
@@ -165,6 +174,7 @@ namespace DevEstate.Api.Services
                 BuildingId = p.BuildingId,
                 InvestmentId = p.InvestmentId,
                 Images = p.Images,
+                TotalPriceWithRequiredFeatures = p.TotalPriceWithRequiredFeatures
             });
         }
 
@@ -190,6 +200,7 @@ namespace DevEstate.Api.Services
                 Status = p.Status,
                 InvestmentId = p.InvestmentId,
                 Images = p.Images,
+                TotalPriceWithRequiredFeatures = p.TotalPriceWithRequiredFeatures
             });
         }
         
@@ -198,6 +209,31 @@ namespace DevEstate.Api.Services
 
         public Task<List<Property>> GetEntitiesByInvestmentIdAsync(string investmentId)
             => _repo.GetByInvestmentIdAsync(investmentId);
+        
+        public async Task RecalculateTotalPriceAsync(Property property)
+        {
+            decimal totalPrice = property.Price;
+
+            var requiredFeatures = await _featureRepo.GetByInvestmentIdAsync(property.InvestmentId);
+
+            if (!string.IsNullOrEmpty(property.BuildingId))
+            {
+                requiredFeatures = requiredFeatures.Where(f => f.BuildingId == property.BuildingId && f.IsRequired).ToList();
+            }
+
+            foreach (var feature in requiredFeatures)
+            {
+                if (feature.IsRequired) 
+                {
+                    totalPrice += feature.Price ?? 0; 
+                }
+            }
+
+            property.TotalPriceWithRequiredFeatures = totalPrice;
+
+            await _repo.UpdateAsync(property);
+        }
+
 
     }
 }

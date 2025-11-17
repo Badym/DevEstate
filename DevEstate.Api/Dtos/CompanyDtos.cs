@@ -13,6 +13,7 @@ public static class CompanyDtos
         public string Website { get; set; }
         public string Address { get; set; }
         public string Description { get; set; }
+        
     }
 
     public class CompanyUpdateDtos
@@ -40,4 +41,11 @@ public static class CompanyDtos
         public DateTime CreatedAt { get; set; }
         public string LogoImage { get; set; }
     }
+    
+    public class CompanyDto
+    {
+        public string Name { get; set; }
+        public string Website { get; set; }
+    }
+    
 }
