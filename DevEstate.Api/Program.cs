@@ -22,6 +22,7 @@ builder.Services.Configure<MongoDbSettings>(
 
 builder.Services.AddSingleton<IMongoClient>(sp =>
 {
+    
     var settings = sp.GetRequiredService<IOptions<MongoDbSettings>>().Value;
     return new MongoClient(settings.ConnectionString);
 });
@@ -97,8 +98,12 @@ builder.Services.AddScoped<ProspectReportService>();
 builder.Services.AddScoped<Md5Service>();
 builder.Services.AddScoped<XmlPriceFeedService>();
 
-builder.Services.AddHttpClient<DatasetFinder>();
 
+builder.Services.AddHttpClient<DatasetResourceFetcher>();
+builder.Services.AddHttpClient<DatasetFinder>();
+builder.Services.AddHttpClient<DeveloperPriceRecordClassMap>();
+builder.Services.AddSingleton<CsvDataParser>();
+builder.Services.AddHttpClient<CsvDownloader>();
 
 builder.Services.AddSingleton(new CompanyDtos.CompanyDto
 {

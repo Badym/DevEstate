@@ -1,16 +1,16 @@
 ﻿namespace DevEstate.Dtos.DeveloperOpenData;
 
-// -------------------------------
-// GŁÓWNA ODPOWIEDŹ API
-// -------------------------------
+// ====================================================================
+// DTO DO LISTY DATASETÓW — używane TYLKO przez DatasetFinder
+// ====================================================================
+
+// Odpowiedź API z /search
 public class ApiDatasetListResponse
 {
     public List<ApiDatasetRawItem>? Data { get; set; }
 }
 
-// -------------------------------
-// POJEDYNCZY RAW ITEM
-// -------------------------------
+// Pojedynczy wpis z listy
 public class ApiDatasetRawItem
 {
     public string? Id { get; set; }
@@ -18,18 +18,14 @@ public class ApiDatasetRawItem
     public ApiDatasetAttributes? Attributes { get; set; }
 }
 
-// -------------------------------
-// ATRYBUTY ITEMU (title, model)
-// -------------------------------
+// Atrybuty datasetu
 public class ApiDatasetAttributes
 {
     public string? Model { get; set; }
     public string? Title { get; set; }
 }
 
-// -------------------------------
-// DTO, KTÓRE ZWRACAMY DO FE
-// -------------------------------
+// DTO wysyłane do Frontu
 public class ApiDatasetItem
 {
     public string? Id { get; set; }
