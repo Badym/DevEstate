@@ -46,21 +46,24 @@ namespace DevEstate.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] FeatureDtos.FeatureCreateDtos dto)
         {
-            await _service.CreateAsync(dto);
+            var fullName = User.FindFirst("fullName")?.Value ?? "Unknown User";
+            await _service.CreateAsync(dto,fullName);
             return Ok("Feature created successfully");
         }
 
         [HttpPatch("{id}")]
         public async Task<IActionResult> Update(string id, [FromBody] FeatureDtos.FeatureUpdateDtos dto)
         {
-            await _service.UpdateAsync(id, dto);
+            var fullName = User.FindFirst("fullName")?.Value ?? "Unknown User";
+            await _service.UpdateAsync(id, dto,fullName);
             return Ok("Feature updated successfully");
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            await _service.DeleteAsync(id);
+            var fullName = User.FindFirst("fullName")?.Value ?? "Unknown User";
+            await _service.DeleteAsync(id,fullName);
             return Ok("Feature deleted successfully");
         }
         

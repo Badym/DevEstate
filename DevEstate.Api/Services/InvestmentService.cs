@@ -10,17 +10,20 @@ namespace DevEstate.Api.Services
         private readonly DocumentRepository _documentRepo;
         private readonly BuildingService _buildingService;
         private readonly PropertyService _propertyService;
-
+        private readonly AdminLogService _logService;
+        
         public InvestmentService(
             InvestmentRepository investmentRepo,
             DocumentRepository documentRepo,
             BuildingService buildingService,
-            PropertyService propertyService)
+            PropertyService propertyService,
+            AdminLogService logService)
         {
             _investmentRepo = investmentRepo;
             _documentRepo = documentRepo;
             _buildingService = buildingService;
             _propertyService = propertyService;
+            _logService = logService;
         }
 
         public async Task<InvestmentDtos.InvestmentResponseDtos> GetByIdAsync(string id)
@@ -65,7 +68,7 @@ namespace DevEstate.Api.Services
             }).ToList();
         }
 
-        public async Task CreateAsync(InvestmentDtos.InvestmentCreateDtos dto)
+        public async Task CreateAsync(InvestmentDtos.InvestmentCreateDtos dto, string fullName)
         {
             var entity = new Investment
             {
@@ -82,9 +85,10 @@ namespace DevEstate.Api.Services
                 InvestmentCounty = dto.InvestmentCounty,
             };
             await _investmentRepo.CreateAsync(entity);
+            await _logService.LogAsync(fullName, "CREATE", "Investment", entity.Id);
         }
 
-        public async Task UpdateAsync(string id, InvestmentDtos.InvestmentUpdateDtos dto)
+        public async Task UpdateAsync(string id, InvestmentDtos.InvestmentUpdateDtos dto, string fullName)
         {
             var entity = await _investmentRepo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Investment not found");
@@ -100,35 +104,48 @@ namespace DevEstate.Api.Services
             entity.InvestmentMunicipality = dto.InvestmentMunicipality ?? entity.InvestmentMunicipality;
 
             await _investmentRepo.UpdateAsync(entity);
+            await _logService.LogAsync(fullName, "UPDATE", "Investment", entity.Id);
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(string id, string fullName)
         {
             // Usuń dokumenty inwestycji
             await _documentRepo.DeleteByParentAsync("investment", id);
 
             // Usuń budynki przypisane do inwestycji
             var buildings = await _buildingService.GetEntitiesByInvestmentIdAsync(id);
+
             if (buildings != null && buildings.Any())
             {
                 foreach (var building in buildings)
-                    await _buildingService.DeleteAsync(building.Id);
+                {
+                    // Usuń budynek + zaloguj w BuildingService
+                    await _buildingService.DeleteAsync(building.Id, fullName);
+                }
             }
 
             // Usuń domy niezależne (properties bez buildingId)
             var properties = await _propertyService.GetEntitiesByInvestmentIdAsync(id);
+
             if (properties != null && properties.Any())
             {
                 foreach (var property in properties)
                 {
                     if (string.IsNullOrEmpty(property.BuildingId))
-                        await _propertyService.DeleteAsync(property.Id);
+                    {
+                        // Usuń property + zaloguj w PropertyService
+                        await _propertyService.DeleteAsync(property.Id, fullName);
+                    }
                 }
             }
 
             // Usuń inwestycję
             await _investmentRepo.DeleteAsync(id);
+
+            // 📝 LOG inwestycji
+            await _logService.LogAsync(fullName, "DELETE", "Investment", id);
         }
+
         
         public async Task AddImageAsync(string investmentId, string fileUrl)
         {

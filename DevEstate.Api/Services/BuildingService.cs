@@ -8,19 +8,23 @@ namespace DevEstate.Api.Services
     {
         private readonly BuildingRepository _buildingRepo;
         private readonly PropertyService _propertyService;
-        private readonly FeatureRepository _featureRepo;
+        private readonly FeatureService _featureRepo;
         private readonly DocumentRepository _documentRepo;
+        private readonly AdminLogService _logService;
+
 
         public BuildingService(
             BuildingRepository buildingRepo,
             PropertyService propertyService,
-            FeatureRepository featureRepo,
-            DocumentRepository documentRepo)
+            FeatureService featureRepo,
+            DocumentRepository documentRepo,
+            AdminLogService logService)
         {
             _buildingRepo = buildingRepo;
             _propertyService = propertyService;
             _featureRepo = featureRepo;
             _documentRepo = documentRepo;
+            _logService = logService;
         }
 
         public async Task<BuildingDtos.BuildingResponseDtos> GetByIdAsync(string id)
@@ -55,7 +59,7 @@ namespace DevEstate.Api.Services
             }).ToList();
         }
 
-        public async Task CreateAsync(BuildingDtos.BuildingCreateDtos dto)
+        public async Task CreateAsync(BuildingDtos.BuildingCreateDtos dto, string fullName)
         {
             var entity = new Building
             {
@@ -64,10 +68,13 @@ namespace DevEstate.Api.Services
                 Description = dto.Description,
                 Status = dto.Status
             };
+            
             await _buildingRepo.CreateAsync(entity);
+            
+            await _logService.LogAsync(fullName, "CREATE", "Building", entity.Id);
         }
 
-        public async Task UpdateAsync(string id, BuildingDtos.BuildingUpdateDtos dto)
+        public async Task UpdateAsync(string id, BuildingDtos.BuildingUpdateDtos dto, string fullName)
         {
             var entity = await _buildingRepo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Building not found");
@@ -77,15 +84,17 @@ namespace DevEstate.Api.Services
             entity.Status = dto.Status ?? entity.Status;
 
             await _buildingRepo.UpdateAsync(entity);
+            
+            await _logService.LogAsync(fullName, "UPDATE", "Building", id);
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(string id, string fullName)
         {
             // usuń dokumenty budynku
             await _documentRepo.DeleteByParentAsync("building", id);
 
             // usuń features powiązane z budynkiem
-            await _featureRepo.DeleteByBuildingIdAsync(id);
+            await _featureRepo.DeleteAsync(id,fullName);
 
             // usuń wszystkie properties przypisane do budynku
             var properties = await _propertyService.GetByBuildingIdAsync(id);
@@ -93,12 +102,14 @@ namespace DevEstate.Api.Services
             {
                 foreach (var property in properties)
                 {
-                    await _propertyService.DeleteAsync(property.Id);
+                    await _propertyService.DeleteAsync(property.Id, fullName);
                 }
             }
 
             // usuń budynek
             await _buildingRepo.DeleteAsync(id);
+            
+            await _logService.LogAsync(fullName, "DELETE", "Building", id);
         }
 
         

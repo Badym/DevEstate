@@ -177,6 +177,7 @@ export default function InvestmentPage() {
                     buildingId={selectedBuildingId}   // ⬅️ filtr po budynku (null = wszystkie)
                 />
             </div>
+            
         </div>
     );
 }

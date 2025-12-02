@@ -9,12 +9,14 @@ namespace DevEstate.Api.Services
         private readonly FeatureRepository _repo;
         private readonly FeatureTypeRepository _featureTypeRepo;
         private readonly PropertyService _propertyService;
+        private readonly AdminLogService _logService;
 
-        public FeatureService(FeatureRepository repo, FeatureTypeRepository featureTypeRepo, PropertyService propertyService)
+        public FeatureService(FeatureRepository repo, FeatureTypeRepository featureTypeRepo, PropertyService propertyService, AdminLogService logService)
         {
             _repo = repo;
             _featureTypeRepo = featureTypeRepo;
             _propertyService = propertyService;
+            _logService = logService;
         }
 
         public async Task<FeatureDtos.FeatureResponseDtos> GetByIdAsync(string id)
@@ -84,7 +86,7 @@ namespace DevEstate.Api.Services
             }).ToList();
         }
 
-        public async Task CreateAsync(FeatureDtos.FeatureCreateDtos dto)
+        public async Task CreateAsync(FeatureDtos.FeatureCreateDtos dto, string fullName)
         {
             var entity = new Feature
             {
@@ -98,10 +100,12 @@ namespace DevEstate.Api.Services
             };
             await _repo.CreateAsync(entity);
             
+            await _logService.LogAsync(fullName, "CREATE", "Feature", entity.Id);
+            
             await RecalculatePropertyPricesForFeatureAsync(entity);
         }
 
-        public async Task UpdateAsync(string id, FeatureDtos.FeatureUpdateDtos dto)
+        public async Task UpdateAsync(string id, FeatureDtos.FeatureUpdateDtos dto, string fullName)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null)
@@ -115,12 +119,16 @@ namespace DevEstate.Api.Services
             entity.Description = dto.Description ?? entity.Description;
             await _repo.UpdateAsync(entity);
             
+            await _logService.LogAsync(fullName, "UPDATE", "Feature", id);
+            
             await RecalculatePropertyPricesForFeatureAsync(entity);
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(string id, string fullName)
         {
             await _repo.DeleteAsync(id);
+            
+            await _logService.LogAsync(fullName, "DELETE", "Feature", id);
         }
         
         public async Task<List<FeatureDtos.FeatureTypeSummaryDto>> GetFeatureTypesByBuildingAsync(string buildingId)

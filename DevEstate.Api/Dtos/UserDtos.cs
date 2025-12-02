@@ -7,7 +7,7 @@ public static class UserDtos
     {
         public string Email { get; set; } = null!;
         public string FullName { get; set; } = null!;
-        public string Role { get; set; } = "Admin"; // Admin / SuperAdmin / Moderator
+        public string Role { get; set; } = null!; // Admin / SuperAdmin / Moderator
         public string? Password { get; set; } // Opcjonalnie, można ustawiać przy tworzeniu
     }
 

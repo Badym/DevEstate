@@ -9,6 +9,10 @@ import PropertiesAdmin from "@/pages/admin/PropertiesAdmin.jsx";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import FeaturesAdmin from "@/pages/admin/FeaturesAdmin.jsx";
 import FeatureTypesAdmin from "@/pages/admin/FeatureTypesAdmin.jsx";
+import UserAdmin from "@/pages/admin/UsersAdmin.jsx";
+import LogsAdmin from "@/pages/admin/AdminLogsPage.jsx";
+import CompanyAdmin from "@/pages/admin/AdminCompanyInfoPage.jsx";
+import AdminReportsPage  from "@/pages/admin/AdminReportsPage.jsx";
 
 
 export default function App() {
@@ -25,6 +29,14 @@ export default function App() {
                 element={
                     <ProtectedRoute>
                         <AdminDashboard />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/admin/users"
+                element={
+                    <ProtectedRoute>
+                        <UserAdmin />
                     </ProtectedRoute>
                 }
             />
@@ -65,6 +77,30 @@ export default function App() {
                 element={
                     <ProtectedRoute>
                         <FeatureTypesAdmin />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/admin/logs"
+                element={
+                    <ProtectedRoute>
+                        <LogsAdmin />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/admin/company-info"
+                element={
+                    <ProtectedRoute>
+                        <CompanyAdmin />
+                    </ProtectedRoute>
+                }
+            />
+            <Route
+                path="/admin/reports"
+                element={
+                    <ProtectedRoute>
+                        <AdminReportsPage />
                     </ProtectedRoute>
                 }
             />

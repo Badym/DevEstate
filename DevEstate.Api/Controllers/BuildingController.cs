@@ -10,12 +10,11 @@ namespace DevEstate.Api.Controllers;
 public class BuildingController : ControllerBase
 {
     private readonly BuildingService _service;
-    private readonly FeatureService _featureService;
 
-    public BuildingController(BuildingService service,FeatureService featureService)
+    public BuildingController(BuildingService service)
     {
         _service = service;
-        _featureService = featureService;
+        
     }
 
     [HttpGet("all")]
@@ -27,23 +26,28 @@ public class BuildingController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] BuildingDtos.BuildingCreateDtos dto)
     {
-        await _service.CreateAsync(dto);
+        var fullName = User.FindFirst("fullName")?.Value;
+
+        await _service.CreateAsync(dto, fullName);
         return Ok();
     }
 
     [HttpPatch("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> Update(string id, [FromBody] BuildingDtos.BuildingUpdateDtos dto)
     {
-        await _service.UpdateAsync(id, dto);
+        var fullName = User.FindFirst("fullName")?.Value;
+        await _service.UpdateAsync(id, dto,fullName);
         return Ok();
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> Delete(string id)
     {
-        await _service.DeleteAsync(id);
+        var fullName = User.FindFirst("fullName")?.Value;
+
+        await _service.DeleteAsync(id, fullName);
         return Ok();
     }
 }

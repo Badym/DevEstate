@@ -19,18 +19,18 @@
     </categories>
     <resources>
       <resource status="published">
-        <extIdent>1beb0e1c-785a-4ced-89ef-33759ae38a8d</extIdent>
+        <extIdent>10b66b99-926b-48f5-95cb-268e9f4a9494</extIdent>
         <url>http://localhost:5086/dane/cennik.csv</url>
         <title>
-          <polish>Ceny ofertowe mieszkań DevEstateNazwaFirmy 2025-11-17</polish>
-          <english>Offer prices DevEstateNazwaFirmy 2025-11-17</english>
+          <polish>Ceny ofertowe mieszkań DevEstateNazwaFirmy 2025-12-01</polish>
+          <english>Offer prices DevEstateNazwaFirmy 2025-12-01</english>
         </title>
         <description>
-          <polish>Cennik udostępniony dnia 2025-11-17</polish>
-          <english>Price list published 2025-11-17</english>
+          <polish>Cennik udostępniony dnia 2025-12-01</polish>
+          <english>Price list published 2025-12-01</english>
         </description>
         <availability>local</availability>
-        <dataDate>2025-11-17</dataDate>
+        <dataDate>2025-12-01</dataDate>
         <specialSigns>
           <specialSign>X</specialSign>
         </specialSigns>

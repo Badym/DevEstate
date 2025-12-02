@@ -17,21 +17,38 @@ public class CsvDownloader
         {
             var bytes = await _http.GetByteArrayAsync(url);
 
-            // katalog temp
-            string tempDir = Path.Combine(Path.GetTempPath(), "devestate_csv");
-            Directory.CreateDirectory(tempDir);
+            // Określenie ścieżki na podstawie bieżącego katalogu aplikacji
+            string appDirectory = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles");
+            Directory.CreateDirectory(appDirectory); // Tworzy folder, jeśli nie istnieje
 
-            // nazwa pliku
-            string fileName = Guid.NewGuid().ToString("N") + ".csv";
-            string filePath = Path.Combine(tempDir, fileName);
+            // Pobieramy nazwę pliku z URL
+            string fileName = Path.GetFileName(url);
+            string extension = Path.GetExtension(fileName).ToLower();
 
+            // Jeśli plik nie jest CSV ani XLSX, zwróć null
+            if (extension != ".csv" && extension != ".xlsx")
+            {
+                return null;
+            }
+
+            // Generowanie unikalnej nazwy pliku
+            string uniqueFileName = Guid.NewGuid().ToString("N") + extension;
+            string filePath = Path.Combine(appDirectory, uniqueFileName);
+
+            // Zapisz plik w docelowej lokalizacji
             await File.WriteAllBytesAsync(filePath, bytes);
 
+            // Logowanie ścieżki pliku
+            Console.WriteLine($"Downloaded file saved to: {filePath}");
+
+            // Zwróć ścieżkę do lokalnego pliku
             return filePath;
         }
-        catch
+        catch (Exception ex)
         {
+            Console.WriteLine($"Error downloading file: {ex.Message}");
             return null;
         }
     }
+
 }

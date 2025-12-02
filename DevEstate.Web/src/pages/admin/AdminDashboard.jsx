@@ -10,7 +10,7 @@ export default function AdminDashboard() {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-        if (!token || user.role !== "Admin") {
+        if (!token || (user.role !== "Admin" && user.role !== "Moderator")) {
             navigate("/admin/login");
         }
     }, [navigate]);
@@ -169,6 +169,50 @@ export default function AdminDashboard() {
                                 Przejdź
                             </Button>
                         </div>
+
+                        <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+                            <h3 className="font-semibold text-lg mb-2">Użytkownicy</h3>
+                            <p className="text-gray-500">Zarządzaj użytkownikami i ich danymi.</p>
+                            <Button
+                                className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
+                                onClick={() => navigate("/admin/users")}>
+                                Przejdź
+                            </Button>
+                        </div>
+                        <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+                            <h3 className="font-semibold text-lg mb-2">Logi administratora</h3>
+                            <p className="text-gray-500">Historia operacji wykonywanych w panelu.</p>
+                            <Button
+                                className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
+                                onClick={() => navigate("/admin/logs")}
+                            >
+                                Przejdź
+                            </Button>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+                            <h3 className="font-semibold text-lg mb-2">Informacje o firmie</h3>
+                            <p className="text-gray-500">Dane rejestrowe oraz kontaktowe firmy.</p>
+                            <Button
+                                className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
+                                onClick={() => navigate("/admin/company-info")}
+                            >
+                                Przejdź
+                            </Button>
+                        </div>
+
+                        <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+                            <h3 className="font-semibold text-lg mb-2">Raporty & Eksport</h3>
+                            <p className="text-gray-500">Generowanie plików cenowych (CSV, MD5, XML).</p>
+                            <Button
+                                className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
+                                onClick={() => navigate("/admin/reports")}
+                            >
+                                Przejdź
+                            </Button>
+                        </div>
+
+
                     </div>
                 </section>
             </main>

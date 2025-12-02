@@ -79,21 +79,24 @@ builder.Services.AddSingleton<FeatureRepository>();
 builder.Services.AddSingleton<PriceHistoryRepository>();
 builder.Services.AddSingleton<DocumentRepository>();
 builder.Services.AddSingleton<FeatureTypeRepository>();
+builder.Services.AddSingleton<DeveloperPriceRepository>();
+builder.Services.AddSingleton<AdminLogRepository>();
 
 
 builder.Services.AddSingleton<CompanyService>();
-builder.Services.AddSingleton<InvestmentService>();
-builder.Services.AddSingleton<BuildingService>();
-builder.Services.AddSingleton<PropertyService>();
+builder.Services.AddScoped<InvestmentService>();
+builder.Services.AddScoped<BuildingService>();
+builder.Services.AddScoped<PropertyService>();
 builder.Services.AddSingleton<UserService>();
-builder.Services.AddSingleton<FeatureService>();
+builder.Services.AddScoped<FeatureService>();
 builder.Services.AddSingleton<PriceHistoryService>();
 builder.Services.AddSingleton<DocumentService>();
 builder.Services.AddSingleton<FeatureTypeService>();
+builder.Services.AddSingleton<DeveloperPriceService>();
 
 builder.Services.AddScoped<ProspectReportService>();
 
-
+builder.Services.AddScoped<AdminLogService>();
 
 builder.Services.AddScoped<Md5Service>();
 builder.Services.AddScoped<XmlPriceFeedService>();
@@ -103,6 +106,9 @@ builder.Services.AddHttpClient<DatasetResourceFetcher>();
 builder.Services.AddHttpClient<DatasetFinder>();
 builder.Services.AddHttpClient<DeveloperPriceRecordClassMap>();
 builder.Services.AddSingleton<CsvDataParser>();
+builder.Services.AddSingleton<DeveloperOpenDataParser>();
+builder.Services.AddSingleton<ExcelDataParser>();
+builder.Services.AddSingleton<AveragePriceService>();
 builder.Services.AddHttpClient<CsvDownloader>();
 
 builder.Services.AddSingleton(new CompanyDtos.CompanyDto

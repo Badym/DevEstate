@@ -27,7 +27,8 @@ export default function AdminLogin() {
             localStorage.setItem("user", JSON.stringify({
                 fullName: data.fullName,
                 role: data.role,
-                email: data.email
+                email: data.email,
+                
             }));
             navigate("/admin/dashboard");
 

@@ -28,21 +28,24 @@ public class InvestmentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Create([FromBody] InvestmentDtos.InvestmentCreateDtos dto)
     {
-        await _service.CreateAsync(dto);
+        var fullName = User.FindFirst("fullName")?.Value;
+        await _service.CreateAsync(dto, fullName);
         return Ok();
     }
 
     [HttpPatch("{id}")]
     public async Task<IActionResult> Update(string id, [FromBody] InvestmentDtos.InvestmentUpdateDtos dto)
     {
-        await _service.UpdateAsync(id, dto);
+        var fullName = User.FindFirst("fullName")?.Value;
+        await _service.UpdateAsync(id, dto, fullName);
         return Ok();
     }
 
     [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(string id)
     {
-        await _service.DeleteAsync(id);
+        var fullName = User.FindFirst("fullName")?.Value;
+        await _service.DeleteAsync(id, fullName);
         return Ok();
     }
     

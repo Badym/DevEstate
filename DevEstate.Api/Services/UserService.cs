@@ -41,7 +41,7 @@ namespace DevEstate.Api.Services
             {
                 Email = dto.Email,
                 FullName = dto.FullName,
-                Role = dto.Role ?? "Admin",
+                Role = dto.Role,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -70,8 +70,17 @@ namespace DevEstate.Api.Services
         // -------------------- Usuwanie użytkownika --------------------
         public async Task DeleteAsync(string id)
         {
+            var user = await _repo.GetByIdAsync(id);
+
+            if (user == null)
+                throw new Exception("Użytkownik nie istnieje.");
+
+            if (user.Role == "Admin")
+                throw new Exception("Nie można usunąć konta administratora.");
+
             await _repo.DeleteAsync(id);
         }
+
 
         // -------------------- Logowanie --------------------
         public async Task<AuthDtos.LoginResponse> LoginAsync(AuthDtos.LoginRequest dto)
@@ -83,7 +92,7 @@ namespace DevEstate.Api.Services
             if (result == PasswordVerificationResult.Failed)
                 throw new Exception("Nieprawidłowe hasło.");
 
-            var token = _jwtService.GenerateToken(user.Id, user.Email, user.Role);
+            var token = _jwtService.GenerateToken(user.Id, user.Email, user.Role, user.FullName);
 
             return new AuthDtos.LoginResponse
             {
@@ -91,6 +100,7 @@ namespace DevEstate.Api.Services
                 Role = user.Role,
                 FullName = user.FullName,
                 Email = user.Email,
+                Id = user.Id
             };
         }
 

@@ -11,14 +11,23 @@ namespace DevEstate.Api.Services
         private readonly PriceHistoryService _priceHistoryService;
         private readonly DocumentRepository _documentRepo;
         private readonly FeatureRepository _featureRepo;
+        private readonly AdminLogService _logService;
 
-        public PropertyService(PropertyRepository repo,DocumentRepository documentRepo,FeatureRepository featureRepo, PriceHistoryService priceHistoryService)
+
+        public PropertyService(
+            PropertyRepository repo,
+            DocumentRepository documentRepo,
+            FeatureRepository featureRepo,
+            PriceHistoryService priceHistoryService,
+            AdminLogService logService)
         {
             _repo = repo;
-            _priceHistoryService =  priceHistoryService;
+            _priceHistoryService = priceHistoryService;
             _documentRepo = documentRepo;
             _featureRepo = featureRepo;
+            _logService = logService;
         }
+
 
         public async Task<PropertyDtos.PropertyResponseDtos> GetByIdAsync(string id)
         {
@@ -60,7 +69,7 @@ namespace DevEstate.Api.Services
             }).ToList();
         }
 
-        public async Task CreateAsync(PropertyDtos.PropertyCreateDtos dto)
+        public async Task CreateAsync(PropertyDtos.PropertyCreateDtos dto, string fullName)
         {
             decimal price = (decimal)dto.Price;  
             decimal area = (decimal)dto.Area;   
@@ -90,9 +99,12 @@ namespace DevEstate.Api.Services
             });
 
             await RecalculateTotalPriceAsync(entity);
+            
+            await _logService.LogAsync(fullName, "CREATE", "Property", entity.Id);
+
         }
         
-        public async Task UpdateAsync(string id, PropertyDtos.PropertyUpdateDtos dto)
+        public async Task UpdateAsync(string id, PropertyDtos.PropertyUpdateDtos dto, string fullName)
         {
             var entity = await _repo.GetByIdAsync(id);
             if (entity == null) throw new Exception("Property not found");
@@ -134,15 +146,20 @@ namespace DevEstate.Api.Services
             }
             
             await RecalculateTotalPriceAsync(entity);
+            
+            await _logService.LogAsync(fullName, "UPDATE", "Property", id);
+
         }
 
-        public async Task DeleteAsync(string id)
+        public async Task DeleteAsync(string id, string fullName)
         {
             // Usuń dokumenty powiązane z property
             await _documentRepo.DeleteByParentAsync("property", id);
 
             // Usuń property
             await _repo.DeleteAsync(id);
+            
+            await _logService.LogAsync(fullName, "DELETE", "Property", id);
         }
         
         public async Task AddImageAsync(string propertyId, string fileUrl)
