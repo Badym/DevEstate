@@ -13,98 +13,113 @@ import UserAdmin from "@/pages/admin/UsersAdmin.jsx";
 import LogsAdmin from "@/pages/admin/AdminLogsPage.jsx";
 import CompanyAdmin from "@/pages/admin/AdminCompanyInfoPage.jsx";
 import AdminReportsPage  from "@/pages/admin/AdminReportsPage.jsx";
+import AdminComparisonPage   from "@/pages/admin/AdminComparisonPage.jsx";
+import { NotificationProvider } from "@/components/NotificationProvider";
+import NotificationContainer from "@/components/NotificationContainer";
+
 
 
 export default function App() {
     return (
-        <Routes>
-            {/* 🌍 Publiczne strony */}
-            <Route path="/" element={<Home />} />
-            <Route path="/:slug" element={<InvestmentPage />} />
-            <Route path="/login" element={<AdminLogin />} />
-
-            {/* 🔒 Panel administratora */}
-            <Route
-                path="/admin/dashboard"
-                element={
-                    <ProtectedRoute>
-                        <AdminDashboard />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/admin/users"
-                element={
-                    <ProtectedRoute>
-                        <UserAdmin />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/admin/investments"
-                element={
-                    <ProtectedRoute>
-                        <InvestmentsAdmin />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/admin/buildings"
-                element={
-                    <ProtectedRoute>
-                        <BuildingsAdmin />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/admin/properties"
-                element={
-                    <ProtectedRoute>
-                        <PropertiesAdmin />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/admin/features"
-                element={
-                    <ProtectedRoute>
-                        <FeaturesAdmin />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/admin/feature-types"
-                element={
-                    <ProtectedRoute>
-                        <FeatureTypesAdmin />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/admin/logs"
-                element={
-                    <ProtectedRoute>
-                        <LogsAdmin />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/admin/company-info"
-                element={
-                    <ProtectedRoute>
-                        <CompanyAdmin />
-                    </ProtectedRoute>
-                }
-            />
-            <Route
-                path="/admin/reports"
-                element={
-                    <ProtectedRoute>
-                        <AdminReportsPage />
-                    </ProtectedRoute>
-                }
-            />
-
-        </Routes>
+        <NotificationProvider>
+            <NotificationContainer />
+                <Routes>
+                    {/* 🌍 Publiczne strony */}
+                    <Route path="/" element={<Home />} />
+                    <Route path="/:slug" element={<InvestmentPage />} />
+                    <Route path="/login" element={<AdminLogin />} />
+        
+                    {/* 🔒 Panel administratora */}
+                    <Route
+                        path="/admin/dashboard"
+                        element={
+                            <ProtectedRoute roles={["Admin", "Moderator"]}>
+                                <AdminDashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/users"
+                        element={
+                            <ProtectedRoute roles={["Admin", "Moderator"]}>
+                                <UserAdmin />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/investments"
+                        element={
+                            <ProtectedRoute roles={["Admin", "Moderator"]}>
+                                <InvestmentsAdmin />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/buildings"
+                        element={
+                            <ProtectedRoute roles={["Admin", "Moderator"]}>
+                                <BuildingsAdmin />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/properties"
+                        element={
+                            <ProtectedRoute roles={["Admin", "Moderator"]}>
+                                <PropertiesAdmin />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/features"
+                        element={
+                            <ProtectedRoute roles={["Admin", "Moderator"]}>
+                                <FeaturesAdmin />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/feature-types"
+                        element={
+                            <ProtectedRoute roles={["Admin", "Moderator"]}>
+                                <FeatureTypesAdmin />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/logs"
+                        element={
+                            <ProtectedRoute roles={["Admin"]}>
+                                <LogsAdmin />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/company-info"
+                        element={
+                            <ProtectedRoute roles={["Admin", "Moderator"]}>
+                                <CompanyAdmin />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/reports"
+                        element={
+                            <ProtectedRoute roles={["Admin"]}>
+                                <AdminReportsPage />
+                            </ProtectedRoute>
+                        }
+                    />
+                    <Route
+                        path="/admin/compare-prices"
+                        element={
+                            <ProtectedRoute roles={["Admin", "Moderator"]}>
+                                <AdminComparisonPage />
+                            </ProtectedRoute>
+                        }
+                    />
+        
+                </Routes>
+        </NotificationProvider>
     );
 }

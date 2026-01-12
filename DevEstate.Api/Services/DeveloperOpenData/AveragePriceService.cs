@@ -30,42 +30,43 @@ public class AveragePriceService
     }
 
     public async Task ProcessAllDatasetsAsync()
+{
+    _logger.LogInformation("Starting batch update of developer prices...");
+
+    var datasets = await _finder.GetDeveloperDatasetsAsync();
+    int datasetIndex = 0;
+
+    foreach (var dataset in datasets)
     {
-        _logger.LogInformation("Starting batch update of developer prices...");
+        datasetIndex++;
+        _logger.LogInformation($"[{datasetIndex}/{datasets.Count}] Processing dataset {dataset.Id}...");
 
-        var datasets = await _finder.GetDeveloperDatasetsAsync();
-        int datasetIndex = 0;
-
-        foreach (var dataset in datasets)
+        try
         {
-            datasetIndex++;
-            _logger.LogInformation($"[{datasetIndex}/{datasets.Count}] Processing dataset {dataset.Id}...");
+            var fileUrl = await _details.GetLatestFileUrlAsync(dataset.Id);
+            if (string.IsNullOrWhiteSpace(fileUrl))
+            {
+                _logger.LogWarning($"Dataset {dataset.Id} has no downloadable file.");
+                continue;
+            }
 
+            var localPath = await _downloader.DownloadToTempFileAsync(fileUrl);
+
+            if (localPath == null)
+            {
+                _logger.LogError($"Failed to download file for dataset {dataset.Id}");
+                continue;
+            }
+
+            _logger.LogInformation($"Downloaded dataset {dataset.Id} → {localPath}");
+            
             try
             {
-                var fileUrl = await _details.GetLatestFileUrlAsync(dataset.Id);
-                if (string.IsNullOrWhiteSpace(fileUrl))
-                {
-                    _logger.LogWarning($"Dataset {dataset.Id} has no downloadable file.");
-                    continue;
-                }
-
-                var localPath = await _downloader.DownloadToTempFileAsync(fileUrl);
-
-                if (localPath == null)
-                {
-                    _logger.LogError($"Failed to download file for dataset {dataset.Id}");
-                    continue;
-                }
-
-                _logger.LogInformation($"Downloaded dataset {dataset.Id} → {localPath}");
-
                 // CSV/XLSX parser → lista rekordów
                 var records = _parser.Parse(localPath);
 
                 foreach (var r in records)
                 {
-                    // pomijamy niekompletne albo bez ceny
                     if (r.Wojewodztwo == null || r.Powiat == null || r.CenaZaM2 == null)
                         continue;
 
@@ -82,12 +83,30 @@ public class AveragePriceService
                         $"Updated/Added record: {r.Wojewodztwo}/{r.Powiat} (+1 mieszkanie, +{r.CenaZaM2} zł/m2)");
                 }
             }
-            catch (Exception ex)
+            finally
             {
-                _logger.LogError($"Error processing dataset {dataset.Id}: {ex.Message}");
+                try
+                {
+                    if (File.Exists(localPath))
+                    {
+                        File.Delete(localPath);
+                        _logger.LogInformation($"Temporary file deleted: {localPath}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Failed to delete temp file {localPath}: {ex.Message}");
+                }
             }
+            // ------------------------------------------------------------
         }
-
-        _logger.LogInformation("Batch update completed!");
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error processing dataset {dataset.Id}: {ex.Message}");
+        }
     }
+
+    _logger.LogInformation("Batch update completed!");
+}
+
 }

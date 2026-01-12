@@ -1,5 +1,6 @@
 ﻿using DevEstate.Api.Dtos;
 using DevEstate.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevEstate.Api.Controllers;
@@ -29,6 +30,7 @@ public class XmlFeedController : ControllerBase
     }
 
     [HttpPost("generate")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> Generate()
     {
         string csvPath = await _reportService.GenerateCsvReportAsync();

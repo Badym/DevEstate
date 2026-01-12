@@ -1,5 +1,6 @@
 ﻿using DevEstate.Api.Dtos;
 using DevEstate.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevEstate.Api.Controllers
@@ -44,6 +45,7 @@ namespace DevEstate.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Create([FromBody] FeatureDtos.FeatureCreateDtos dto)
         {
             var fullName = User.FindFirst("fullName")?.Value ?? "Unknown User";
@@ -52,6 +54,7 @@ namespace DevEstate.Api.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Update(string id, [FromBody] FeatureDtos.FeatureUpdateDtos dto)
         {
             var fullName = User.FindFirst("fullName")?.Value ?? "Unknown User";
@@ -60,6 +63,7 @@ namespace DevEstate.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Delete(string id)
         {
             var fullName = User.FindFirst("fullName")?.Value ?? "Unknown User";

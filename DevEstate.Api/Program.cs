@@ -10,6 +10,8 @@ using DevEstate.Services.DeveloperOpenData;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.StaticFiles;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -205,6 +207,16 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
+
+var provider = new FileExtensionContentTypeProvider();
+provider.Mappings[".md5"] = "text/plain";
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    ContentTypeProvider = provider
+});
+
+
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions
 {

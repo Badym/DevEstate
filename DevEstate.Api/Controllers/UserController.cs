@@ -30,6 +30,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> Update(string id, [FromBody] UserDtos.Update dto)
     {
         await _service.UpdateAsync(id, dto);
@@ -37,6 +38,7 @@ public class UserController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(string id)
     {
         await _service.DeleteAsync(id);

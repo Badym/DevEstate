@@ -15,7 +15,7 @@ public class AdminLogController : ControllerBase
     }
 
     [HttpGet]
-    //[Authorize]  // tylko zalogowani mogą przeglądać logi
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<List<AdminLogDtos.AdminLogResponseDtos>>> GetAll()
     {
         var logs = await _service.GetAllAsync();
@@ -35,7 +35,7 @@ public class AdminLogController : ControllerBase
 
     // GET: api/admin-log/filter?user=...&action=...&entity=...
     [HttpGet("filter")]
-    //[Authorize]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<List<AdminLogDtos.AdminLogResponseDtos>>> GetFiltered(
         [FromQuery] AdminLogDtos.AdminLogFilterDtos filter)
     {

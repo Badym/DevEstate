@@ -20,6 +20,7 @@ import {
 const CustomTooltip = ({ active, payload, label }) => {
     if (!active || !payload || payload.length === 0) return null;
     const price = payload[0].value;
+
     return (
         <div className="bg-white border border-gray-300 rounded-md px-3 py-2 shadow text-sm">
             <p className="font-medium text-gray-700">{label}</p>
@@ -44,12 +45,29 @@ export default function PriceHistoryChart({ propertyId, open, onClose }) {
                 if (!res.ok) throw new Error("Nie udało się pobrać historii cen.");
                 const history = await res.json();
 
+                // Formatowanie
                 const formatted = history.map((h) => ({
                     date: new Date(h.date).toLocaleDateString("pl-PL"),
                     newPrice: h.newPrice,
                 }));
 
-                setData(formatted.reverse());
+                // Odwrócenie kolejności
+                const reversed = formatted.reverse();
+
+                // ➕ Przedłużenie wykresu o 2 dni
+                if (reversed.length > 0) {
+                    const last = reversed[reversed.length - 1];
+
+                    const extendDate = new Date();
+                    extendDate.setDate(extendDate.getDate() + 2);
+
+                    reversed.push({
+                        date: extendDate.toLocaleDateString("pl-PL"),
+                        newPrice: last.newPrice,
+                    });
+                }
+
+                setData(reversed);
             } catch (err) {
                 console.error(err);
             } finally {
@@ -64,7 +82,7 @@ export default function PriceHistoryChart({ propertyId, open, onClose }) {
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-3xl">
                 <DialogHeader>
-                    <DialogTitle>📈 Historia zmian ceny</DialogTitle>
+                    <DialogTitle>Historia zmian ceny</DialogTitle>
                 </DialogHeader>
 
                 {loading ? (
@@ -83,7 +101,12 @@ export default function PriceHistoryChart({ propertyId, open, onClose }) {
                                 margin={{ top: 20, right: 30, left: 10, bottom: 10 }}
                             >
                                 <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" tick={{ fontSize: 12 }} />
+
+                                <XAxis
+                                    dataKey="date"
+                                    tick={{ fontSize: 12 }}
+                                />
+
                                 <YAxis
                                     tickFormatter={(v) =>
                                         v.toLocaleString("pl-PL", {
@@ -94,13 +117,15 @@ export default function PriceHistoryChart({ propertyId, open, onClose }) {
                                     }
                                     tick={{ fontSize: 12 }}
                                 />
+
                                 <Tooltip
                                     content={<CustomTooltip />}
                                     cursor={{ stroke: "#999", strokeWidth: 1 }}
                                     isAnimationActive={false}
                                 />
+
                                 <Line
-                                    type="monotone"
+                                    type="stepAfter"
                                     dataKey="newPrice"
                                     stroke="#4f46e5"
                                     strokeWidth={3}

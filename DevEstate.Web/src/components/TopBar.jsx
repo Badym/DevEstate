@@ -101,11 +101,12 @@ export default function TopBar() {
 
                 {/* Przycisk kontaktowy */}
                 <button
-                    onClick={() => handleNavigateToSection("contact")}
+                    onClick={() => navigate("/login")}
                     className="bg-[#C8A27E] hover:bg-[#b18e6b] text-white font-medium px-5 py-2 rounded-full transition hidden md:block"
                 >
-                    Skontaktuj się
+                    Zaloguj się
                 </button>
+
             </div>
         </nav>
     );

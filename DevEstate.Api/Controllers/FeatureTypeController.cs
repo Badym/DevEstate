@@ -1,5 +1,6 @@
 ﻿using DevEstate.Api.Dtos;
 using DevEstate.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevEstate.Api.Controllers
@@ -30,6 +31,7 @@ namespace DevEstate.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Create([FromBody] FeatureTypeDtos.FeatureTypeCreateDtos dto)
         {
             await _service.CreateAsync(dto);
@@ -37,6 +39,7 @@ namespace DevEstate.Api.Controllers
         }
 
         [HttpPatch("{id}")]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Update(string id, [FromBody] FeatureTypeDtos.FeatureTypeUpdateDtos dto)
         {
             await _service.UpdateAsync(id, dto);
@@ -44,6 +47,7 @@ namespace DevEstate.Api.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Delete(string id)
         {
             await _service.DeleteAsync(id);

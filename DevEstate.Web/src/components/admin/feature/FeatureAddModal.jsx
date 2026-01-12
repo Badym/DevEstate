@@ -63,7 +63,8 @@ export default function FeatureAddModal({
         try {
             const res = await fetch("/api/Feature", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,},
                 body: JSON.stringify(body),
             });
             if (!res.ok) throw new Error("Nie udało się dodać cechy.");

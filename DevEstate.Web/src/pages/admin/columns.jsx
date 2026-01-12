@@ -50,6 +50,9 @@ export const columns = [
                 try {
                     const res = await fetch(`/api/investment/${investment.id}`, {
                         method: "DELETE",
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
                     });
 
                     if (!res.ok) throw new Error("Nie udało się usunąć inwestycji.");

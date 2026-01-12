@@ -1,6 +1,8 @@
 ﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import AdminTopBar from "@/components/admin/AdminTopBar";
+
 
 export default function AdminCompanyInfoPage() {
     const navigate = useNavigate();
@@ -54,17 +56,7 @@ export default function AdminCompanyInfoPage() {
     return (
         <div className="min-h-screen bg-[#FAF9F6] flex flex-col">
 
-            {/* HEADER */}
-            <header className="bg-[#1A1A1A] text-white py-4 px-8 flex justify-between items-center shadow-md">
-                <h1 className="text-2xl font-semibold">Informacje o firmie</h1>
-                <Button
-                    variant="outline"
-                    onClick={() => navigate("/admin/dashboard")}
-                    className="border-gray-400 text-gray-200 hover:bg-gray-200 hover:text-[#1A1A1A]"
-                >
-                    Powrót
-                </Button>
-            </header>
+            <AdminTopBar />
 
             <main className="flex">
 

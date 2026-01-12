@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.FileProviders;
 using DevEstate.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DevEstate.Api.Controllers
 {
@@ -27,6 +28,7 @@ namespace DevEstate.Api.Controllers
         }
 
         [HttpPost("{entityType}/{entityId}")]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> UploadImage(string entityType, string entityId, IFormFile file)
         {
             if (file == null || file.Length == 0)

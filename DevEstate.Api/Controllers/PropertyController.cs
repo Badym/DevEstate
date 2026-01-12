@@ -1,5 +1,6 @@
 ﻿using DevEstate.Api.Dtos;
 using DevEstate.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevEstate.Api.Controllers;
@@ -22,6 +23,7 @@ public class PropertyController : ControllerBase
     public async Task<IActionResult> GetById(string id) => Ok(await _service.GetByIdAsync(id));
 
     [HttpPost]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> Create([FromBody] PropertyDtos.PropertyCreateDtos dto)
     {
         
@@ -31,6 +33,7 @@ public class PropertyController : ControllerBase
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> Update(string id, [FromBody] PropertyDtos.PropertyUpdateDtos dto)
     {
         var fullName = User.FindFirst("fullName")?.Value;
@@ -39,6 +42,7 @@ public class PropertyController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> Delete(string id)
     {
         var fullName = User.FindFirst("fullName")?.Value;

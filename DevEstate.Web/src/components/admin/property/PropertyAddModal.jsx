@@ -89,7 +89,8 @@ export default function PropertyAddModal({ open, onClose, onSave, buildings, inv
         try {
             const res = await fetch("/api/property", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,},
                 body: JSON.stringify(body),
             });
             if (!res.ok) throw new Error("Nie udało się dodać nieruchomości.");

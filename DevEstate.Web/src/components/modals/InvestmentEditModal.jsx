@@ -64,6 +64,7 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
                 },
                 body: JSON.stringify(form),
             });

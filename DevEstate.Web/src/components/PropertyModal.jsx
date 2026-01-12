@@ -152,9 +152,6 @@ export default function PropertyModal({ property, onClose }) {
                         <p>
                             <strong>Cena za m²:</strong> {pricePerMeter} zł/m²
                         </p>
-                        <p>
-                            <strong>ID lokalu:</strong> {property.id}
-                        </p>
                     </div>
                 </div>
 

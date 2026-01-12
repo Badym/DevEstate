@@ -11,57 +11,78 @@ export default function Home() {
     const { data: investmentsSprzedane, loading: investmentsSprzedaneLoading, error: investmentsSprzedaneError } =
         useFetch("/api/Investment/status/Sprzedane");
 
-    if (companyLoading || investmentsAktualneLoading || investmentsSprzedaneLoading) return <p>Ładowanie...</p>;
+    if (companyLoading || investmentsAktualneLoading || investmentsSprzedaneLoading)
+        return <p className="text-center mt-20 text-gray-600">Ładowanie...</p>;
+
     if (companyError || investmentsAktualneError || investmentsSprzedaneError)
-        return <p>Błąd: {companyError || investmentsAktualneError || investmentsSprzedaneError}</p>;
+        return (
+            <p className="text-center mt-20 text-red-600">
+                Błąd: {companyError || investmentsAktualneError || investmentsSprzedaneError}
+            </p>
+        );
 
     return (
         <div className="min-h-screen text-[#1A1A1A] scroll-smooth">
-            {/* Pasek nawigacyjny */}
+
+            {/* 🔝 Pasek nawigacyjny */}
             <TopBar />
 
-            {/* Sekcja powitalna */}
-            <div className="bg-white pt-32 text-center" id="home">
-                <h1 className="text-5xl font-semibold mb-4">
+            {/* 🏠 Sekcja powitalna */}
+            <section className="bg-white pt-40 pb-24 text-center" id="home">
+                <h1 className="text-5xl md:text-6xl font-semibold tracking-tight mb-6 animate-fade-in">
                     {companyData?.name || "Witamy w DevEstate"}
                 </h1>
-            </div>
+                <p className="text-lg text-gray-600 animate-fade-in delay-150">
+                    Profesjonalne inwestycje nieruchomości — nowoczesne, przejrzyste, solidne.
+                </p>
+            </section>
 
-            {/* Sekcja O nas */}
-            <div className="bg-[#FAF9F6] py-20" id="about">
-                <AboutSection />
-            </div>
+            {/* 📄 Sekcja O nas (bez napisu "O nas") */}
+            <section className="bg-[#FAF9F6] pt-4 pb-24" id="about">
+                <div className="max-w-4xl mx-auto px-6 animate-fade-in">
+                    <AboutSection />
+                </div>
+            </section>
 
-            {/* Sekcja Na sprzedaż */}
-            <div className="bg-[#D1B28D] py-20" id="sales">
-                <div className="text-center">
-                    <h2 className="text-3xl font-semibold text-white mb-6">
+
+            {/* 🏢 Aktualne inwestycje */}
+            <section className="bg-[#D1B28D] py-24" id="sales">
+                <div className="text-center text-white">
+                    <h2 className="text-3xl font-semibold mb-8 animate-fade-in">
                         Aktualne inwestycje
                     </h2>
-                    <InvestmentCarousel investments={investmentsAktualne || []} />
-                    <p className="text-white mt-4">
+
+                    <div className="animate-fade-in delay-150">
+                        <InvestmentCarousel investments={investmentsAktualne || []} />
+                    </div>
+
+                    <p className="text-white mt-6 opacity-90 animate-fade-in delay-300">
                         {investmentsAktualne?.length || 0} inwestycji dostępnych
                     </p>
                 </div>
-            </div>
+            </section>
 
-            {/* Sekcja Historia inwestycji */}
-            <div className="bg-[#FAF9F6] py-20" id="history">
+            {/* 🏘️ Sprzedane inwestycje */}
+            <section className="bg-[#FAF9F6] py-24" id="history">
                 <div className="text-center">
-                    <h2 className="text-3xl font-semibold mb-6">
+                    <h2 className="text-3xl font-semibold mb-8 animate-fade-in">
                         Sprzedane inwestycje
                     </h2>
-                    <InvestmentCarousel investments={investmentsSprzedane || []} />
-                    <p className="mt-4">
+
+                    <div className="animate-fade-in delay-150">
+                        <InvestmentCarousel investments={investmentsSprzedane || []} />
+                    </div>
+
+                    <p className="mt-6 text-gray-700 animate-fade-in delay-300">
                         {investmentsSprzedane?.length || 0} inwestycji sprzedanych
                     </p>
                 </div>
-            </div>
+            </section>
 
-            {/* Sekcja Kontakt */}
-            <div id="contact">
+            {/* 📬 Kontakt */}
+            <section id="contact" className="animate-fade-in py-24">
                 <ContactSection companyData={companyData} />
-            </div>
+            </section>
         </div>
     );
 }

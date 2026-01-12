@@ -1,6 +1,7 @@
 ﻿using DevEstate.Services.DeveloperOpenData;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
 [Route("api/developer-data")]
@@ -30,6 +31,7 @@ public class DeveloperDataController : ControllerBase
     }
 
     [HttpGet("all-datasets")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> AllDatasets()
     {
         var data = await _finder.GetDeveloperDatasetsAsync();
@@ -37,6 +39,7 @@ public class DeveloperDataController : ControllerBase
     }
 
     [HttpGet("latest-file/{datasetId}")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> GetLatestFile(string datasetId)
     {
         // Pobieramy najnowszy plik (CSV lub XLSX)
@@ -52,6 +55,7 @@ public class DeveloperDataController : ControllerBase
     }
     
     [HttpGet("sorted-data")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> GetSortedData(string datasetId)
     {
         // Sprawdzamy czy datasetId jest poprawne
@@ -125,6 +129,7 @@ public class DeveloperDataController : ControllerBase
     }
     
     [HttpGet("average-price")]
+    [Authorize(Roles = "Admin,Moderator")]
     public IActionResult GetAveragePrice()
     {
         // Uruchamiamy proces w tle (nie czekamy na zakończenie)

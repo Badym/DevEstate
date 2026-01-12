@@ -1,4 +1,5 @@
 ﻿using DevEstate.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevEstate.Api.Controllers
@@ -22,6 +23,7 @@ namespace DevEstate.Api.Controllers
         }
         
         [HttpGet("download-csv")]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> DownloadCsvReport()
         {
             // Generowanie raportu CSV i uzyskanie pełnej ścieżki

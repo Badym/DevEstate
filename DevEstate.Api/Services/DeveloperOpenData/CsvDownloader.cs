@@ -17,9 +17,9 @@ public class CsvDownloader
         {
             var bytes = await _http.GetByteArrayAsync(url);
 
-            // Określenie ścieżki na podstawie bieżącego katalogu aplikacji
+
             string appDirectory = Path.Combine(Directory.GetCurrentDirectory(), "UploadedFiles");
-            Directory.CreateDirectory(appDirectory); // Tworzy folder, jeśli nie istnieje
+            Directory.CreateDirectory(appDirectory); 
 
             // Pobieramy nazwę pliku z URL
             string fileName = Path.GetFileName(url);

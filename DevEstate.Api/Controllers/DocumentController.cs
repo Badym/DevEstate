@@ -1,5 +1,6 @@
 ﻿using DevEstate.Api.Dtos;
 using DevEstate.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevEstate.Api.Controllers;
@@ -35,6 +36,7 @@ namespace DevEstate.Api.Controllers;
 
         // ------------------ DELETE ------------------
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Delete(string id)
         {
             await _documentService.DeleteAsync(id);
@@ -44,6 +46,7 @@ namespace DevEstate.Api.Controllers;
 
         [HttpPost("{entityType}/{entityId}")]
         [Consumes("multipart/form-data")]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> UploadDocument(string entityType, string entityId, IFormFile file)
         {
             if (file == null || file.Length == 0)

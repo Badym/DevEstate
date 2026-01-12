@@ -49,7 +49,9 @@ export const columns = [
                 const token = localStorage.getItem("token");
                 const res = await fetch(`/api/FeatureType/${featureType.id}`, {
                     method: "DELETE",
-                    headers: { Authorization: `Bearer ${token}` },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
                 });
 
                 if (res.ok) {

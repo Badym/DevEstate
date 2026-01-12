@@ -117,6 +117,7 @@ namespace DevEstate.Api.Services
             entity.Price = dto.Price ?? entity.Price;
             entity.IsAvailable = dto.IsAvailable ?? entity.IsAvailable;
             entity.Description = dto.Description ?? entity.Description;
+            entity.IsRequired = dto.IsRequired ?? entity.IsRequired;
             await _repo.UpdateAsync(entity);
             
             await _logService.LogAsync(fullName, "UPDATE", "Feature", id);

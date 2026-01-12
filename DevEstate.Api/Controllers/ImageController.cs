@@ -1,4 +1,5 @@
 ﻿using DevEstate.Api.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevEstate.Api.Controllers;
@@ -29,6 +30,7 @@ namespace DevEstate.Api.Controllers;
         /// </summary>
         [HttpPost("{entityType}/{entityId}")]
         [Consumes("multipart/form-data")]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> UploadImage(string entityType, string entityId, IFormFile file)
         {
             if (file == null || file.Length == 0)
@@ -51,7 +53,8 @@ namespace DevEstate.Api.Controllers;
                 await file.CopyToAsync(stream);
             }
             
-            var fileUrl = $"{Request.Scheme}://{Request.Host}/uploads/images/{uniqueName}";
+            var fileUrl = $"/uploads/images/{uniqueName}";
+
             
             switch (entityType.ToLower())
             {
@@ -92,6 +95,7 @@ namespace DevEstate.Api.Controllers;
         
         
         [HttpDelete("{entityType}/{entityId}")]
+        [Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> DeleteImage(string entityType, string entityId, [FromQuery] string imageUrl)
         {
             if (string.IsNullOrWhiteSpace(imageUrl))

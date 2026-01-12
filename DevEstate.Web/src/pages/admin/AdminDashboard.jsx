@@ -1,11 +1,12 @@
 ﻿import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import AdminTopBar from "@/components/admin/AdminTopBar"; // 🔥 nowy topbar
 
 export default function AdminDashboard() {
     const navigate = useNavigate();
 
-    // 🔒 Sprawdzenie autoryzacji
+    // 🔒 Autoryzacja
     useEffect(() => {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user") || "{}");
@@ -15,45 +16,25 @@ export default function AdminDashboard() {
         }
     }, [navigate]);
 
+
     const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const isAdmin = user.role === "Admin";
+    const isModerator = user.role === "Moderator";
+
 
     return (
         <div className="min-h-screen bg-[#FAF9F6] flex flex-col">
-            {/* Górny pasek */}
-            <header className="bg-[#1A1A1A] text-white py-4 px-8 flex justify-between items-center shadow-md">
-                <h1 className="text-2xl font-semibold">Panel administratora</h1>
-                <div className="flex items-center gap-4">
-                    <p className="text-sm text-gray-200">
-                        Zalogowano jako: <strong>{user.fullName || "Admin"}</strong>
-                    </p>
 
-                    <Button
-                        variant="outline"
-                        className="border-gray-400 text-gray-200 hover:bg-gray-200 hover:text-[#1A1A1A] transition"
-                        onClick={() => navigate("/")}
-                    >
-                        Strona główna
-                    </Button>
-
-                    <Button
-                        variant="outline"
-                        className="border-[#C8A27E] text-[#C8A27E] hover:bg-[#C8A27E] hover:text-white transition"
-                        onClick={() => {
-                            localStorage.removeItem("token");
-                            localStorage.removeItem("user");
-                            navigate("/admin/login");
-                        }}
-                    >
-                        Wyloguj
-                    </Button>
-                </div>
-            </header>
+            {/* 🔥 NOWY TOPBAR */}
+            <AdminTopBar />
 
             {/* Główna sekcja */}
             <main className="flex flex-1">
+
                 {/* Lewy panel */}
                 <aside className="w-64 bg-white shadow-lg border-r border-gray-200 p-6 space-y-4">
                     <h2 className="text-lg font-semibold mb-4">Nawigacja</h2>
+
                     <nav className="flex flex-col gap-3 text-gray-700">
                         <Button
                             variant="ghost"
@@ -100,7 +81,7 @@ export default function AdminDashboard() {
                             className="justify-start text-left hover:bg-[#C8A27E]/20 hover:text-[#C8A27E]"
                             onClick={() => navigate("/admin/feature-types")}
                         >
-                            🧩 Typy cech
+                            🧩 Typy udogodnień
                         </Button>
                     </nav>
                 </aside>
@@ -110,10 +91,12 @@ export default function AdminDashboard() {
                     <h2 className="text-3xl font-semibold mb-6">
                         Witaj, {user.fullName || "Administrator"}!
                     </h2>
+
                     <p className="text-gray-600 text-lg mb-10">
                         W tym panelu możesz zarządzać inwestycjami, budynkami, lokalami oraz udogodnieniami.
                     </p>
 
+                    {/* Wszystkie kafelki 1:1 */}
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
                         <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
                             <h3 className="font-semibold text-lg mb-2">Inwestycje</h3>
@@ -160,7 +143,7 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
-                            <h3 className="font-semibold text-lg mb-2">Typy cech</h3>
+                            <h3 className="font-semibold text-lg mb-2">Typy udogodnień</h3>
                             <p className="text-gray-500">Zarządzaj kategoriami udogodnień (np. garaż, ogród).</p>
                             <Button
                                 className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
@@ -175,20 +158,25 @@ export default function AdminDashboard() {
                             <p className="text-gray-500">Zarządzaj użytkownikami i ich danymi.</p>
                             <Button
                                 className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
-                                onClick={() => navigate("/admin/users")}>
-                                Przejdź
-                            </Button>
-                        </div>
-                        <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
-                            <h3 className="font-semibold text-lg mb-2">Logi administratora</h3>
-                            <p className="text-gray-500">Historia operacji wykonywanych w panelu.</p>
-                            <Button
-                                className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
-                                onClick={() => navigate("/admin/logs")}
+                                onClick={() => navigate("/admin/users")}
                             >
                                 Przejdź
                             </Button>
                         </div>
+
+                        {isAdmin && (
+                            <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+                                <h3 className="font-semibold text-lg mb-2">Logi administratora</h3>
+                                <p className="text-gray-500">Historia operacji wykonywanych w panelu.</p>
+                                <Button
+                                    className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
+                                    onClick={() => navigate("/admin/logs")}
+                                >
+                                    Przejdź
+                                </Button>
+                            </div>
+                        )}
+
 
                         <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
                             <h3 className="font-semibold text-lg mb-2">Informacje o firmie</h3>
@@ -201,18 +189,30 @@ export default function AdminDashboard() {
                             </Button>
                         </div>
 
+                        {isAdmin && (
+                            <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
+                                <h3 className="font-semibold text-lg mb-2">Raporty & Eksport</h3>
+                                <p className="text-gray-500">Generowanie plików cenowych (CSV, MD5, XML).</p>
+                                <Button
+                                    className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
+                                    onClick={() => navigate("/admin/reports")}
+                                >
+                                    Przejdź
+                                </Button>
+                            </div>
+                        )}
+
+
                         <div className="bg-white p-6 rounded-lg shadow hover:shadow-md transition">
-                            <h3 className="font-semibold text-lg mb-2">Raporty & Eksport</h3>
-                            <p className="text-gray-500">Generowanie plików cenowych (CSV, MD5, XML).</p>
+                            <h3 className="font-semibold text-lg mb-2">Porównanie regionów</h3>
+                            <p className="text-gray-500">Porównanie średnich cen mieszkań wg regionów.</p>
                             <Button
                                 className="mt-4 bg-[#C8A27E] text-white hover:bg-[#b18e6b]"
-                                onClick={() => navigate("/admin/reports")}
+                                onClick={() => navigate("/admin/compare-prices")}
                             >
                                 Przejdź
                             </Button>
                         </div>
-
-
                     </div>
                 </section>
             </main>

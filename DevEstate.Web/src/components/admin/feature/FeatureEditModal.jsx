@@ -14,6 +14,7 @@ export default function FeatureEditModal({ open, onClose, feature, onSave }) {
         price: "",
         description: "",
         isAvailable: true,
+        isRequired: false,
     });
 
     useEffect(() => {
@@ -22,6 +23,7 @@ export default function FeatureEditModal({ open, onClose, feature, onSave }) {
                 price: feature.price ?? "",
                 description: feature.description ?? "",
                 isAvailable: feature.isAvailable ?? true,
+                isRequired: feature.isRequired ?? false,
             });
         }
     }, [feature]);
@@ -39,13 +41,18 @@ export default function FeatureEditModal({ open, onClose, feature, onSave }) {
         try {
             const res = await fetch(`/api/Feature/${feature.id}`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
                 body: JSON.stringify({
                     price: form.price ? Number(form.price) : null,
                     description: form.description || null,
                     isAvailable: form.isAvailable,
+                    isRequired: form.isRequired,
                 }),
             });
+
             if (!res.ok) throw new Error("Nie udało się zaktualizować cechy.");
             alert("✅ Zaktualizowano cechę!");
             onSave();
@@ -84,6 +91,7 @@ export default function FeatureEditModal({ open, onClose, feature, onSave }) {
                         />
                     </div>
 
+                    {/* 🆕 Checkbox: IsAvailable */}
                     <div className="flex items-center space-x-2">
                         <input
                             id="isAvailable"
@@ -94,7 +102,22 @@ export default function FeatureEditModal({ open, onClose, feature, onSave }) {
                             className="w-4 h-4 accent-green-600"
                         />
                         <label htmlFor="isAvailable" className="text-sm text-gray-700">
-                            Dostępna
+                            Dostępna (IsAvailable)
+                        </label>
+                    </div>
+
+                    {/* 🆕 Checkbox: IsRequired */}
+                    <div className="flex items-center space-x-2">
+                        <input
+                            id="isRequired"
+                            name="isRequired"
+                            type="checkbox"
+                            checked={form.isRequired}
+                            onChange={handleChange}
+                            className="w-4 h-4 accent-green-600"
+                        />
+                        <label htmlFor="isRequired" className="text-sm text-gray-700">
+                            Wymagana (IsRequired)
                         </label>
                     </div>
 

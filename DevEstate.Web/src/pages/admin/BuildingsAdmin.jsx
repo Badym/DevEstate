@@ -5,7 +5,7 @@ import { columns as defaultColumns } from "@/components/admin/building/buildingc
 import BuildingAddModal from "@/components/admin/building/BuildingAddModal";
 
 export default function BuildingsAdmin() {
-    const { data: buildings, loading, error } = useFetch("/api/building/all");
+    const { data: buildings, loading, error, refetch } = useFetch("/api/building/all");
     const { data: investments } = useFetch("/api/investment/all");
 
     const [openAdd, setOpenAdd] = useState(false);
@@ -38,12 +38,11 @@ export default function BuildingsAdmin() {
                 filterKey="investmentName"
             />
 
-
             <BuildingAddModal
                 open={openAdd}
                 onClose={() => setOpenAdd(false)}
-                onSave={() => window.location.reload()}
-                investments={investments} // 👈 przekaż inwestycje do selecta w modalu
+                onSave={() => refetch()}  // ⬅️ ODNAWIA LISTĘ, BEZ PRZEŁADOWANIA STRONY
+                investments={investments}
             />
         </>
     );

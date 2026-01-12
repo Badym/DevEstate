@@ -36,4 +36,18 @@ public class DeveloperPriceRepository
     {
         await _collection.ReplaceOneAsync(x => x.Id == e.Id, e);
     }
+    
+    public async Task<List<DeveloperPriceEntity>> GetAllAsync()
+    {
+        return await _collection.Find(_ => true).ToListAsync();
+    }
+    
+    public async Task<List<DeveloperPriceEntity>> GetByWojewodztwoAsync(string woj)
+    {
+        return await _collection
+            .Find(x => x.Wojewodztwo == woj)
+            .ToListAsync();
+    }
+
+
 }

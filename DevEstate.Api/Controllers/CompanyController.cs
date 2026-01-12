@@ -1,5 +1,6 @@
 ﻿using DevEstate.Api.Dtos;
 using DevEstate.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevEstate.Api.Controllers;
@@ -29,6 +30,7 @@ public class CompanyController : ControllerBase
     }
 
     [HttpPatch("{id}")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> Update(string id, [FromBody] CompanyDtos.CompanyUpdateDtos dto)
     {
         await _service.UpdateAsync(id, dto);
@@ -36,6 +38,7 @@ public class CompanyController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> Delete(string id)
     {
         await _service.DeleteAsync(id);
@@ -64,6 +67,7 @@ public class CompanyController : ControllerBase
 
 // PATCH: /api/company/details
     [HttpPatch("details")]
+    [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> UpdateDetails([FromBody] CompanyDetailsDtos.UpdateCompanyDetails dto)
     {
         await _service.UpdateDetailsAsync(dto);

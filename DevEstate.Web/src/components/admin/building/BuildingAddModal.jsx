@@ -8,8 +8,11 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
+import { useNotification } from "@/components/NotificationProvider";
 
 export default function BuildingAddModal({ open, onClose, onSave }) {
+    const { notifySuccess, notifyError } = useNotification();
+
     const [form, setForm] = useState({
         investmentId: "",
         buildingNumber: "",
@@ -19,13 +22,13 @@ export default function BuildingAddModal({ open, onClose, onSave }) {
 
     const [investments, setInvestments] = useState([]);
 
-    // 📡 Pobierz inwestycje przy otwarciu modala
     useEffect(() => {
         if (!open) return;
+
         fetch("/api/investment/all")
             .then((res) => res.json())
             .then(setInvestments)
-            .catch((err) => console.error("Błąd pobierania inwestycji:", err));
+            .catch(() => notifyError("Błąd pobierania inwestycji."));
     }, [open]);
 
     const handleChange = (e) => {
@@ -33,23 +36,31 @@ export default function BuildingAddModal({ open, onClose, onSave }) {
         setForm((prev) => ({ ...prev, [name]: value }));
     };
 
-    // 🟢 Dodawanie budynku
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         try {
             const res = await fetch("/api/building", {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
                 body: JSON.stringify(form),
             });
 
             if (!res.ok) throw new Error("Nie udało się dodać budynku.");
 
-            alert("✅ Budynek został dodany pomyślnie!");
-            onSave();
-            onClose();
+            notifySuccess("Budynek został dodany!");
+
+            // 🔥 najpierw toast, potem zamknięcie, potem odświeżenie danych
+            setTimeout(() => {
+                onClose();
+                onSave();
+            }, 400);
+
         } catch (err) {
-            alert(`❌ Błąd: ${err.message}`);
+            notifyError(err.message);
         }
     };
 
@@ -61,17 +72,14 @@ export default function BuildingAddModal({ open, onClose, onSave }) {
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 mt-4">
-                    {/* 🔽 Wybór inwestycji */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Inwestycja
-                        </label>
+                        <label className="block text-sm font-medium">Inwestycja</label>
                         <select
                             name="investmentId"
                             value={form.investmentId}
                             onChange={handleChange}
                             required
-                            className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C8A27E]"
+                            className="w-full border rounded-md p-2"
                         >
                             <option value="">-- wybierz inwestycję --</option>
                             {investments.map((inv) => (
@@ -83,7 +91,7 @@ export default function BuildingAddModal({ open, onClose, onSave }) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Numer budynku</label>
+                        <label className="block text-sm font-medium">Numer budynku</label>
                         <Input
                             name="buildingNumber"
                             value={form.buildingNumber}
@@ -93,23 +101,23 @@ export default function BuildingAddModal({ open, onClose, onSave }) {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Opis</label>
+                        <label className="block text-sm font-medium">Opis</label>
                         <textarea
                             name="description"
                             value={form.description}
                             onChange={handleChange}
                             rows={3}
-                            className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C8A27E]"
+                            className="w-full border rounded-md p-2"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Status</label>
+                        <label className="block text-sm font-medium">Status</label>
                         <select
                             name="status"
                             value={form.status}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-md p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C8A27E]"
+                            className="w-full border rounded-md p-2"
                         >
                             <option value="Aktualne">Aktualne</option>
                             <option value="Zakończony">Zakończony</option>
@@ -120,7 +128,7 @@ export default function BuildingAddModal({ open, onClose, onSave }) {
                         <Button type="button" variant="outline" onClick={onClose}>
                             Anuluj
                         </Button>
-                        <Button type="submit" className="bg-green-600 text-white hover:bg-green-700">
+                        <Button type="submit" className="bg-green-600 text-white">
                             Zapisz
                         </Button>
                     </DialogFooter>

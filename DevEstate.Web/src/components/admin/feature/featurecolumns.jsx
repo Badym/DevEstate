@@ -94,6 +94,10 @@ export const columns = [
                 try {
                     const res = await fetch(`/api/Feature/${feature.id}`, {
                         method: "DELETE",
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`
+                        },
+                        
                     });
                     if (!res.ok) throw new Error("Nie udało się usunąć cechy.");
                     alert("✅ Usunięto cechę!");

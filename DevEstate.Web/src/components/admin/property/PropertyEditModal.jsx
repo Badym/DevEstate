@@ -119,6 +119,9 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
             const res = await fetch(`/api/document/property/${property.id}`, {
                 method: "POST",
                 body: formData,
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                },
             });
             if (!res.ok) throw new Error("Nie udało się przesłać dokumentu.");
             const data = await res.json();
