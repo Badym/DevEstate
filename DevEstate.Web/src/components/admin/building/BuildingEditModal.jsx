@@ -15,6 +15,12 @@ export default function BuildingEditModal({ open, onClose, building, onSave }) {
         description: "",
         status: "",
     });
+
+    const authHeader = () => {
+        const token = localStorage.getItem("token");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
+    
     const [images, setImages] = useState([]);
     const [documents, setDocuments] = useState([]);
 
@@ -73,6 +79,9 @@ export default function BuildingEditModal({ open, onClose, building, onSave }) {
         try {
             const res = await fetch(`/api/image/building/${building.id}`, {
                 method: "POST",
+                headers: {
+                    ...authHeader(),
+                },
                 body: formData,
             });
 
@@ -95,7 +104,10 @@ export default function BuildingEditModal({ open, onClose, building, onSave }) {
         try {
             const res = await fetch(
                 `/api/image/building/${building.id}?imageUrl=${encodeURIComponent(imageUrl)}`,
-                { method: "DELETE" }
+                { method: "DELETE",
+                    headers: {
+                        ...authHeader(),
+                    },}
             );
             if (!res.ok) throw new Error("Nie udało się usunąć zdjęcia.");
             setImages((prev) => prev.filter((img) => img !== imageUrl));
@@ -115,6 +127,9 @@ export default function BuildingEditModal({ open, onClose, building, onSave }) {
         try {
             const res = await fetch(`/api/document/building/${building.id}`, {
                 method: "POST",
+                headers: {
+                    ...authHeader(),
+                },
                 body: formData,
             });
             if (!res.ok) throw new Error("Nie udało się przesłać dokumentu.");
@@ -136,7 +151,9 @@ export default function BuildingEditModal({ open, onClose, building, onSave }) {
         if (!confirm("Czy na pewno chcesz usunąć ten dokument?")) return;
 
         try {
-            const res = await fetch(`/api/document/${docId}`, { method: "DELETE" });
+            const res = await fetch(`/api/document/${docId}`, { method: "DELETE", headers: {
+                    ...authHeader(),
+                }, });
             if (!res.ok) throw new Error("Nie udało się usunąć dokumentu.");
             setDocuments((prev) => prev.filter((doc) => doc.id !== docId));
         } catch (err) {

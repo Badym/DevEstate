@@ -18,6 +18,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      "/uploads": {
+        target: "http://localhost:5086",
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 })

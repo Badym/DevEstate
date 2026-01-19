@@ -14,6 +14,11 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
         price: "",
         status: "Aktualne",
     });
+
+    const authHeader = () => {
+        const token = localStorage.getItem("token");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
     const [images, setImages] = useState([]);
     const [documents, setDocuments] = useState([]);
 
@@ -76,6 +81,9 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
         try {
             const res = await fetch(`/api/image/property/${property.id}`, {
                 method: "POST",
+                headers: {
+                    ...authHeader(),
+                },
                 body: formData,
             });
 
@@ -98,7 +106,9 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
         try {
             const res = await fetch(
                 `/api/image/property/${property.id}?imageUrl=${encodeURIComponent(imageUrl)}`,
-                { method: "DELETE" }
+                { method: "DELETE",headers: {
+                        ...authHeader(),
+                    }, }
             );
             if (!res.ok) throw new Error("Nie udało się usunąć zdjęcia.");
             setImages((prev) => prev.filter((img) => img !== imageUrl));
@@ -142,7 +152,9 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
         if (!confirm("Czy na pewno chcesz usunąć ten dokument?")) return;
 
         try {
-            const res = await fetch(`/api/document/${docId}`, { method: "DELETE" });
+            const res = await fetch(`/api/document/${docId}`, { method: "DELETE",headers: {
+                    ...authHeader(),
+                }, });
             if (!res.ok) throw new Error("Nie udało się usunąć dokumentu.");
             setDocuments((prev) => prev.filter((doc) => doc.id !== docId));
         } catch (err) {

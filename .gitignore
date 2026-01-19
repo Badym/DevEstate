@@ -354,3 +354,9 @@ dist/
 .vite/
 *.log
 
+backend.env
+*.env
+appsettings.*.json
+!appsettings.json
+
+

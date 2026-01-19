@@ -36,7 +36,7 @@ namespace DevEstate.Api.Controllers;
 
         // ------------------ DELETE ------------------
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin,Moderator")]
+        //[Authorize(Roles = "Admin,Moderator")]
         public async Task<IActionResult> Delete(string id)
         {
             await _documentService.DeleteAsync(id);

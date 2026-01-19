@@ -22,6 +22,12 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
         investmentMunicipality: "",
     });
 
+    const authHeader = () => {
+        const token = localStorage.getItem("token");
+        return token ? { Authorization: `Bearer ${token}` } : {};
+    };
+
+
     const [images, setImages] = useState([]);
     const [documents, setDocuments] = useState([]);
 
@@ -88,6 +94,9 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
         try {
             const res = await fetch(`/api/image/investment/${investment.id}`, {
                 method: "POST",
+                headers: {
+                    ...authHeader(),
+                },
                 body: formData,
             });
 
@@ -110,7 +119,7 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
         try {
             const res = await fetch(
                 `/api/image/investment/${investment.id}?imageUrl=${encodeURIComponent(imageUrl)}`,
-                { method: "DELETE" }
+                { method: "DELETE", headers: { ...authHeader() } }
             );
             if (!res.ok) throw new Error("Nie udało się usunąć zdjęcia.");
 
@@ -131,6 +140,9 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
         try {
             const res = await fetch(`/api/document/investment/${investment.id}`, {
                 method: "POST",
+                headers: {
+                    ...authHeader(),
+                },
                 body: formData,
             });
 
@@ -154,7 +166,9 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
         if (!confirm("Czy na pewno chcesz usunąć ten dokument?")) return;
 
         try {
-            const res = await fetch(`/api/document/${docId}`, { method: "DELETE" });
+            const res = await fetch(`/api/document/${docId}`, { method: "DELETE", headers: {
+                    ...authHeader(),
+                }, });
             if (!res.ok) throw new Error("Nie udało się usunąć dokumentu.");
 
             setDocuments((prev) => prev.filter((doc) => doc.id !== docId));

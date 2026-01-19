@@ -114,11 +114,17 @@ export default function InvestmentPage() {
                 <div className="max-w-5xl mx-auto mt-16 px-4">
                     <h3 className="text-2xl font-semibold mb-6 text-center">Galeria inwestycji</h3>
 
-                    <Carousel className="w-full max-w-4xl mx-auto">
-                        <CarouselContent className="flex justify-center">
+                    <Carousel
+                        className="w-full max-w-4xl mx-auto"
+                        opts={{ align: "center", loop: true }}
+                    >
+                        <CarouselContent>
                             {investment.images.map((img, index) => (
-                                <CarouselItem key={index} className="basis-full sm:basis-1/2 md:basis-1/3 flex justify-center">
-                                    <div className="p-2">
+                                <CarouselItem
+                                    key={index}
+                                    className="basis-[80%] sm:basis-[55%] md:basis-[40%] lg:basis-[33%] flex justify-center"
+                                >
+                                    <div className="p-2 w-full">
                                         <Card
                                             className="overflow-hidden rounded-lg shadow-md cursor-pointer hover:shadow-xl transition-transform"
                                             onClick={() => openImage(img)}
@@ -135,11 +141,13 @@ export default function InvestmentPage() {
                                 </CarouselItem>
                             ))}
                         </CarouselContent>
+
                         <CarouselPrevious />
                         <CarouselNext />
                     </Carousel>
                 </div>
             )}
+
 
             {/* LIGHTBOX */}
             {selectedImage && (

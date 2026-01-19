@@ -7,13 +7,31 @@ export default function PropertyModal({ property, onClose }) {
     const [index, setIndex] = useState(0);
     const [historyOpen, setHistoryOpen] = useState(false);
     const [documents, setDocuments] = useState([]);
+    const [lightboxOpen, setLightboxOpen] = useState(false);
 
-    // Zamknięcie ESC
+    // Zamknięcie ESC: najpierw lightbox, potem modal
     useEffect(() => {
-        const handleEsc = (e) => e.key === "Escape" && onClose();
+        const handleEsc = (e) => {
+            if (e.key !== "Escape") return;
+
+            if (lightboxOpen) {
+                setLightboxOpen(false);
+                return;
+            }
+
+            onClose();
+        };
+
         window.addEventListener("keydown", handleEsc);
         return () => window.removeEventListener("keydown", handleEsc);
-    }, [onClose]);
+    }, [onClose, lightboxOpen]);
+
+    // Reset po zmianie nieruchomości
+    useEffect(() => {
+        setIndex(0);
+        setLightboxOpen(false);
+        setHistoryOpen(false);
+    }, [property?.id]);
 
     // Pobieranie dokumentów przypisanych do nieruchomości
     useEffect(() => {
@@ -22,11 +40,13 @@ export default function PropertyModal({ property, onClose }) {
                 const res = await fetch(`/api/Document/property/${property.id}`);
                 if (!res.ok) throw new Error("Nie udało się pobrać dokumentów.");
                 const data = await res.json();
-                setDocuments(data);  // Zapisanie dokumentów w stanie
+                setDocuments(data);
             } catch (error) {
                 console.error("Błąd podczas pobierania dokumentów: ", error);
+                setDocuments([]);
             }
         };
+
         if (property) fetchDocuments();
     }, [property]);
 
@@ -43,9 +63,11 @@ export default function PropertyModal({ property, onClose }) {
         status,
     } = property;
 
+    const hasImages = Array.isArray(images) && images.length > 0;
+
     // Nawigacja strzałkami
-    const next = () => setIndex((prev) => (prev + 1) % images.length);
-    const prev = () => setIndex((prev) => (prev - 1 + images.length) % images.length);
+    const next = () => hasImages && setIndex((prev) => (prev + 1) % images.length);
+    const prev = () => hasImages && setIndex((prev) => (prev - 1 + images.length) % images.length);
 
     return (
         <div
@@ -55,7 +77,7 @@ export default function PropertyModal({ property, onClose }) {
             {/* Kontener modala */}
             <div
                 className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative animate-fadeIn"
-                onClick={(e) => e.stopPropagation()} // Blokuje zamykanie przy kliknięciu wnętrza
+                onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
                 <div className="flex justify-between items-center p-6 border-b border-gray-200 sticky top-0 bg-white z-10">
@@ -65,50 +87,58 @@ export default function PropertyModal({ property, onClose }) {
                     <button
                         onClick={onClose}
                         className="text-gray-400 hover:text-gray-600 text-3xl font-light"
+                        aria-label="Zamknij"
                     >
                         ×
                     </button>
                 </div>
 
                 {/* Galeria */}
-                {images && images.length > 0 && (
+                {hasImages && (
                     <div className="relative w-full h-80 overflow-hidden">
-                        {/* Zdjęcie */}
                         <img
                             key={index}
                             src={images[index]}
                             alt={`Zdjęcie ${apartmentNumber}`}
-                            className="w-full h-full object-cover transition-all duration-500"
+                            className="w-full h-full object-cover transition-all duration-500 cursor-zoom-in"
+                            onClick={() => setLightboxOpen(true)}
+                            draggable={false}
                         />
 
                         {/* Strzałki */}
                         {images.length > 1 && (
                             <>
                                 <button
+                                    type="button"
                                     onClick={prev}
-                                    className="absolute top-1/2 left-4 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-2"
+                                    className="absolute top-1/2 left-4 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-2 z-10"
+                                    aria-label="Poprzednie zdjęcie"
                                 >
                                     <ChevronLeft size={24} />
                                 </button>
                                 <button
+                                    type="button"
                                     onClick={next}
-                                    className="absolute top-1/2 right-4 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-2"
+                                    className="absolute top-1/2 right-4 -translate-y-1/2 bg-black/40 hover:bg-black/60 text-white rounded-full p-2 z-10"
+                                    aria-label="Następne zdjęcie"
                                 >
                                     <ChevronRight size={24} />
                                 </button>
                             </>
                         )}
 
-                        {/* Kropki (indykatory) */}
+                        {/* Kropki */}
                         {images.length > 1 && (
-                            <div className="absolute bottom-3 w-full flex justify-center gap-2">
+                            <div className="absolute bottom-3 w-full flex justify-center gap-2 z-10">
                                 {images.map((_, i) => (
                                     <button
                                         key={i}
+                                        type="button"
                                         onClick={() => setIndex(i)}
                                         className={`w-2.5 h-2.5 rounded-full transition-all ${
                                             i === index ? "bg-white" : "bg-white/50 hover:bg-white/70"
                                         }`}
+                                        aria-label={`Przejdź do zdjęcia ${i + 1}`}
                                     />
                                 ))}
                             </div>
@@ -133,8 +163,8 @@ export default function PropertyModal({ property, onClose }) {
                                             : "text-green-700"
                                 }`}
                             >
-                                {status}
-                            </span>
+                {status}
+              </span>
                         </p>
                         <p>
                             <strong>Powierzchnia:</strong> {area} m²
@@ -155,7 +185,7 @@ export default function PropertyModal({ property, onClose }) {
                     </div>
                 </div>
 
-                {/* Dokumenty (jeśli są) */}
+                {/* Dokumenty */}
                 {documents && documents.length > 0 && (
                     <div className="border-t border-gray-200 p-8 text-gray-600">
                         <h4 className="text-lg font-semibold mb-4 text-[#1A1A1A]">Dokumenty</h4>
@@ -177,9 +207,7 @@ export default function PropertyModal({ property, onClose }) {
 
                 {/* Historia cen */}
                 <div className="border-t border-gray-200 p-8 text-gray-600">
-                    <h4 className="text-lg font-semibold mb-4 text-[#1A1A1A]">
-                        Historia cen
-                    </h4>
+                    <h4 className="text-lg font-semibold mb-4 text-[#1A1A1A]">Historia cen</h4>
 
                     <Button
                         onClick={() => setHistoryOpen(true)}
@@ -195,6 +223,74 @@ export default function PropertyModal({ property, onClose }) {
                     />
                 </div>
             </div>
+
+            {/* LIGHTBOX */}
+            {lightboxOpen && hasImages && (
+                <div
+                    className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center p-4"
+                    onClick={() => setLightboxOpen(false)}
+                >
+                    <div
+                        className="relative w-full max-w-6xl max-h-[90vh] flex items-center justify-center"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Zamknij */}
+                        <button
+                            type="button"
+                            onClick={() => setLightboxOpen(false)}
+                            className="absolute top-4 right-4 text-white text-4xl font-light z-20 hover:opacity-80"
+                            aria-label="Zamknij podgląd"
+                        >
+                            ×
+                        </button>
+
+                        {/* Obraz */}
+                        <img
+                            src={images[index]}
+                            alt={`Zdjęcie ${apartmentNumber} (podgląd)`}
+                            className="max-h-[90vh] max-w-full object-contain rounded-xl shadow-2xl cursor-zoom-out"
+                            onClick={() => setLightboxOpen(false)}
+                            draggable={false}
+                        />
+
+                        {/* Strzałki */}
+                        {images.length > 1 && (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        prev();
+                                    }}
+                                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 z-20"
+                                    aria-label="Poprzednie zdjęcie"
+                                >
+                                    <ChevronLeft size={32} />
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        next();
+                                    }}
+                                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/10 hover:bg-white/20 text-white rounded-full p-3 z-20"
+                                    aria-label="Następne zdjęcie"
+                                >
+                                    <ChevronRight size={32} />
+                                </button>
+                            </>
+                        )}
+
+                        {/* Licznik */}
+                        {images.length > 1 && (
+                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm bg-black/40 px-3 py-1 rounded-full">
+                                {index + 1} / {images.length}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

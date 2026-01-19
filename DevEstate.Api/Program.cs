@@ -15,6 +15,13 @@ using Microsoft.AspNetCore.StaticFiles;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+// 🔥 Wczytaj appsettings.Private.json JEŚLI istnieje
+builder.Configuration
+    //.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    //.AddJsonFile("appsettings.Private.json", optional: true, reloadOnChange: true);
+    .AddEnvironmentVariables();
+
 // Add services to the container.
 
 // ------------------ MongoDB ------------------

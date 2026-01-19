@@ -19,18 +19,18 @@
     </categories>
     <resources>
       <resource status="published">
-        <extIdent>46b685f2-c154-480d-816b-6377832955d0</extIdent>
+        <extIdent>0f6a1fb7-f272-420e-ac4a-a444b6216fb5</extIdent>
         <url>http://localhost:5086/dane/cennik.csv</url>
         <title>
-          <polish>Ceny ofertowe mieszkań DevEstateNazwaFirmy 2026-01-07</polish>
-          <english>Offer prices DevEstateNazwaFirmy 2026-01-07</english>
+          <polish>Ceny ofertowe mieszkań DevEstateNazwaFirmy 2026-01-13</polish>
+          <english>Offer prices DevEstateNazwaFirmy 2026-01-13</english>
         </title>
         <description>
-          <polish>Cennik udostępniony dnia 2026-01-07</polish>
-          <english>Price list published 2026-01-07</english>
+          <polish>Cennik udostępniony dnia 2026-01-13</polish>
+          <english>Price list published 2026-01-13</english>
         </description>
         <availability>local</availability>
-        <dataDate>2026-01-07</dataDate>
+        <dataDate>2026-01-13</dataDate>
         <specialSigns>
           <specialSign>X</specialSign>
         </specialSigns>
