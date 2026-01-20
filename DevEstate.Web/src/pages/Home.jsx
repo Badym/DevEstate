@@ -33,7 +33,7 @@ export default function Home() {
                     {companyData?.name || "Witamy w DevEstate"}
                 </h1>
                 <p className="text-lg text-gray-600 animate-fade-in delay-150">
-                    Profesjonalne inwestycje nieruchomości — nowoczesne, przejrzyste, solidne.
+                    ProfesjonalneEE inwestycje nieruchomości — nowoczesne, przejrzyste, solidne.
                 </p>
             </section>
 

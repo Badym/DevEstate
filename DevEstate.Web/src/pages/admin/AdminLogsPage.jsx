@@ -1,8 +1,8 @@
 ﻿import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import AdminLogsTable from "@/components/admin/Logs/AdminLogsTable";
-import AdminLogsFilters from "@/components/admin/Logs/AdminLogsFilters";
+import AdminLogsTable from "@/components/admin/AdminLogs/AdminLogsTable";
+import AdminLogsFilters from "@/components/admin/AdminLogs/AdminLogsFilters";
 
 export default function AdminLogsPage() {
     const navigate = useNavigate();

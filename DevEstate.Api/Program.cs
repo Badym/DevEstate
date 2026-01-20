@@ -68,12 +68,16 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173")
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "https://devestate-frontend.onrender.com" // jak już będziesz miał front
+            )
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyMethod();
     });
 });
+
 
 // ------------------ Services ------------------
 // (Dodamy później np. UserService, PropertyService, DatabaseSeeder itp.)
