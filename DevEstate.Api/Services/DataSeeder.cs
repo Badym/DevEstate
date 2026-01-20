@@ -53,7 +53,7 @@ namespace DevEstate.Api.Services
                 Address = "ul. Przykładowa 1, 00-001 Warszawa",
                 Description = "Nowoczesny deweloper realizujący inwestycje mieszkaniowe i domowe w całej Polsce.",
                 CreatedAt = DateTime.UtcNow,
-                LogoImage = "http://localhost:5086/uploads/images/logoO.jpg"
+                LogoImage = "/uploads/images/logoO.jpg"
             };
             await _companyRepo.CreateAsync(company);
 
@@ -86,7 +86,7 @@ namespace DevEstate.Api.Services
                 Status = "Aktualne",
                 Images = new List<string>
                 {
-                    "http://localhost:5086/uploads/images/Investment_68fbb4167b6000293487edf9_3624ff3819944cc68f0ffd275892a398.webp"
+                    "/uploads/images/Investment_68fbb4167b6000293487edf9_3624ff3819944cc68f0ffd275892a398.webp"
                 },
                 CreatedAt = DateTime.UtcNow
             };
@@ -101,7 +101,7 @@ namespace DevEstate.Api.Services
                 Status = "Aktualne",
                 Images = new List<string>
                 {
-                    "http://localhost:5086/uploads/images/Building_68fbb5bd7038d7a814fda4ea_f4910ea3e97545f8b541c874df428c1b.webp"
+                    "/uploads/images/Building_68fbb5bd7038d7a814fda4ea_f4910ea3e97545f8b541c874df428c1b.webp"
                 },
                 CreatedAt = DateTime.UtcNow
             };
@@ -115,7 +115,7 @@ namespace DevEstate.Api.Services
                 Status = "Aktualne",
                 Images = new List<string>
                 {
-                    "http://localhost:5086/uploads/images/Building_68fbb5bd7038d7a814fda4ea_f4910ea3e97545f8b541c874df428c1b.webp"
+                    "/uploads/images/Building_68fbb5bd7038d7a814fda4ea_f4910ea3e97545f8b541c874df428c1b.webp"
                 },
                 CreatedAt = DateTime.UtcNow
             };
@@ -170,7 +170,7 @@ namespace DevEstate.Api.Services
                 Status = "Aktualne",
                 Images = new List<string>
                 {
-                    "http://localhost:5086/uploads/images/Investment_68f4c723543280f07a4c6352_17a24ea03fb04f58a680688e49c205f0.jpg"
+                    "/uploads/images/Investment_68f4c723543280f07a4c6352_17a24ea03fb04f58a680688e49c205f0.jpg"
                 },
                 CreatedAt = DateTime.UtcNow
             };
@@ -184,7 +184,7 @@ namespace DevEstate.Api.Services
                 Status = "Aktualne",
                 Images = new List<string>
                 {
-                    "http://localhost:5086/uploads/images/Building_68fbb5bd7038d7a814fda4ea_f4910ea3e97545f8b541c874df428c1b.webp"
+                    "/uploads/images/Building_68fbb5bd7038d7a814fda4ea_f4910ea3e97545f8b541c874df428c1b.webp"
                 },
                 CreatedAt = DateTime.UtcNow
             };
@@ -236,7 +236,7 @@ namespace DevEstate.Api.Services
                 Status = "Sprzedane",
                 Images = new List<string>
                 {
-                    "http://localhost:5086/uploads/images/Investment_68fba5e4d34c0daf6c4272c7_fcbd42ac2bca4a05a953c997ce864af9.jpg"
+                    "/uploads/images/Investment_68fba5e4d34c0daf6c4272c7_fcbd42ac2bca4a05a953c997ce864af9.jpg"
                 },
                 CreatedAt = DateTime.UtcNow
             };
@@ -250,7 +250,7 @@ namespace DevEstate.Api.Services
                 Status = "Sprzedane",
                 Images = new List<string>
                 {
-                    "http://localhost:5086/uploads/images/Building_68fbb5bd7038d7a814fda4ea_f4910ea3e97545f8b541c874df428c1b.webp"
+                    "/uploads/images/Building_68fbb5bd7038d7a814fda4ea_f4910ea3e97545f8b541c874df428c1b.webp"
                 },
                 CreatedAt = DateTime.UtcNow
             };

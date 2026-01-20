@@ -10,7 +10,7 @@ export default function AdminReportsPage() {
     // --- 1) Pobranie CSV (DOWNLOAD)
     const downloadCsv = async () => {
         try {
-            const res = await fetch("http://localhost:5086/api/ProspectReport/download-csv", {
+            const res = await fetch("/api/ProspectReport/download-csv", {
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
@@ -38,7 +38,7 @@ export default function AdminReportsPage() {
     // --- 2) Generowanie pełnego zestawu (CSV + MD5 + XML)
     const generateFullExport = async () => {
         try {
-            const res = await fetch("http://localhost:5086/api/xml/generate", {
+            const res = await fetch("/api/xml/generate", {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`

@@ -13,7 +13,7 @@ export default function AdminCompanyInfoPage() {
     const token = localStorage.getItem("token");
 
     const fetchData = async () => {
-        const res = await fetch("http://localhost:5086/api/Company/details", {
+        const res = await fetch("/api/Company/details", {
             headers: { Authorization: `Bearer ${token}` }
         });
 
@@ -36,7 +36,7 @@ export default function AdminCompanyInfoPage() {
     const handleSave = async () => {
         setSaving(true);
 
-        await fetch("http://localhost:5086/api/Company/details", {
+        await fetch("/api/Company/details", {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",

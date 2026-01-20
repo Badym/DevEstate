@@ -19,7 +19,7 @@ const InvestmentCarousel = ({ investments }) => {
         if (imagePath && imagePath.startsWith("http")) {
             return imagePath;
         }
-        return `http://localhost:5086${imagePath}`;
+        return `${imagePath}`;
     };
 
     // ✅ Funkcja do przekierowania po kliknięciu

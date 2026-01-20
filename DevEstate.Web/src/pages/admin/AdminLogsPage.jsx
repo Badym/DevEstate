@@ -32,8 +32,8 @@ export default function AdminLogsPage() {
         const query = params.toString();
 
         const url = query
-            ? `http://localhost:5086/api/AdminLog/filter?${query}`
-            : `http://localhost:5086/api/AdminLog`;
+            ? `/api/AdminLog/filter?${query}`
+            : `/api/AdminLog`;
 
         const res = await fetch(url, {
             headers: {
