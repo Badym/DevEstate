@@ -36,7 +36,7 @@ export default function AdminCompanyInfoPage() {
     const handleSave = async () => {
         setSaving(true);
 
-        await fetch("/api/Company/details", {
+        await fetch("/api/Company/details", { //kom
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
