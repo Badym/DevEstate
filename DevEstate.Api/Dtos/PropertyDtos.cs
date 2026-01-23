@@ -13,12 +13,18 @@ public static class PropertyDtos
         public decimal Price { get; set; }
         public decimal PricePerMeter { get; set; }
         public string Status { get; set; } = "Aktualne"; // Aktualne / Zarezerwowane / Sprzedane
+        
+        public List<string>? RequiredFeatureIds { get; set; }
+
     }
 
     public class PropertyUpdateDtos
     {
         public decimal? Price { get; set; }
         public string? Status { get; set; }
+        
+        public List<string>? RequiredFeatureIds { get; set; }
+
     }
 
     public class PropertyResponseDtos
@@ -34,5 +40,7 @@ public static class PropertyDtos
         public string? InvestmentId { get; set; }
         public List<string> Images { get; set; }
         public decimal? TotalPriceWithRequiredFeatures { get; set; }
+        
+        public List<string>? RequiredFeatureIds { get; set; }
     }
 }

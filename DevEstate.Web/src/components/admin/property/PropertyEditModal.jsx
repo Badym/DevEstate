@@ -8,6 +8,8 @@ import {
     DialogTitle,
     DialogFooter,
 } from "@/components/ui/dialog";
+import PropertyFeatureModal from "@/components/admin/property/PropertyFeatureModal";
+
 
 export default function PropertyEditModal({ open, onClose, property, onSave }) {
     const [form, setForm] = useState({
@@ -22,6 +24,10 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
     const [images, setImages] = useState([]);
     const [documents, setDocuments] = useState([]);
 
+    const [featureModalOpen, setFeatureModalOpen] = useState(false);
+    const [selectedFeatureIds, setSelectedFeatureIds] = useState([]);
+
+
     // 🧠 Wczytaj dane nieruchomości przy otwarciu
     useEffect(() => {
         if (property) {
@@ -30,6 +36,8 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
                 status: property.status ?? "Aktualne",
             });
             setImages(property.images || []);
+            setSelectedFeatureIds(property.requiredFeatureIds || []);
+
             // Pobieramy dokumenty przypisane do nieruchomości
             fetch(`/api/document/property/${property.id}`)
                 .then(res => res.ok ? res.json() : [])
@@ -50,6 +58,7 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
         const body = {
             price: form.price !== "" ? Number(form.price) : null,
             status: form.status || null,
+            requiredFeatureIds: selectedFeatureIds
         };
 
         try {
@@ -163,6 +172,7 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
     };
 
     return (
+        <>
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-xl">
                 <DialogHeader>
@@ -207,6 +217,16 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
                                 <option value="Sprzedane">Sprzedane</option>
                             </select>
                         </div>
+
+                        <Button
+                            type="button"
+                            variant="outline"
+                            className="w-full mt-2"
+                            onClick={() => setFeatureModalOpen(true)}
+                        >
+                            ➕ Dodatki (required)
+                        </Button>
+
                     </div>
 
                     {/* 🖼️ Sekcja zdjęć */}
@@ -309,6 +329,20 @@ export default function PropertyEditModal({ open, onClose, property, onSave }) {
                     </DialogFooter>
                 </form>
             </DialogContent>
+            
+            
         </Dialog>
+            <PropertyFeatureModal
+                open={featureModalOpen}
+                onClose={() => setFeatureModalOpen(false)}
+                property={property}
+                selectedFeatureIds={selectedFeatureIds}
+                onSave={setSelectedFeatureIds}
+            />
+            
+            </>
+        
     );
+
+
 }

@@ -44,5 +44,10 @@ namespace DevEstate.Api.Models
         
         [BsonElement("images")]
         public List<string> Images { get; set; } = new();
+        
+        [BsonElement("requiredFeatureIds")]
+        [BsonRepresentation(BsonType.ObjectId)]
+        public List<string> RequiredFeatureIds { get; set; } = new();
+
     }
 }

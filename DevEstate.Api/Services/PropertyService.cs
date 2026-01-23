@@ -27,6 +27,43 @@ namespace DevEstate.Api.Services
             _featureRepo = featureRepo;
             _logService = logService;
         }
+        
+        private async Task ValidateRequiredFeaturesAsync(
+            Property property,
+            List<string> featureIds)
+        {
+            if (featureIds == null || featureIds.Count == 0)
+                return;
+
+            foreach (var featureId in featureIds)
+            {
+                var feature = await _featureRepo.GetByIdAsync(featureId);
+
+                if (feature == null)
+                    throw new ArgumentException($"Feature not found: {featureId}");
+
+                // tylko REQUIRED
+                if (!feature.IsRequired)
+                    throw new ArgumentException($"Feature {featureId} is not required");
+
+                // investment musi się zgadzać
+                if (feature.InvestmentId != property.InvestmentId)
+                    throw new ArgumentException(
+                        $"Feature {featureId} does not belong to investment {property.InvestmentId}");
+
+                // jeżeli property ma building → feature też musi być z tego buildingu (albo globalny)
+                if (!string.IsNullOrEmpty(property.BuildingId))
+                {
+                    if (!string.IsNullOrEmpty(feature.BuildingId) &&
+                        feature.BuildingId != property.BuildingId)
+                    {
+                        throw new ArgumentException(
+                            $"Feature {featureId} does not belong to building {property.BuildingId}");
+                    }
+                }
+            }
+        }
+
 
 
         public async Task<PropertyDtos.PropertyResponseDtos> GetByIdAsync(string id)
@@ -46,7 +83,8 @@ namespace DevEstate.Api.Services
                 InvestmentId = entity.InvestmentId,
                 BuildingId = entity.BuildingId,
                 Images = entity.Images,
-                TotalPriceWithRequiredFeatures = entity.TotalPriceWithRequiredFeatures
+                TotalPriceWithRequiredFeatures = entity.TotalPriceWithRequiredFeatures,
+                RequiredFeatureIds = entity.RequiredFeatureIds
             };
         }
 
@@ -65,7 +103,8 @@ namespace DevEstate.Api.Services
                 BuildingId = e.BuildingId,
                 InvestmentId = e.InvestmentId,
                 Images = e.Images,
-                TotalPriceWithRequiredFeatures = e.TotalPriceWithRequiredFeatures
+                TotalPriceWithRequiredFeatures = e.TotalPriceWithRequiredFeatures,
+                RequiredFeatureIds = e.RequiredFeatureIds
             }).ToList();
         }
 
@@ -86,10 +125,14 @@ namespace DevEstate.Api.Services
                 TerraceArea = dto.TerraceArea,
                 Price = dto.Price,
                 PricePerMeter = pricePerMeter,
-                Status = dto.Status
+                Status = dto.Status,
+                
+                RequiredFeatureIds = dto.RequiredFeatureIds ?? new List<string>()
             };
 
+            await ValidateRequiredFeaturesAsync(entity, entity.RequiredFeatureIds);
             await _repo.CreateAsync(entity);
+
 
             await _priceHistoryService.CreateAsync(new PriceHistoryDtos.PriceHistoryCreateDtos
             {
@@ -110,6 +153,14 @@ namespace DevEstate.Api.Services
             if (entity == null) throw new Exception("Property not found");
             
             bool priceChanged = false;
+            
+            if (dto.RequiredFeatureIds != null)
+            {
+                await ValidateRequiredFeaturesAsync(entity, dto.RequiredFeatureIds);
+                entity.RequiredFeatureIds = dto.RequiredFeatureIds;
+            }
+
+
             
             if (dto.Price.HasValue || dto.Status != null)
             {
@@ -231,18 +282,16 @@ namespace DevEstate.Api.Services
         {
             decimal totalPrice = property.Price;
 
-            var requiredFeatures = await _featureRepo.GetByInvestmentIdAsync(property.InvestmentId);
-
-            if (!string.IsNullOrEmpty(property.BuildingId))
+            if (property.RequiredFeatureIds != null && property.RequiredFeatureIds.Count > 0)
             {
-                requiredFeatures = requiredFeatures.Where(f => f.BuildingId == property.BuildingId && f.IsRequired).ToList();
-            }
-
-            foreach (var feature in requiredFeatures)
-            {
-                if (feature.IsRequired) 
+                foreach (var featureId in property.RequiredFeatureIds)
                 {
-                    totalPrice += feature.Price ?? 0; 
+                    var feature = await _featureRepo.GetByIdAsync(featureId);
+
+                    if (feature == null)
+                        continue;
+
+                    totalPrice += feature.Price ?? 0;
                 }
             }
 
@@ -250,6 +299,7 @@ namespace DevEstate.Api.Services
 
             await _repo.UpdateAsync(property);
         }
+
 
 
     }

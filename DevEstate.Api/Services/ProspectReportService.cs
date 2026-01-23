@@ -60,9 +60,15 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
             .FirstOrDefault();
 
         // 🔹 4. Dodatki powiązane z inwestycją (np. garaże, komórki), uwzględniając tylko wymagane
-        var propertyFeatures = features
-            .Where(f => f.InvestmentId == investment.Id && f.IsRequired)
-            .ToList();
+        var propertyFeatures = new List<Feature>();
+
+        if (property.RequiredFeatureIds != null && property.RequiredFeatureIds.Any())
+        {
+            propertyFeatures = features
+                .Where(f => property.RequiredFeatureIds.Contains(f.Id))
+                .ToList();
+        }
+
 
         // 🔹 5. Pobierz numer budynku powiązanego z nieruchomością (jeśli jest przypisany do budynku)
         string? buildingNumber = null;
