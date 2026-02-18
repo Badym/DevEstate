@@ -92,7 +92,7 @@ namespace DevEstate.Api.Controllers
         [HttpGet("search")]
         public async Task<IActionResult> Search([FromQuery] string woj, [FromQuery] string? pow)
         {
-            var data = await _service.GetRegionAggregatedAsync(woj, pow);
+            var data = await _service.GetRegionAggregatedAsync(woj, pow); //zmiana
 
             if (data == null)
                 return NotFound(new { message = "Region not found" });
