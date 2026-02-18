@@ -126,8 +126,8 @@ builder.Services.AddHttpClient<CsvDownloader>();
 
 builder.Services.AddSingleton(new CompanyDtos.CompanyDto
 {
-    Name = "DevEstateNazwaFirmy",
-    Website = "http://localhost:5086"
+    Name = "Tio",
+    Website = "https://devestate-tio.onrender.com/"
 });
 
 builder.Services.AddSingleton(new XmlDatasetSettingsDto
