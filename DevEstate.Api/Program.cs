@@ -19,8 +19,8 @@ var builder = WebApplication.CreateBuilder(args);
 // 🔥 Wczytaj appsettings.Private.json JEŚLI istnieje
 builder.Configuration
     //.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    //.AddJsonFile("appsettings.Private.json", optional: true, reloadOnChange: true);
-    .AddEnvironmentVariables();
+    .AddJsonFile("appsettings.Private.json", optional: true, reloadOnChange: true);
+    //.AddEnvironmentVariables();
 
 // Add services to the container.
 
@@ -222,13 +222,14 @@ app.UseCors("AllowFrontend");
 var provider = new FileExtensionContentTypeProvider();
 provider.Mappings[".md5"] = "text/plain";
 
+app.UseDefaultFiles(); //dodane to żeby można było wejść na /dane i zobaczyć listę plików (index.html) - ale to wymaga, żeby w katalogu dane był plik index.html (można go tam wrzucić ręcznie)
+
 app.UseStaticFiles(new StaticFileOptions
 {
     ContentTypeProvider = provider
 });
 
 
-app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(documentPath),
@@ -245,5 +246,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapFallbackToFile("index.html");
+
 
 app.Run();

@@ -30,16 +30,16 @@ const ContactSection = ({ companyData }) => {
                             <h3 className="text-2xl font-semibold text-[#1A1A1A] mb-4">DANE KONTAKTOWE</h3>
                             <p><strong>Email:</strong> <a href={`mailto:${companyData?.email}`} className="text-blue-600">{companyData?.email}</a></p>
                             <p><strong>Telefon:</strong> {companyData?.phone}</p>
-                            <p><strong>REGON:</strong> {companyData?.REGON}</p>
-                            <p><strong>NIP:</strong> {companyData?.NIP}</p>
+                            <p><strong>REGON:</strong> {companyData?.regon}</p>
+                            <p><strong>NIP:</strong> {companyData?.nip}</p>
                         </div>
 
                         {/* Siedziba firmy */}
                         <div className="bg-[#F2F2F2] p-6 rounded-lg shadow-md">
                             <h3 className="text-2xl font-semibold text-[#1A1A1A] mb-4">SIEDZIBA FIRMY</h3>
                             <p><strong>Firma:</strong> {companyData?.name}</p>
-                            <p><strong>Adres:</strong> {companyData?.address}</p>
-                            <p><strong>KRS:</strong> {companyData?.KRS}</p>
+                            <p><strong>Adres:</strong> {companyData?.city + ", " + companyData?.street + " " + companyData?.buildingNumber + " " + companyData?.postalCode}</p>
+                            <p><strong>KRS:</strong> {companyData?.krs}</p>
                         </div>
                     </div>
                 </div>

@@ -1,22 +1,54 @@
 ﻿using System.Text;
 using System.Xml.Linq;
 using DevEstate.Api.Dtos;
+using DevEstate.Api.Repositories;
+using ZstdSharp.Unsafe;
 
 namespace DevEstate.Api.Services;
 
 public class XmlPriceFeedService
     {
-        private readonly CompanyDtos.CompanyDto _company;
+        private readonly CompanyRepository _companyRepo;
+
         private readonly XmlDatasetSettingsDto _settings;
 
-        public XmlPriceFeedService(CompanyDtos.CompanyDto company, XmlDatasetSettingsDto settings)
+        public XmlPriceFeedService(CompanyRepository companyRepo, XmlDatasetSettingsDto settings)
         {
-            _company = company;
+            _companyRepo = companyRepo;
             _settings = settings;
         }
 
-        public string GenerateXml(XmlResourceInfoDto resource, string outputDir)
+        public  async Task<string> GenerateXml(XmlResourceInfoDto resource, string outputDir)
         {
+            var companyEntity = (await _companyRepo.GetAllAsync()).FirstOrDefault()
+                                ?? throw new Exception("Company data not found");
+
+            var company = new CompanyDetailsDtos.ResponseCompanyDetails
+            {
+                Id = companyEntity.Id,
+                Name = companyEntity.Name,
+                LegalForm = companyEntity.LegalForm,
+                KRS = companyEntity.KRS,
+                CEIDGNumber = companyEntity.CEIDGNumber,
+                NIP = companyEntity.NIP,
+                REGON = companyEntity.REGON,
+                Phone = companyEntity.Phone,
+                Fax = companyEntity.Fax,
+                Email = companyEntity.Email,
+                Website = companyEntity.Website,
+                Province = companyEntity.Province,
+                County = companyEntity.County,
+                Municipality = companyEntity.Municipality,
+                City = companyEntity.City,
+                Street = companyEntity.Street,
+                BuildingNumber = companyEntity.BuildingNumber,
+                ApartmentNumber = companyEntity.ApartmentNumber,
+                PostalCode = companyEntity.PostalCode,
+                Description = companyEntity.Description,
+                LogoImage = companyEntity.LogoImage,
+                ContactMethond = companyEntity.ContactMethod // uwaga na literówkę w DTO
+            };
+
             XNamespace ns = "urn:otwarte-dane:harvester:1.13";
 
             var xml = new XElement(ns + "datasets",
@@ -26,13 +58,13 @@ public class XmlPriceFeedService
                     new XElement("extIdent", _settings.DatasetExtIdent),
 
                     new XElement("title",
-                        new XElement("polish", $"Ceny ofertowe mieszkań dewelopera {_company.Name} w {resource.DataDate.Year} r."),
-                        new XElement("english", $"Offer prices of apartments of developer {_company.Name} in {resource.DataDate.Year}.")
+                        new XElement("polish", $"Ceny ofertowe mieszkań dewelopera {company.Name} w {resource.DataDate.Year} r."),
+                        new XElement("english", $"Offer prices of apartments of developer {company.Name} in {resource.DataDate.Year}.")
                     ),
 
                     new XElement("description",
-                        new XElement("polish", $"Zbiór danych zawiera informacje o cenach ofertowych mieszkań dewelopera {_company.Name}."),
-                        new XElement("english", $"Dataset contains offer prices of developer {_company.Name}.")
+                        new XElement("polish", $"Zbiór danych zawiera informacje o cenach ofertowych mieszkań dewelopera {company.Name}."),
+                        new XElement("english", $"Dataset contains offer prices of developer {company.Name}.")
                     ),
 
                     new XElement("updateFrequency", "daily"),
@@ -49,13 +81,13 @@ public class XmlPriceFeedService
                         new XElement("resource",
                             new XAttribute("status", "published"),
 
-                            new XElement("extIdent", GenerateResourceExtIdent()),
+                            new XElement("extIdent", GenerateResourceExtIdent(resource.DataDate)),
 
                             new XElement("url", resource.CsvUrl),
 
                             new XElement("title",
-                                new XElement("polish", $"Ceny ofertowe mieszkań {_company.Name} {resource.DataDate:yyyy-MM-dd}"),
-                                new XElement("english", $"Offer prices {_company.Name} {resource.DataDate:yyyy-MM-dd}")
+                                new XElement("polish", $"Ceny ofertowe mieszkań {company.Name} {resource.DataDate:yyyy-MM-dd}"),
+                                new XElement("english", $"Offer prices {company.Name} {resource.DataDate:yyyy-MM-dd}")
                             ),
 
                             new XElement("description",
@@ -90,8 +122,14 @@ public class XmlPriceFeedService
             return xmlPath;
         }
 
-        private string GenerateResourceExtIdent()
+        private string GenerateResourceExtIdent(DateTime dataDate)
         {
-            return Guid.NewGuid().ToString("D");
+            var yyyymmdd = dataDate.ToString("yyyyMMdd");          // np. 20260218
+            var seed = $"{yyyymmdd}-DevEstate";                // "sól" żeby nie było zbyt "gołe"
+
+            using var md5 = System.Security.Cryptography.MD5.Create();
+            var bytes = md5.ComputeHash(Encoding.UTF8.GetBytes(seed)); // 16 bajtów
+
+            return new Guid(bytes).ToString("D"); // ✅ 36 znaków
         }
     }   

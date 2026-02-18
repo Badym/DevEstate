@@ -179,8 +179,8 @@ export default function InvestmentEditModal({ open, onClose, investment, onSave 
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-xl">
-                <DialogHeader>
+            <DialogContent className="sm:max-w-xl max-h-[85vh] overflow-y-auto">
+            <DialogHeader>
                     <DialogTitle>Edytuj inwestycję</DialogTitle>
                 </DialogHeader>
 

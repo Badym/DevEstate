@@ -12,6 +12,8 @@ namespace DevEstate.Api.Services
         private readonly FeatureRepository _featureRepo;
         private readonly PriceHistoryRepository _priceHistoryRepo;
         private readonly BuildingService _buildingService;
+        private readonly FeatureTypeRepository _featureTypeRepo;
+
         
         private readonly IWebHostEnvironment _env;
 
@@ -21,6 +23,7 @@ namespace DevEstate.Api.Services
             InvestmentRepository investmentRepo,
             PropertyRepository propertyRepo,
             FeatureRepository featureRepo,
+            FeatureTypeRepository featureTypeRepo,
             PriceHistoryRepository priceHistoryRepo,
             BuildingService buildingService,
             IWebHostEnvironment env)
@@ -29,6 +32,7 @@ namespace DevEstate.Api.Services
             _investmentRepo = investmentRepo;
             _propertyRepo = propertyRepo;
             _featureRepo = featureRepo;
+            _featureTypeRepo = featureTypeRepo; 
             _priceHistoryRepo = priceHistoryRepo;
             _buildingService = buildingService;
             _env = env;
@@ -43,7 +47,14 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
     var properties = await _propertyRepo.GetAllAsync();
     var features = await _featureRepo.GetAllAsync();
     var priceHistories = await _priceHistoryRepo.GetAllAsync();
+    var featureTypes = await _featureTypeRepo.GetAllAsync();
+    
+    var featureTypeNameMap = featureTypes.ToDictionary(
+        ft => ft.Id,
+        ft => ft.Name
+    );
 
+    
     var rows = new List<ProspectReportDtos.Row>();
 
     // 🔹 2. Przejście po wszystkich nieruchomościach (tylko dostępne)
@@ -68,6 +79,8 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
                 .Where(f => property.RequiredFeatureIds.Contains(f.Id))
                 .ToList();
         }
+        
+        
 
 
         // 🔹 5. Pobierz numer budynku powiązanego z nieruchomością (jeśli jest przypisany do budynku)
@@ -110,16 +123,25 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
             InvestmentBuildingNumber = buildingNumber,  // Dodajemy numer budynku lub null
             InvestmentPostalCode = investment.PostalCode,
 
-            PropertyType = property.Type,
+            PropertyType = MapPropertyType(property.Type),
+
             ApartmentNumber = property.ApartmentNumber,
             Area = property.Area,
             PricePerM2 = property.PricePerMeter,
             TotalPrice = property.Price,
-            FullPrice = property.Price, // w przyszłości: dodamy sumowanie z dodatkami
+            FullPrice = property.TotalPriceWithRequiredFeatures, // w przyszłości: dodamy sumowanie z dodatkami
             PriceFromDate = latestPrice?.Date,
 
-            AttachedParts = string.Join(", ", propertyFeatures.Select(f => f.FeatureTypeId)),
-            AttachedPartsLabels = string.Join(", ", propertyFeatures.Select(f => f.Description)),
+            //AttachedParts = string.Join(", ", propertyFeatures.Select(f => f.FeatureTypeId)),
+            AttachedParts = string.Join(", ",
+                propertyFeatures
+                    .Select(f => featureTypeNameMap.TryGetValue(f.FeatureTypeId, out var name)
+                        ? name
+                        : "Nieznany typ")
+                    .Distinct()
+            ),
+
+            //AttachedPartsLabels = string.Join(", ", propertyFeatures.Select(f => f.Description)),
             AttachedPartsPrice = propertyFeatures.Sum(f => f.Price ?? 0),
             AttachedPartsPriceFromDate = latestPrice?.Date,
 
@@ -134,7 +156,7 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
     return rows;
 }
 
-        public async Task<string> GenerateCsvReportAsync()
+        public async Task<string> GenerateCsvReportAsync(string outputFolderName)
 {
     // 1. Pobierz dane z istniejącego raportu
     var rows = await GenerateReportAsync(); // Zmieniamy: używamy istniejącej metody do pobrania danych
@@ -184,7 +206,7 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
         "Cena części nieruchomości, będących przedmiotem umowy [zł]", 
         "Data od której obowiązuje cena części nieruchomości, będących przedmiotem umowy", 
         "Rodzaj pomieszczeń przynależnych, o których mowa w art. 2 ust. 4 ustawy z dnia 24 czerwca 1994 r. o własności lokali", 
-        "Oznaczenie pomieszczeń przynależnych, o których mowa w art. 2 ust. 4 ustawy z dnia 24 czerwca 1994 r. o własności lokali", 
+        //"Oznaczenie pomieszczeń przynależnych, o których mowa w art. 2 ust. 4 ustawy z dnia 24 czerwca 1994 r. o własności lokali", 
         "Wyszczególnienie cen pomieszczeń przynależnych, o których mowa w art. 2 ust. 4 ustawy z dnia 24 czerwca 1994 r. o własności lokali [zł]", 
         "Data od której obowiązuje cena wyszczególnionych pomieszczeń przynależnych, o których mowa w art. 2 ust. 4 ustawy z dnia 24 czerwca 1994 r. o własności lokali", 
         "Wyszczególnienie praw niezbędnych do korzystania z lokalu mieszkalnego lub domu jednorodzinnego", 
@@ -262,7 +284,7 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
 
             // Dodatki
             row.AttachedParts ?? "x",
-            row.AttachedPartsLabels ?? "x",
+            //row.AttachedPartsLabels ?? "x",
             row.AttachedPartsPrice?.ToString() ?? "x",
             row.AttachedPartsPriceFromDate?.ToString("yyyy-MM-dd") ?? "x",
             "x","x","x","x","x","x","x","x","x","x",
@@ -276,14 +298,19 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
     }
 
     // Ścieżka do pliku CSV
-    string outputDir = Path.Combine(_env.WebRootPath, "dane");
+    string outputDir = Path.Combine(_env.WebRootPath, outputFolderName);
     Directory.CreateDirectory(outputDir);
 
     string filePath = Path.Combine(outputDir, "cennik.csv");
 
 
     // Zapisz plik CSV
-    File.WriteAllText(filePath, string.Join("\n", csvRows));
+    File.WriteAllText(
+        filePath,
+        string.Join("\n", csvRows),
+        new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: true)
+    );
+
 
     Console.WriteLine($"CSV file generated at: {filePath}");
 
@@ -293,6 +320,18 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
 
 
 
+        private static string MapPropertyType(string? type)
+        {
+            if (string.IsNullOrWhiteSpace(type))
+                return "x";
+
+            return type.ToLower() switch
+            {
+                "apartment" => "lokal mieszkalny",
+                "house" => "dom jednorodzinny",
+                _ => type // fallback, gdyby kiedyś doszło coś nowego
+            };
+        }
 
 
 
@@ -313,4 +352,6 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
             return $"{baseUrl.TrimEnd('/')}/{slug}";
         }
     }
+    
 }
+

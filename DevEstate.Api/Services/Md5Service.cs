@@ -16,8 +16,10 @@ public class Md5Service
     public void SaveMd5File(string filePath)
     {
         string md5 = GenerateHash(filePath);
-        string fileName = Path.GetFileName(filePath);
+        var dir = Path.GetDirectoryName(filePath)!;
+        var nameWithoutExt = Path.GetFileNameWithoutExtension(filePath); // cennik
+        var md5Path = Path.Combine(dir, nameWithoutExt + ".md5");        // cennik.md5
 
-        File.WriteAllText(filePath + ".md5", $"{md5}  {fileName}");
+        File.WriteAllText(md5Path, md5 + Environment.NewLine);
     }
 }

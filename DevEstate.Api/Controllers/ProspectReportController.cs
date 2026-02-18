@@ -27,7 +27,7 @@ namespace DevEstate.Api.Controllers
         public async Task<IActionResult> DownloadCsvReport()
         {
             // Generowanie raportu CSV i uzyskanie pełnej ścieżki
-            string filePath = await _service.GenerateCsvReportAsync();
+            string filePath = await _service.GenerateCsvReportAsync("test");
 
             if (!System.IO.File.Exists(filePath))
                 return NotFound("Plik CSV nie został znaleziony.");

@@ -33,8 +33,8 @@ public class XmlFeedController : ControllerBase
     [Authorize(Roles = "Admin,Moderator")]
     public async Task<IActionResult> Generate()
     {
-        string csvPath = await _reportService.GenerateCsvReportAsync();
-        _md5Service.SaveMd5File(csvPath);
+        string csvPath = await _reportService.GenerateCsvReportAsync("dane");
+        //_md5Service.SaveMd5File(csvPath);
 
         string csvUrl = $"{_company.Website}/dane/cennik.csv";
 
@@ -45,12 +45,14 @@ public class XmlFeedController : ControllerBase
         };
 
         string outputDir = Path.Combine(_env.WebRootPath, "dane");
-        _xmlService.GenerateXml(resource, outputDir);
+        string xmlPath = await _xmlService.GenerateXml(resource, outputDir);
 
+        _md5Service.SaveMd5File(xmlPath);
+        
         return Ok(new
         {
             csv = csvUrl,
-            md5 = csvUrl + ".md5",
+            md5 = $"{_company.Website}/dane/cennik.md5",
             xml = $"{_company.Website}/dane/cennik.xml"
         });
     }

@@ -75,7 +75,7 @@ export default function PropertyAddModal({ open, onClose, onSave, buildings, inv
         // - apartment  -> buildingId (required), investmentId -> null
         // - house      -> investmentId (required), buildingId -> null
         const body = {
-            investmentId: form.type === "house" ? form.investmentId : null,
+            investmentId: form.investmentId,
             buildingId: form.type === "apartment" ? form.buildingId : null,
             apartmentNumber: form.apartmentNumber,
             type: form.type,

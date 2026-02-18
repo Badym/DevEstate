@@ -21,27 +21,48 @@ export default function PropertyFeatureModal({
     useEffect(() => {
         if (!open || !property) return;
 
-        // synchronizujemy stan lokalny z parentem
         setSelected(selectedFeatureIds || []);
 
         const loadFeatures = async () => {
             try {
-                const url = property.buildingId
-                    ? `/api/feature/byInvestment/${property.investmentId}`
-                    : `/api/feature/byBuilding/${property.buildingId}`;
+                // 1️⃣ ZAWSZE investment
+                const investmentRes = await fetch(
+                    `/api/feature/byInvestment/${property.investmentId}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${localStorage.getItem("token")}`,
+                        },
+                    }
+                );
 
-                const res = await fetch(url, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                });
+                if (!investmentRes.ok) throw new Error();
+                let investmentFeatures = await investmentRes.json();
 
-                if (!res.ok) throw new Error();
+                // 2️⃣ JEŚLI jest building → dociągamy building
+                let buildingFeatures = [];
+                if (property.buildingId) {
+                    const buildingRes = await fetch(
+                        `/api/feature/byBuilding/${property.buildingId}`,
+                        {
+                            headers: {
+                                Authorization: `Bearer ${localStorage.getItem("token")}`,
+                            },
+                        }
+                    );
 
-                const data = await res.json();
+                    if (!buildingRes.ok) throw new Error();
+                    buildingFeatures = await buildingRes.json();
+                }
 
-                // tylko required
-                setFeatures(data.filter(f => f.isRequired));
+                // 3️⃣ ŁĄCZYMY + tylko required + uniq
+                const all = [...investmentFeatures, ...buildingFeatures]
+                    .filter(f => f.isRequired)
+                    .reduce((acc, f) => {
+                        if (!acc.find(x => x.id === f.id)) acc.push(f);
+                        return acc;
+                    }, []);
+
+                setFeatures(all);
             } catch {
                 alert("❌ Nie udało się pobrać dodatków");
                 setFeatures([]);
@@ -73,43 +94,39 @@ export default function PropertyFeatureModal({
 
                 <div className="space-y-3 max-h-72 overflow-y-auto mt-2">
                     {features.length > 0 ? (
-                        features.map(f => {
-                            const checked = selected.includes(f.id);
+                        features.map(f => (
+                            <label
+                                key={f.id}
+                                className="flex items-start gap-3 p-3 border rounded-md cursor-pointer hover:bg-gray-50"
+                            >
+                                <input
+                                    type="checkbox"
+                                    checked={selected.includes(f.id)}
+                                    onChange={() => toggleFeature(f.id)}
+                                    className="mt-1"
+                                />
 
-                            return (
-                                <label
-                                    key={f.id}
-                                    className="flex items-start gap-3 p-3 border rounded-md cursor-pointer hover:bg-gray-50"
-                                >
-                                    <input
-                                        type="checkbox"
-                                        checked={checked}
-                                        onChange={() => toggleFeature(f.id)}
-                                        className="mt-1"
-                                    />
+                                <div className="flex-1">
+                                    <div className="flex justify-between items-start">
+                                        <span className="font-medium text-sm text-gray-900">
+                                            {f.name}
+                                        </span>
 
-                                    <div className="flex-1">
-                                        <div className="flex justify-between items-start">
-                                            <span className="font-medium text-sm text-gray-900">
-                                                {f.name}
+                                        {f.price != null && (
+                                            <span className="text-sm text-gray-600 whitespace-nowrap">
+                                                (+{f.price} PLN)
                                             </span>
-
-                                            {f.price != null && (
-                                                <span className="text-sm text-gray-600 whitespace-nowrap">
-                                                    (+{f.price} PLN)
-                                                </span>
-                                            )}
-                                        </div>
-
-                                        {f.description && (
-                                            <p className="text-xs text-gray-500 mt-1">
-                                                {f.description}
-                                            </p>
                                         )}
                                     </div>
-                                </label>
-                            );
-                        })
+
+                                    {f.description && (
+                                        <p className="text-xs text-gray-500 mt-1">
+                                            {f.description}
+                                        </p>
+                                    )}
+                                </div>
+                            </label>
+                        ))
                     ) : (
                         <p className="text-sm text-gray-500">
                             Brak dostępnych dodatków

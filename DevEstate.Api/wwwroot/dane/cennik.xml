@@ -2,12 +2,12 @@
   <dataset status="published" xmlns="">
     <extIdent>abdspstyabcismegptusjjqwqasuciwmnfhs</extIdent>
     <title>
-      <polish>Ceny ofertowe mieszkań dewelopera DevEstateNazwaFirmy w 2026 r.</polish>
-      <english>Offer prices of apartments of developer DevEstateNazwaFirmy in 2026.</english>
+      <polish>Ceny ofertowe mieszkań dewelopera TIO Sp. z o.o. w 2026 r.</polish>
+      <english>Offer prices of apartments of developer TIO Sp. z o.o. in 2026.</english>
     </title>
     <description>
-      <polish>Zbiór danych zawiera informacje o cenach ofertowych mieszkań dewelopera DevEstateNazwaFirmy.</polish>
-      <english>Dataset contains offer prices of developer DevEstateNazwaFirmy.</english>
+      <polish>Zbiór danych zawiera informacje o cenach ofertowych mieszkań dewelopera TIO Sp. z o.o..</polish>
+      <english>Dataset contains offer prices of developer TIO Sp. z o.o..</english>
     </description>
     <updateFrequency>daily</updateFrequency>
     <hasDynamicData>false</hasDynamicData>
@@ -19,18 +19,18 @@
     </categories>
     <resources>
       <resource status="published">
-        <extIdent>c3de66f6-67f0-4044-b281-325903b79beb</extIdent>
+        <extIdent>70860365-be94-53b4-30b5-afeec1474ad2</extIdent>
         <url>http://localhost:5086/dane/cennik.csv</url>
         <title>
-          <polish>Ceny ofertowe mieszkań DevEstateNazwaFirmy 2026-01-22</polish>
-          <english>Offer prices DevEstateNazwaFirmy 2026-01-22</english>
+          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-02-18</polish>
+          <english>Offer prices TIO Sp. z o.o. 2026-02-18</english>
         </title>
         <description>
-          <polish>Cennik udostępniony dnia 2026-01-22</polish>
-          <english>Price list published 2026-01-22</english>
+          <polish>Cennik udostępniony dnia 2026-02-18</polish>
+          <english>Price list published 2026-02-18</english>
         </description>
         <availability>local</availability>
-        <dataDate>2026-01-22</dataDate>
+        <dataDate>2026-02-18</dataDate>
         <specialSigns>
           <specialSign>X</specialSign>
         </specialSigns>

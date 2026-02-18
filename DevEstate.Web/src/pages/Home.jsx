@@ -5,21 +5,40 @@ import ContactSection from "../components/ContactSection";
 import useFetch from "../hooks/useFetch";
 
 export default function Home() {
-    const { data: companyData, loading: companyLoading, error: companyError } = useFetch("/api/Company");
-    const { data: investmentsAktualne, loading: investmentsAktualneLoading, error: investmentsAktualneError } =
-        useFetch("/api/Investment/status/Aktualne");
-    const { data: investmentsSprzedane, loading: investmentsSprzedaneLoading, error: investmentsSprzedaneError } =
-        useFetch("/api/Investment/status/Sprzedane");
+    const {
+        data: companyData,
+        loading: companyLoading,
+        error: companyError
+    } = useFetch("/api/Company/details");
 
-    if (companyLoading || investmentsAktualneLoading || investmentsSprzedaneLoading)
-        return <p className="text-center mt-20 text-gray-600">Ładowanie...</p>;
+    const {
+        data: investmentsAktualne,
+        loading: investmentsAktualneLoading,
+        error: investmentsAktualneError
+    } = useFetch("/api/Investment/status/Aktualne");
 
-    if (companyError || investmentsAktualneError || investmentsSprzedaneError)
+    const {
+        data: investmentsSprzedane,
+        loading: investmentsSprzedaneLoading
+        // ❌ celowo NIE bierzemy error
+    } = useFetch("/api/Investment/status/Sprzedane");
+
+    if (companyLoading || investmentsAktualneLoading || investmentsSprzedaneLoading) {
         return (
-            <p className="text-center mt-20 text-red-600">
-                Błąd: {companyError || investmentsAktualneError || investmentsSprzedaneError}
+            <p className="text-center mt-20 text-gray-600">
+                Ładowanie...
             </p>
         );
+    }
+
+    // ❗ tylko krytyczne błędy
+    if (companyError || investmentsAktualneError) {
+        return (
+            <p className="text-center mt-20 text-red-600">
+                Błąd: {companyError || investmentsAktualneError}
+            </p>
+        );
+    }
 
     return (
         <div className="min-h-screen text-[#1A1A1A] scroll-smooth">
@@ -27,23 +46,22 @@ export default function Home() {
             {/* 🔝 Pasek nawigacyjny */}
             <TopBar />
 
-            {/* 🏠 Sekcja powitalna */}
+            {/* 🏠 Hero */}
             <section className="bg-white pt-40 pb-24 text-center" id="home">
                 <h1 className="text-5xl md:text-6xl font-semibold tracking-tight mb-6 animate-fade-in">
                     {companyData?.name || "Witamy w DevEstate"}
                 </h1>
                 <p className="text-lg text-gray-600 animate-fade-in delay-150">
-                    ProfesjonalneEE inwestycje nieruchomości — nowoczesne, przejrzyste, solidne.
+                    Profesjonalne inwestycje nieruchomości — nowoczesne, przejrzyste, solidne.
                 </p>
             </section>
 
-            {/* 📄 Sekcja O nas (bez napisu "O nas") */}
+            {/* 📄 O nas */}
             <section className="bg-[#FAF9F6] pt-4 pb-24" id="about">
                 <div className="max-w-4xl mx-auto px-6 animate-fade-in">
                     <AboutSection />
                 </div>
             </section>
-
 
             {/* 🏢 Aktualne inwestycje */}
             <section className="bg-[#D1B28D] py-24" id="sales">
@@ -62,22 +80,24 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* 🏘️ Sprzedane inwestycje */}
-            <section className="bg-[#FAF9F6] py-24" id="history">
-                <div className="text-center">
-                    <h2 className="text-3xl font-semibold mb-8 animate-fade-in">
-                        Sprzedane inwestycje
-                    </h2>
+            {/* 🏘️ Sprzedane inwestycje — tylko jeśli są */}
+            {Array.isArray(investmentsSprzedane) && investmentsSprzedane.length > 0 && (
+                <section className="bg-[#FAF9F6] py-24" id="history">
+                    <div className="text-center">
+                        <h2 className="text-3xl font-semibold mb-8 animate-fade-in">
+                            Sprzedane inwestycje
+                        </h2>
 
-                    <div className="animate-fade-in delay-150">
-                        <InvestmentCarousel investments={investmentsSprzedane || []} />
+                        <div className="animate-fade-in delay-150">
+                            <InvestmentCarousel investments={investmentsSprzedane} />
+                        </div>
+
+                        <p className="mt-6 text-gray-700 animate-fade-in delay-300">
+                            {investmentsSprzedane.length} inwestycji sprzedanych
+                        </p>
                     </div>
-
-                    <p className="mt-6 text-gray-700 animate-fade-in delay-300">
-                        {investmentsSprzedane?.length || 0} inwestycji sprzedanych
-                    </p>
-                </div>
-            </section>
+                </section>
+            )}
 
             {/* 📬 Kontakt */}
             <section id="contact" className="animate-fade-in py-24">
