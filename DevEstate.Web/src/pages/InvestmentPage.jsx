@@ -86,7 +86,13 @@ export default function InvestmentPage() {
             {/* OPIS */}
             <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-xl p-10 mt-20 text-center">
                 <h3 className="text-2xl font-semibold mb-4">Opis inwestycji</h3>
-                <p className="text-gray-700 leading-relaxed">{investment.description}</p>
+                <p
+                    className="text-gray-700 leading-relaxed whitespace-pre-wrap text-justify"
+                    style={{ textAlign: "justify" }}
+                >
+                    {investment.description}
+                </p>
+
 
                 {/* Dokumenty - minimalistyczne */}
                 {documents.length > 0 && (
