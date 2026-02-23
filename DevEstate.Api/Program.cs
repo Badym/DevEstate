@@ -136,7 +136,9 @@ builder.Services.AddSingleton(new CompanyDtos.CompanyDto
 
 builder.Services.AddSingleton(new XmlDatasetSettingsDto
 {
-    DatasetExtIdent = "abdspstyabcismegptusjjqwqasuciwmnfhs"
+    DatasetExtIdent = "abdspstyabcismegptusjjqwqasuciwmnfhs",
+    DatasetIntIdent = 6403
+
 });
 
 // DataSeeder

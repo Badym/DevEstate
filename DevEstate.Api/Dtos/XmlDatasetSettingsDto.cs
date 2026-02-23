@@ -3,4 +3,5 @@
 public class XmlDatasetSettingsDto
 {
     public string DatasetExtIdent { get; set; } = string.Empty; // stałe 36 znaków
+    public int DatasetIntIdent { get; set; }
 }

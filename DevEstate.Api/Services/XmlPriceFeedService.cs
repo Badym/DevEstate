@@ -54,9 +54,11 @@ public class XmlPriceFeedService
             var xml = new XElement(ns + "datasets",
                 new XElement("dataset",
                     new XAttribute("status", "published"),
-
+                    
                     new XElement("extIdent", _settings.DatasetExtIdent),
-
+                    
+                    new XElement("intIdent", _settings.DatasetIntIdent),
+                    
                     new XElement("title",
                         new XElement("polish", $"Ceny ofertowe mieszkań dewelopera {company.Name} w {resource.DataDate.Year} r."),
                         new XElement("english", $"Offer prices of apartments of developer {company.Name} in {resource.DataDate.Year}.")
