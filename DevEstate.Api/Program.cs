@@ -124,11 +124,14 @@ builder.Services.AddSingleton<ExcelDataParser>();
 builder.Services.AddSingleton<AveragePriceService>();
 builder.Services.AddHttpClient<CsvDownloader>();
 
+builder.Services.AddScoped<XmlFeedGenerationService>();
+builder.Services.AddHostedService<XmlFeedScheduler>();
+
 builder.Services.AddSingleton(new CompanyDtos.CompanyDto
 {
     Name = "Tio",
-    Website = "https://devestate-tio.onrender.com"
-    //Website = "http://localhost:5086"
+    //Website = "https://devestate-tio.onrender.com"
+    Website = "http://localhost:5086"
 });
 
 builder.Services.AddSingleton(new XmlDatasetSettingsDto

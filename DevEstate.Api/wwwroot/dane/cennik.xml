@@ -19,18 +19,18 @@
     </categories>
     <resources>
       <resource status="published">
-        <extIdent>70860365-be94-53b4-30b5-afeec1474ad2</extIdent>
+        <extIdent>c5c45290-8ca9-7f24-c206-c4169b6c6308</extIdent>
         <url>http://localhost:5086/dane/cennik.csv</url>
         <title>
-          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-02-18</polish>
-          <english>Offer prices TIO Sp. z o.o. 2026-02-18</english>
+          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-02-23</polish>
+          <english>Offer prices TIO Sp. z o.o. 2026-02-23</english>
         </title>
         <description>
-          <polish>Cennik udostępniony dnia 2026-02-18</polish>
-          <english>Price list published 2026-02-18</english>
+          <polish>Cennik udostępniony dnia 2026-02-23</polish>
+          <english>Price list published 2026-02-23</english>
         </description>
         <availability>local</availability>
-        <dataDate>2026-02-18</dataDate>
+        <dataDate>2026-02-23</dataDate>
         <specialSigns>
           <specialSign>X</specialSign>
         </specialSigns>
