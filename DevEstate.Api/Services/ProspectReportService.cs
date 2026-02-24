@@ -266,12 +266,19 @@ public async Task<List<ProspectReportDtos.Row>> GenerateReportAsync()
             row.InvestmentMunicipality ?? "x",
             row.InvestmentCity ?? "x",
             row.InvestmentStreet ?? "x",
-            row.InvestmentBuildingNumber ?? "x",
+            //row.InvestmentBuildingNumber ?? "x", //tu
+            (!string.IsNullOrWhiteSpace(row.InvestmentBuildingNumber)
+                ? row.InvestmentBuildingNumber
+                : (!string.IsNullOrWhiteSpace(row.ApartmentNumber) ? row.ApartmentNumber : "x")),
             row.InvestmentPostalCode ?? "x",
 
             // Nieruchomość
             row.PropertyType ?? "x",
-            row.ApartmentNumber ?? "x",
+            //row.ApartmentNumber ?? "x", // pierwsze
+            (!string.IsNullOrWhiteSpace(row.InvestmentBuildingNumber)
+                ? (row.ApartmentNumber ?? "x")
+                : "x"),
+            
             //row.Area?.ToString() ?? "x",
             row.PricePerM2?.ToString() ?? "x",
             row.PriceFromDate?.ToString("yyyy-MM-dd") ?? "x",//////////////

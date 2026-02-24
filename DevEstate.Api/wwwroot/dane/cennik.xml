@@ -1,6 +1,7 @@
 ﻿<datasets xmlns="urn:otwarte-dane:harvester:1.13">
   <dataset status="published" xmlns="">
     <extIdent>abdspstyabcismegptusjjqwqasuciwmnfhs</extIdent>
+    <intIdent>6403</intIdent>
     <title>
       <polish>Ceny ofertowe mieszkań dewelopera TIO Sp. z o.o. w 2026 r.</polish>
       <english>Offer prices of apartments of developer TIO Sp. z o.o. in 2026.</english>
@@ -19,18 +20,18 @@
     </categories>
     <resources>
       <resource status="published">
-        <extIdent>c5c45290-8ca9-7f24-c206-c4169b6c6308</extIdent>
+        <extIdent>978febbd-14b5-6d88-62bb-fb7c76d30e09</extIdent>
         <url>http://localhost:5086/dane/cennik.csv</url>
         <title>
-          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-02-23</polish>
-          <english>Offer prices TIO Sp. z o.o. 2026-02-23</english>
+          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-02-24</polish>
+          <english>Offer prices TIO Sp. z o.o. 2026-02-24</english>
         </title>
         <description>
-          <polish>Cennik udostępniony dnia 2026-02-23</polish>
-          <english>Price list published 2026-02-23</english>
+          <polish>Cennik udostępniony dnia 2026-02-24</polish>
+          <english>Price list published 2026-02-24</english>
         </description>
         <availability>local</availability>
-        <dataDate>2026-02-23</dataDate>
+        <dataDate>2026-02-24</dataDate>
         <specialSigns>
           <specialSign>X</specialSign>
         </specialSigns>
