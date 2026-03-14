@@ -24,7 +24,7 @@ export default function TopBar() {
                     className="text-2xl font-semibold tracking-tight text-[#1A1A1A] cursor-pointer"
                     onClick={() => handleNavigateToSection("home")}
                 >
-                    DevEstate
+                    TIO Sp. z o.o.
                 </div>
 
                 {/* Desktop menu */}
