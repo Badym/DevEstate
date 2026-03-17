@@ -37,7 +37,7 @@ public class XmlFeedGenerationService
         };
 
         var outputDir = Path.Combine(_env.WebRootPath, folderName);
-        var xmlPath = await _xmlService.GenerateXml(resource, outputDir);
+        var xmlPath = await _xmlService.GenerateXml_3(resource, outputDir);
 
         _md5Service.SaveMd5File(xmlPath);
 

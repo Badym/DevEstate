@@ -45,7 +45,7 @@ public class XmlFeedController : ControllerBase
         };
 
         string outputDir = Path.Combine(_env.WebRootPath, "dane");
-        string xmlPath = await _xmlService.GenerateXml(resource, outputDir);
+        string xmlPath = await _xmlService.GenerateXml_3(resource, outputDir);
 
         _md5Service.SaveMd5File(xmlPath);
         

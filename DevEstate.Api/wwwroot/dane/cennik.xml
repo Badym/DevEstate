@@ -20,18 +20,62 @@
     </categories>
     <resources>
       <resource status="published">
-        <extIdent>1e72983d-670a-f4ae-cdb4-2b0985e99a6a</extIdent>
+        <extIdent>7e979fe8-4724-3fbf-f089-c81d9dde37fc</extIdent>
         <url>http://localhost:5086/dane/cennik.csv</url>
         <title>
-          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-03-14</polish>
-          <english>Offer prices TIO Sp. z o.o. 2026-03-14</english>
+          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-03-17</polish>
+          <english>Offer prices TIO Sp. z o.o. 2026-03-17</english>
         </title>
         <description>
-          <polish>Cennik udostępniony dnia 2026-03-14</polish>
-          <english>Price list published 2026-03-14</english>
+          <polish>Cennik udostępniony dnia 2026-03-17</polish>
+          <english>Price list published 2026-03-17</english>
         </description>
         <availability>local</availability>
-        <dataDate>2026-03-14</dataDate>
+        <dataDate>2026-03-17</dataDate>
+        <specialSigns>
+          <specialSign>X</specialSign>
+        </specialSigns>
+        <hasDynamicData>false</hasDynamicData>
+        <hasHighValueData>true</hasHighValueData>
+        <hasHighValueDataFromEuropeanCommissionList>false</hasHighValueDataFromEuropeanCommissionList>
+        <hasResearchData>false</hasResearchData>
+        <containsProtectedData>false</containsProtectedData>
+      </resource>
+      <resource status="published">
+        <extIdent>7b43a84b-fc1a-9ddb-71cd-f1c392b6c413</extIdent>
+        <url>http://localhost:5086/dane/cennik.csv</url>
+        <title>
+          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-03-16</polish>
+          <english>Offer prices TIO Sp. z o.o. 2026-03-16</english>
+        </title>
+        <description>
+          <polish>Cennik udostępniony dnia 2026-03-16</polish>
+          <english>Price list published 2026-03-16</english>
+        </description>
+        <availability>local</availability>
+        <dataDate>2026-03-16</dataDate>
+        <specialSigns>
+          <specialSign>X</specialSign>
+        </specialSigns>
+        <hasDynamicData>false</hasDynamicData>
+        <hasHighValueData>true</hasHighValueData>
+        <hasHighValueDataFromEuropeanCommissionList>false</hasHighValueDataFromEuropeanCommissionList>
+        <hasResearchData>false</hasResearchData>
+        <containsProtectedData>false</containsProtectedData>
+      </resource>
+      <resource status="published">
+        <extIdent>24e98838-d206-acef-2ba9-dcd737f5722c</extIdent>
+        <url>http://localhost:5086/dane/cennik.csv</url>
+        <title>
+          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-03-15</polish>
+          <english>Offer prices TIO Sp. z o.o. 2026-03-15</english>
+        </title>
+        <description>
+          <polish>Cennik udostępniony dnia 2026-03-15</polish>
+          <english>Price list published 2026-03-15</english>
+        </description>
+        <availability>local</availability>
+        <dataDate>2026-03-15</dataDate>
         <specialSigns>
           <specialSign>X</specialSign>
         </specialSigns>

@@ -123,6 +123,129 @@ public class XmlPriceFeedService
 
             return xmlPath;
         }
+        
+        public async Task<string> GenerateXml_3(XmlResourceInfoDto resource, string outputDir)
+        {
+        var companyEntity = (await _companyRepo.GetAllAsync()).FirstOrDefault()
+                            ?? throw new Exception("Company data not found");
+
+        var company = new CompanyDetailsDtos.ResponseCompanyDetails
+        {
+            Id = companyEntity.Id,
+            Name = companyEntity.Name,
+            LegalForm = companyEntity.LegalForm,
+            KRS = companyEntity.KRS,
+            CEIDGNumber = companyEntity.CEIDGNumber,
+            NIP = companyEntity.NIP,
+            REGON = companyEntity.REGON,
+            Phone = companyEntity.Phone,
+            Fax = companyEntity.Fax,
+            Email = companyEntity.Email,
+            Website = companyEntity.Website,
+            Province = companyEntity.Province,
+            County = companyEntity.County,
+            Municipality = companyEntity.Municipality,
+            City = companyEntity.City,
+            Street = companyEntity.Street,
+            BuildingNumber = companyEntity.BuildingNumber,
+            ApartmentNumber = companyEntity.ApartmentNumber,
+            PostalCode = companyEntity.PostalCode,
+            Description = companyEntity.Description,
+            LogoImage = companyEntity.LogoImage,
+            ContactMethond = companyEntity.ContactMethod // uwaga na literówkę w DTO
+        };
+
+        XNamespace ns = "urn:otwarte-dane:harvester:1.13";
+
+        // Zbiór <resource> dla kolejnych dni
+        var resourcesElement = new XElement("resources");
+
+        // offset = 0 -> dataDate = dzisiaj (resource.DataDate)
+        // offset = 1 -> wczoraj
+        // offset = 2 -> przedwczoraj
+        for (int offset = 0; offset < 3; offset++)
+        {
+            var dayDate = resource.DataDate.Date.AddDays(-offset);
+
+            // TODO: jeżeli masz różne CSV dla różnych dni, tutaj wylicz URL dla dayDate
+            // Na razie używam resource.CsvUrl jako placeholder.
+            var csvUrlForDay = resource.CsvUrl;
+
+            var resourceElement = new XElement("resource",
+                new XAttribute("status", "published"),
+
+                new XElement("extIdent", GenerateResourceExtIdent(dayDate)),
+
+                new XElement("url", csvUrlForDay),
+
+                new XElement("title",
+                    new XElement("polish", $"Ceny ofertowe mieszkań {company.Name} {dayDate:yyyy-MM-dd}"),
+                    new XElement("english", $"Offer prices {company.Name} {dayDate:yyyy-MM-dd}")
+                ),
+
+                new XElement("description",
+                    new XElement("polish", $"Cennik udostępniony dnia {dayDate:yyyy-MM-dd}"),
+                    new XElement("english", $"Price list published {dayDate:yyyy-MM-dd}")
+                ),
+
+                new XElement("availability", "local"),
+                new XElement("dataDate", dayDate.ToString("yyyy-MM-dd")),
+
+                new XElement("specialSigns",
+                    new XElement("specialSign", "X")
+                ),
+
+                new XElement("hasDynamicData", false),
+                new XElement("hasHighValueData", true),
+                new XElement("hasHighValueDataFromEuropeanCommissionList", false),
+                new XElement("hasResearchData", false),
+                new XElement("containsProtectedData", false)
+            );
+
+            resourcesElement.Add(resourceElement);
+        }
+
+        var xml = new XElement(ns + "datasets",
+            new XElement("dataset",
+                new XAttribute("status", "published"),
+
+                new XElement("extIdent", _settings.DatasetExtIdent),
+                new XElement("intIdent", _settings.DatasetIntIdent),
+
+                new XElement("title",
+                    new XElement("polish", $"Ceny ofertowe mieszkań dewelopera {company.Name} w {resource.DataDate.Year} r."),
+                    new XElement("english", $"Offer prices of apartments of developer {company.Name} in {resource.DataDate.Year}.")
+                ),
+
+                new XElement("description",
+                    new XElement("polish", $"Zbiór danych zawiera informacje o cenach ofertowych mieszkań dewelopera {company.Name}."),
+                    new XElement("english", $"Dataset contains offer prices of developer {company.Name}.")
+                ),
+
+                new XElement("updateFrequency", "daily"),
+                new XElement("hasDynamicData", false),
+                new XElement("hasHighValueData", true),
+                new XElement("hasHighValueDataFromEuropeanCommissionList", false),
+                new XElement("hasResearchData", false),
+
+                new XElement("categories",
+                    new XElement("category", "ECON")
+                ),
+
+                // Tu wstrzykujemy przygotowaną listę resource'ów dla 3 dni
+                resourcesElement,
+
+                new XElement("tags",
+                    new XElement("tag", new XAttribute("lang", "pl"), "Deweloper")
+                )
+            )
+        );
+
+        string xmlPath = Path.Combine(outputDir, "cennik.xml");
+        File.WriteAllText(xmlPath, xml.ToString(), Encoding.UTF8);
+
+        return xmlPath;
+        }
 
         private string GenerateResourceExtIdent(DateTime dataDate)
         {
