@@ -163,7 +163,7 @@ public class XmlPriceFeedService
         // offset = 0 -> dataDate = dzisiaj (resource.DataDate)
         // offset = 1 -> wczoraj
         // offset = 2 -> przedwczoraj
-        for (int offset = 0; offset < 3; offset++)
+        for (int offset = 0; offset < 6; offset++)
         {
             var dayDate = resource.DataDate.Date.AddDays(-offset);
 
