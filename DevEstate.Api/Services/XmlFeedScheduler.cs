@@ -15,7 +15,7 @@ public class XmlFeedScheduler : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        var timer = new PeriodicTimer(TimeSpan.FromMinutes(0.1));
+        var timer = new PeriodicTimer(TimeSpan.FromMinutes(60));
 
         while (await timer.WaitForNextTickAsync(stoppingToken))
         {
