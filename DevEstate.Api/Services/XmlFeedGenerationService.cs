@@ -56,7 +56,7 @@ public class XmlFeedGenerationService
     
     public async Task<(string csvUrl, string xmlUrl, string md5Url, string xmlPath)> GenerateAsync(string folderName = "dane")
     {
-        var today = DateTime.Today.AddDays(1);
+        var today = DateTime.Today;
         
         // 1️⃣ jeśli już jest wpis na dziś → nie rób nic
         var existing = await _csvDateService.GetByDateAsync(today);

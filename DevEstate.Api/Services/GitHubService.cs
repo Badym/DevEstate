@@ -2,6 +2,7 @@
 using System.Text;
 using System.Text.Json;
 using DevEstate.Api.Models;
+using DevEstate.Api.Services;
 using Microsoft.Extensions.Options;
 
 
@@ -9,16 +10,19 @@ public class GitHubService
 {
     private readonly HttpClient _httpClient;
     private readonly GitHubSettings _settings;
+    
+    private readonly ILogger<XmlFeedScheduler> _logger;
 
     private const string OWNER = "Badym";
     private const string REPO = "DevEstate";
     
     private readonly string _token;
     
-    public GitHubService(HttpClient httpClient, IOptions<GitHubSettings> settings)
+    public GitHubService(HttpClient httpClient, IOptions<GitHubSettings> settings, ILogger<XmlFeedScheduler> logger)
     {
         _httpClient = httpClient;
         _token = settings.Value.Token;
+        _logger = logger;
 
         _httpClient.DefaultRequestHeaders.Authorization =
             new AuthenticationHeaderValue("Bearer", _token);
@@ -28,6 +32,7 @@ public class GitHubService
 
     public async Task UploadFileAsync(string localPath, string repoPath)
     {
+        Console.WriteLine("TOKEN: " + _token.Substring(0, 5));
         var content = await File.ReadAllBytesAsync(localPath);
         var base64 = Convert.ToBase64String(content);
 
