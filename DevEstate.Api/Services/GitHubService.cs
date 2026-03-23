@@ -1,17 +1,29 @@
-﻿using System.Text;
+﻿using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
+using DevEstate.Api.Models;
+using Microsoft.Extensions.Options;
+
 
 public class GitHubService
 {
-    private readonly HttpClient _http;
+    private readonly HttpClient _httpClient;
+    private readonly GitHubSettings _settings;
 
     private const string OWNER = "Badym";
     private const string REPO = "DevEstate";
-    private const string TOKEN = "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"; // ⚠️ potem do configa
-
-    public GitHubService(HttpClient http)
+    
+    private readonly string _token;
+    
+    public GitHubService(HttpClient httpClient, IOptions<GitHubSettings> settings)
     {
-        _http = http;
+        _httpClient = httpClient;
+        _token = settings.Value.Token;
+
+        _httpClient.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", _token);
+
+        _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("DevEstateApp");
     }
 
     public async Task UploadFileAsync(string localPath, string repoPath)
@@ -30,11 +42,11 @@ public class GitHubService
         var json = JsonSerializer.Serialize(body);
 
         var request = new HttpRequestMessage(HttpMethod.Put, url);
-        request.Headers.Add("Authorization", $"Bearer {TOKEN}");
+        request.Headers.Add("Authorization", $"Bearer {_token}");
         request.Headers.Add("User-Agent", "DevEstate");
         request.Content = new StringContent(json, Encoding.UTF8, "application/json");
 
-        var response = await _http.SendAsync(request);
+        var response = await _httpClient.SendAsync(request);
         var responseText = await response.Content.ReadAsStringAsync();
 
         if (!response.IsSuccessStatusCode)
