@@ -32,7 +32,7 @@ public class GitHubService
 
     public async Task UploadFileAsync(string localPath, string repoPath)
     {
-        Console.WriteLine("TOKEN: " + _token.Substring(0, 5));
+        //Console.WriteLine("TOKEN: " + _token.Substring(0, 5));
         var content = await File.ReadAllBytesAsync(localPath);
         var base64 = Convert.ToBase64String(content);
 

@@ -56,8 +56,13 @@ public class XmlFeedGenerationService
     
     public async Task<(string csvUrl, string xmlUrl, string md5Url, string xmlPath)> GenerateAsync(string folderName = "dane")
     {
-        var today = DateTime.Today;
-        
+        var polandTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+        var nowPl = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, polandTimeZone);
+
+
+        var today = DateTime.SpecifyKind(nowPl.Date, DateTimeKind.Utc);
+        Console.WriteLine("UTC: " + DateTime.UtcNow);
+        Console.WriteLine("PL: " + today);
         // 1️⃣ jeśli już jest wpis na dziś → nie rób nic
         var existing = await _csvDateService.GetByDateAsync(today);
         if (existing != null)

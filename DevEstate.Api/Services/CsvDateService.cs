@@ -35,7 +35,7 @@ namespace DevEstate.Api.Services
 
             var entity = new CsvDate
             {
-                Date = date,
+                Date = DateTime.SpecifyKind(date, DateTimeKind.Utc),
                 FileName = fileName
             };
 
