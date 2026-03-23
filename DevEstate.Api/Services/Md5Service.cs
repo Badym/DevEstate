@@ -22,4 +22,9 @@ public class Md5Service
 
         File.WriteAllText(md5Path, md5 + Environment.NewLine);
     }
+    
+    public string GetMd5(string filePath)
+    {
+        return GenerateHash(filePath);
+    }
 }

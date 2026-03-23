@@ -11,11 +11,14 @@ public class XmlPriceFeedService
         private readonly CompanyRepository _companyRepo;
 
         private readonly XmlDatasetSettingsDto _settings;
+        
+        private readonly CsvDateService _csvDateService;
 
-        public XmlPriceFeedService(CompanyRepository companyRepo, XmlDatasetSettingsDto settings)
+        public XmlPriceFeedService(CompanyRepository companyRepo, XmlDatasetSettingsDto settings, CsvDateService csvDateService)
         {
             _companyRepo = companyRepo;
             _settings = settings;
+            _csvDateService = csvDateService;
         }
 
         public  async Task<string> GenerateXml(XmlResourceInfoDto resource, string outputDir)
@@ -128,7 +131,14 @@ public class XmlPriceFeedService
         {
         var companyEntity = (await _companyRepo.GetAllAsync()).FirstOrDefault()
                             ?? throw new Exception("Company data not found");
+        
+        var entries = await _csvDateService.GetAllAsync();
 
+        // sortowanie malejąco (najpierw najnowsze)
+        entries = entries
+            .OrderByDescending(e => e.Date)
+            .ToList();
+        
         var company = new CompanyDetailsDtos.ResponseCompanyDetails
         {
             Id = companyEntity.Id,
@@ -163,13 +173,13 @@ public class XmlPriceFeedService
         // offset = 0 -> dataDate = dzisiaj (resource.DataDate)
         // offset = 1 -> wczoraj
         // offset = 2 -> przedwczoraj
-        for (int offset = 0; offset < 6; offset++)
-        {
-            var dayDate = resource.DataDate.Date.AddDays(-offset);
+        var baseUrl = resource.CsvUrl; // czyli https://raw.githubusercontent.com/Badym/DevEstate/main/ceny
 
-            // TODO: jeżeli masz różne CSV dla różnych dni, tutaj wylicz URL dla dayDate
-            // Na razie używam resource.CsvUrl jako placeholder.
-            var csvUrlForDay = resource.CsvUrl;
+        foreach (var entry in entries)
+        {
+            var dayDate = entry.Date;
+
+            var csvUrlForDay = $"{baseUrl}/{entry.FileName}";
 
             var resourceElement = new XElement("resource",
                 new XAttribute("status", "published"),

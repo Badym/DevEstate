@@ -126,6 +126,9 @@ builder.Services.AddHttpClient<CsvDownloader>();
 
 builder.Services.AddScoped<XmlFeedGenerationService>();
 builder.Services.AddHostedService<XmlFeedScheduler>();
+builder.Services.AddSingleton<CsvDateRepository>();
+builder.Services.AddScoped<CsvDateService>();
+builder.Services.AddHttpClient<GitHubService>();
 
 builder.Services.AddSingleton(new CompanyDtos.CompanyDto
 {
