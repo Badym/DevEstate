@@ -20,6 +20,72 @@
     </categories>
     <resources>
       <resource status="published">
+        <extIdent>51dfa5be-91d8-0fee-838c-46078315dbbd</extIdent>
+        <url>https://raw.githubusercontent.com/Badym/DevEstate/main/ceny/cennik_3.csv</url>
+        <title>
+          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-03-26</polish>
+          <english>Offer prices TIO Sp. z o.o. 2026-03-26</english>
+        </title>
+        <description>
+          <polish>Cennik udostępniony dnia 2026-03-26</polish>
+          <english>Price list published 2026-03-26</english>
+        </description>
+        <availability>local</availability>
+        <dataDate>2026-03-26</dataDate>
+        <specialSigns>
+          <specialSign>X</specialSign>
+        </specialSigns>
+        <hasDynamicData>false</hasDynamicData>
+        <hasHighValueData>true</hasHighValueData>
+        <hasHighValueDataFromEuropeanCommissionList>false</hasHighValueDataFromEuropeanCommissionList>
+        <hasResearchData>false</hasResearchData>
+        <containsProtectedData>false</containsProtectedData>
+      </resource>
+      <resource status="published">
+        <extIdent>99f67412-9452-8718-7757-81c39e1f4a17</extIdent>
+        <url>https://raw.githubusercontent.com/Badym/DevEstate/main/ceny/cennik_3.csv</url>
+        <title>
+          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-03-25</polish>
+          <english>Offer prices TIO Sp. z o.o. 2026-03-25</english>
+        </title>
+        <description>
+          <polish>Cennik udostępniony dnia 2026-03-25</polish>
+          <english>Price list published 2026-03-25</english>
+        </description>
+        <availability>local</availability>
+        <dataDate>2026-03-25</dataDate>
+        <specialSigns>
+          <specialSign>X</specialSign>
+        </specialSigns>
+        <hasDynamicData>false</hasDynamicData>
+        <hasHighValueData>true</hasHighValueData>
+        <hasHighValueDataFromEuropeanCommissionList>false</hasHighValueDataFromEuropeanCommissionList>
+        <hasResearchData>false</hasResearchData>
+        <containsProtectedData>false</containsProtectedData>
+      </resource>
+      <resource status="published">
+        <extIdent>384cce4f-348c-d66d-9308-a6112b93bb2d</extIdent>
+        <url>https://raw.githubusercontent.com/Badym/DevEstate/main/ceny/cennik_2.csv</url>
+        <title>
+          <polish>Ceny ofertowe mieszkań TIO Sp. z o.o. 2026-03-24</polish>
+          <english>Offer prices TIO Sp. z o.o. 2026-03-24</english>
+        </title>
+        <description>
+          <polish>Cennik udostępniony dnia 2026-03-24</polish>
+          <english>Price list published 2026-03-24</english>
+        </description>
+        <availability>local</availability>
+        <dataDate>2026-03-24</dataDate>
+        <specialSigns>
+          <specialSign>X</specialSign>
+        </specialSigns>
+        <hasDynamicData>false</hasDynamicData>
+        <hasHighValueData>true</hasHighValueData>
+        <hasHighValueDataFromEuropeanCommissionList>false</hasHighValueDataFromEuropeanCommissionList>
+        <hasResearchData>false</hasResearchData>
+        <containsProtectedData>false</containsProtectedData>
+      </resource>
+      <resource status="published">
         <extIdent>28fc588e-d03b-6b28-a5fd-d81b1494ddc3</extIdent>
         <url>https://raw.githubusercontent.com/Badym/DevEstate/main/ceny/cennik_1.csv</url>
         <title>

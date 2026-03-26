@@ -23,6 +23,17 @@ public class Md5Service
         File.WriteAllText(md5Path, md5 + Environment.NewLine);
     }
     
+    public async Task<string> GetMd5FromUrlAsync(string url)
+    {
+        using var http = new HttpClient();
+        var bytes = await http.GetByteArrayAsync(url);
+
+        using var md5 = System.Security.Cryptography.MD5.Create();
+        var hash = md5.ComputeHash(bytes);
+
+        return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+    }
+    
     public string GetMd5(string filePath)
     {
         return GenerateHash(filePath);

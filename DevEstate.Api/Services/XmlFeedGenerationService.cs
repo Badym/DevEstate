@@ -60,7 +60,7 @@ public class XmlFeedGenerationService
         var nowPl = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, polandTimeZone);
 
 
-        var today = DateTime.SpecifyKind(nowPl.Date, DateTimeKind.Utc);
+        var today = DateTime.SpecifyKind(nowPl.Date, DateTimeKind.Utc).AddDays(-1);
         Console.WriteLine("UTC: " + DateTime.UtcNow);
         Console.WriteLine("PL: " + today);
         // 1️⃣ jeśli już jest wpis na dziś → nie rób nic
@@ -99,11 +99,11 @@ public class XmlFeedGenerationService
         if (!File.Exists(firstFilePath))
         {
             // kopiuj jako pierwszy plik
-            File.Copy(tempCsvPath, firstFilePath, true);
+           // File.Copy(tempCsvPath, firstFilePath, true);
 
             // 🚀 upload na GitHub
             var repoPath = "ceny/cennik_1.csv";
-            await _gitHubService.UploadFileAsync(firstFilePath, repoPath);
+            await _gitHubService.UploadFileAsync(tempCsvPath, repoPath);
 
             Console.WriteLine("🔥 Uploaded FIRST file: cennik_1.csv to GitHub");
         }
@@ -118,25 +118,25 @@ public class XmlFeedGenerationService
 
         if (last != null)
         {
-            var lastPath = Path.Combine(_env.WebRootPath, folderName, last.FileName);
-            var lastMd5 = _md5Service.GetMd5(lastPath);
+            var lastUrl = _gitHubService.GetRawUrl($"ceny/{last.FileName}");
+            var lastMd5 = await _md5Service.GetMd5FromUrlAsync(lastUrl);
 
-            // 4️⃣ jeśli plik taki sam → reuse
             if (newMd5 == lastMd5)
             {
+                // 🔁 ten sam plik → reuse
                 finalFileName = last.FileName;
             }
             else
             {
-                // 5️⃣ nowa wersja
+                // 🆕 nowa wersja
                 var nextNumber = GetNextVersionNumber(last.FileName);
                 finalFileName = $"cennik_{nextNumber}.csv";
 
-                finalCsvPath = Path.Combine(_env.WebRootPath, folderName, finalFileName);
-                File.Copy(tempCsvPath, finalCsvPath, true);
-                
+                //finalCsvPath = Path.Combine(_env.WebRootPath, folderName, finalFileName);
+                //tempCsvPath, finalCsvPath, true);
+
                 var repoPath = $"ceny/{finalFileName}";
-                await _gitHubService.UploadFileAsync(finalCsvPath, repoPath);
+                await _gitHubService.UploadFileAsync(tempCsvPath, repoPath);
             }
         }
         else
