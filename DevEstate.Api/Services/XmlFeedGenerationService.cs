@@ -60,7 +60,7 @@ public class XmlFeedGenerationService
         var nowPl = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, polandTimeZone);
 
 
-        var today = DateTime.SpecifyKind(nowPl.Date, DateTimeKind.Utc).AddDays(-1);
+        var today = DateTime.SpecifyKind(nowPl.Date, DateTimeKind.Utc);
         Console.WriteLine("UTC: " + DateTime.UtcNow);
         Console.WriteLine("PL: " + today);
         // 1️⃣ jeśli już jest wpis na dziś → nie rób nic
